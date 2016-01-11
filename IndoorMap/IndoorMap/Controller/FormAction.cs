@@ -61,8 +61,8 @@ namespace IndoorMap.Controller
                 requestMessage.RequestUri = uri;
 
                 HttpResponseMessage responseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationToken);
-                string a = await responseMessage.Content.ReadAsStringAsync();
-                
+                string content = await responseMessage.Content.ReadAsStringAsync();
+
                 if (viewModel == null)
                 {
                     
@@ -71,17 +71,24 @@ namespace IndoorMap.Controller
                 {
                     if(viewModel is MainPage_Model)
                     {
+                        JsonCityModel jsonCity = JsonConvert.DeserializeObject<JsonCityModel>(content);
+                        if (jsonCity.reason == "成功")
+                        {
+                            (viewModel as MainPage_Model).HttpClientReturn(jsonCity.result);
+                        }
+                        else
+                        {
 
+                        }
                     }
                     else if(viewModel is MainPage_Model)
                     {
 
                     }
-                    var aa = JsonConvert.DeserializeObject<JsonMallModel>(a);
                 }
 
                 if (FormActionCompleted != null)
-                    FormActionCompleted(a, "");
+                    FormActionCompleted("", "");
 
                 if (WaitingPanelHelper.IsWaitingPanelExisted())
                     WaitingPanelHelper.HiddenWaitingPanel();

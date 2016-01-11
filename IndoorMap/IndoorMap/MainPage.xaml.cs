@@ -34,7 +34,7 @@ namespace IndoorMap
             });
             StrongTypeViewModel = this.ViewModel as MainPage_Model;
 
-            this.ViewModel
+           
         }
 
 
