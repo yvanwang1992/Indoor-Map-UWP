@@ -1,6 +1,7 @@
 ﻿{
   "dependencies": {
-    "MVVM-Sidekick": "1.6.14"
+    "MVVM-Sidekick": "1.6.14",
+    "Newtonsoft.Json": "8.0.2"
   },
   "frameworks": {
     "uap10.0": {}

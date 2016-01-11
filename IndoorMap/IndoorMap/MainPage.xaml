@@ -15,6 +15,6 @@
     </Page.Resources>
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
         <TextBlock x:Name="pageTitle" Grid.Column="1" Margin="100" Text="{Binding Title}" />
-
+        <Button Content="请求" HorizontalAlignment="Center" VerticalAlignment="Center"/>
     </Grid>
 </mvvm:MVVMPage>

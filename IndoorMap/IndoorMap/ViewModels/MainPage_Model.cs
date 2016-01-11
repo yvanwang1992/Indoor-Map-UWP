@@ -12,6 +12,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using IndoorMap.Controller;
 
 namespace IndoorMap.ViewModels
 {
@@ -43,10 +44,19 @@ namespace IndoorMap.ViewModels
         static Func<String> _TitleDefaultValueFactory = ()=>"Title is Here";
         #endregion
 
+        public void Test()
+        {
+            //string url = @"http://op.juhe.cn/atlasyun/city/list?key=" + Configmanager.INDOORMAP_APPKEY;
+            string url = @"http://op.juhe.cn/atlasyun/mall/list?key=" + Configmanager.INDOORMAP_APPKEY + "&cityid=53d5e4c85620fa7f111a3f67";
+            FormAction action = new FormAction(url);
+            action.Run();
+            action.FormActionCompleted += (ss, ee) =>
+            {
+            };
+        }
 
-        
         #region Life Time Event Handling
-    
+
         ///// <summary>
         ///// This will be invoked by view when this viewmodel instance is set to view's ViewModel property. 
         ///// </summary>
@@ -102,7 +112,6 @@ namespace IndoorMap.ViewModels
         //}
 
         #endregion
-
 
     }
 

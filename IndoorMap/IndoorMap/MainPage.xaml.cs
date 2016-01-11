@@ -14,6 +14,7 @@ using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
 using IndoorMap.ViewModels;
+using IndoorMap.Controller;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -32,10 +33,12 @@ namespace IndoorMap
                 StrongTypeViewModel = this.ViewModel as MainPage_Model;
             });
             StrongTypeViewModel = this.ViewModel as MainPage_Model;
+
+            this.ViewModel
         }
 
 
-    public MainPage_Model StrongTypeViewModel
+        public MainPage_Model StrongTypeViewModel
         {
             get { return (MainPage_Model)GetValue(StrongTypeViewModelProperty); }
             set { SetValue(StrongTypeViewModelProperty, value); }
@@ -43,8 +46,6 @@ namespace IndoorMap
 
         public static readonly DependencyProperty StrongTypeViewModelProperty =
                     DependencyProperty.Register("StrongTypeViewModel", typeof(MainPage_Model), typeof(MainPage), new PropertyMetadata(null));
-
-
-
+ 
     }
 }
