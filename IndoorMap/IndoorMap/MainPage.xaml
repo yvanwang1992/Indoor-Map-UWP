@@ -7,14 +7,79 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:mvvm="using:MVVMSidekick.Views"
     xmlns:vm="using:IndoorMap.ViewModels"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     mc:Ignorable="d">
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">My Application</x:String>
         <vm:MainPage_Model x:Key="DesignVM"/>
     </Page.Resources>
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
-        <TextBlock x:Name="pageTitle" Grid.Column="1" Margin="100" Text="{Binding SupportCities[0].name}" />
-        <Button Content="请求" HorizontalAlignment="Center" VerticalAlignment="Center" Command="{Binding CommandGetSupportCities}"/>
+    <Grid Loaded="Grid_Loaded" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}" Margin="0,0,-2,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition />
+            <RowDefinition Height="Auto"/>
+        </Grid.RowDefinitions>
+        
+        <StackPanel Grid.Row="0" Orientation="Horizontal">
+            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{Binding SupportCities[0].name}" />
+            <Button Content="请求" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetSupportCities}"/>
+            <ComboBox HorizontalAlignment="Center" x:Name="cbCity" SelectedIndex="{Binding SelectedCityIndex, Mode=TwoWay}" ItemsSource="{Binding SupportCities}">
+                <ComboBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding name}"/>
+                    </DataTemplate>
+                </ComboBox.ItemTemplate>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                        <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </ComboBox>
+            <Button Content="MallList" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetMallList}"/>
+            
+        </StackPanel>
+       
+        <!--Get All Malls-->
+        <ListView Grid.Row="1" IsItemClickEnabled="True" HorizontalAlignment="Stretch" ItemsSource="{Binding MallList}" >
+            <ListView.ItemTemplate>
+                <DataTemplate>
+                    <Border HorizontalAlignment="Stretch"  Background="Transparent" BorderBrush="Red" BorderThickness="1">
+                        <StackPanel Orientation="Vertical">
+                            <TextBlock Text="{Binding name}"/>
+                            <TextBlock Text="{Binding addr}"/>
+                            <TextBlock Text="{Binding opentime}"/>
+                        </StackPanel>
+                    </Border> 
+                </DataTemplate>
+            </ListView.ItemTemplate>
+        </ListView>
+        
+        <Grid Grid.Row="2" Height="200" VerticalAlignment="Bottom" >
+            <maps:MapControl x:Name="maps" 
+                             MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB"/>
+        </Grid>
     </Grid>
+
+    
+
+    <Page.DataContext>
+        <Binding  RelativeSource="{RelativeSource Mode=Self}" Path="ViewModel"/>
+    </Page.DataContext>
+    <mvvm:MVVMPage.ViewModel>
+        <Binding Source="{StaticResource DesignVM}" />
+    </mvvm:MVVMPage.ViewModel>
+    <mvvm:MVVMPage.BottomAppBar>
+        <CommandBar x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
+            <CommandBar.PrimaryCommands >
+                <AppBarButton x:Name="appbarRefresh"  Icon="Setting" Label="设置" Click="appbarRefresh_Click"/>
+            </CommandBar.PrimaryCommands>
+            <CommandBar.SecondaryCommands>
+
+            </CommandBar.SecondaryCommands>
+        </CommandBar>
+    </mvvm:MVVMPage.BottomAppBar>
+
 </mvvm:MVVMPage>

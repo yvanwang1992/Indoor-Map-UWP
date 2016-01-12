@@ -15,6 +15,8 @@ using System.Runtime.Serialization;
 using IndoorMap.Controller;
 using IndoorMap.Models;
 using System.Diagnostics;
+using IndoorMap.Helpers;
+using Newtonsoft.Json;
 
 namespace IndoorMap.ViewModels
 {
@@ -24,14 +26,13 @@ namespace IndoorMap.ViewModels
     {
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property propcmd for command
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性 propcmd 输入命令
-
+         
         public MainPage_Model()
         {
             if (IsInDesignMode )
             {
                 Title = "Title is a little different in Design mode";
             }
-        
         }
 
         //propvm tab tab string tab Title
@@ -45,22 +46,88 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<String>> _TitleLocator = RegisterContainerLocator<String>("Title", model => model.Initialize("Title", ref model._Title, ref _TitleLocator, _TitleDefaultValueFactory));
         static Func<String> _TitleDefaultValueFactory = ()=>"Title is Here";
         #endregion
-
-
-        //Current Channel
+        
+        //SupportCities
         public List<CityModel> SupportCities
         {
             get { return _SupportCitiesLocator(this).Value; }
             set { _SupportCitiesLocator(this).SetValueAndTryNotify(value); }
         }
-        #region Property Channel CurrentChannel Setup        
+        #region Property Channel SupportCities Setup        
         protected Property<List<CityModel>> _SupportCities = new Property<List<CityModel>> { LocatorFunc = _SupportCitiesLocator };
         static Func<BindableBase, ValueContainer<List<CityModel>>> _SupportCitiesLocator = RegisterContainerLocator<List<CityModel>>("SupportCities", model => model.Initialize("SupportCities", ref model._SupportCities, ref _SupportCitiesLocator, _SupportCitiesDefaultValueFactory));
         static Func<List<CityModel>> _SupportCitiesDefaultValueFactory = () => { return new List<CityModel>(); };
         #endregion
 
+        //MallList
+        public List<MallModel> MallList
+        {
+            get { return _MallListLocator(this).Value; }
+            set { _MallListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel MallList Setup        
+        protected Property<List<MallModel>> _MallList = new Property<List<MallModel>> { LocatorFunc = _MallListLocator };
+        static Func<BindableBase, ValueContainer<List<MallModel>>> _MallListLocator = RegisterContainerLocator<List<MallModel>>("MallList", model => model.Initialize("MallList", ref model._MallList, ref _MallListLocator, _MallListDefaultValueFactory));
+        static Func<List<MallModel>> _MallListDefaultValueFactory = () => { return new List<MallModel>(); };
+        #endregion
+
+        //SelectedCityIndex
+        public int SelectedCityIndex
+        {
+            get { return _SelectedCityIndexLocator(this).Value; }
+            set { _SelectedCityIndexLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel SelectedCityIndex Setup        
+        protected Property<int> _SelectedCityIndex = new Property<int> { LocatorFunc = _SelectedCityIndexLocator };
+        static Func<BindableBase, ValueContainer<int>> _SelectedCityIndexLocator = RegisterContainerLocator<int>("SelectedCityIndex", model => model.Initialize("SelectedCityIndex", ref model._SelectedCityIndex, ref _SelectedCityIndexLocator, _SelectedCityIndexDefaultValueFactory));
+        static Func<int> _SelectedCityIndexDefaultValueFactory = () => { return -1; };
+        #endregion
+
         #region Commands
-        //Request Button
+
+        #region CommandCityChanged
+        public CommandModel<ReactiveCommand, String> CommandCityChanged
+        {
+            get { return _CommandCityChangedLocator(this).Value; }
+            set { _CommandCityChangedLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandCityChanged Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandCityChanged = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandCityChangedLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandCityChangedLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandCityChanged", model => model.Initialize("CommandCityChanged", ref model._CommandCityChanged, ref _CommandCityChangedLocator, _CommandCityChangedDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandCityChangedDefaultValueFactory =
+            model =>
+            {
+                var resource = "GoToSettingPage";           // Command resource  
+                var commandId = "GoToSettingPage";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                             //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            if(vm.SelectedCityIndex >= 0)
+                            {
+                                var city = vm.SupportCities[vm.SelectedCityIndex];
+                                AppSettings.Intance.SelectedCityId = city.id;
+                            }
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+         
+        //Request City List
         public CommandModel<ReactiveCommand, String> CommandGetSupportCities
         {
             get { return _CommandGetSupportCitiesLocator(this).Value; }
@@ -76,27 +143,12 @@ namespace IndoorMap.ViewModels
                 var commandId = "GetSupportCities";
                 var vm = CastToCurrentType(model);
                 var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
-                cmd
-                    //.DoExecuteUIBusyTask(
-                    //    vm,
-                    //    e =>
-                    //    {
-                    //        //var seletedItem = e.EventArgs.Parameter as Channel;
-                    //        //if (seletedItem != null)
-                    //        //{
-                    //        //    vm.DealWithCatalogs(seletedItem);
-                    //        //    //vm.CurrentChannel = seletedItem.Url;
-                    //        //    //vm.CurrentChannel = seletedItem;
-                    //        //}
-                    //        ////Todo: Add GetSupportCities logic here, or
-                    //        ////await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                    //    }
-                    //)
-                     .DoExecuteUIBusyTask(
+                cmd.DoExecuteUIBusyTask(
                         vm,
                         async e =>
-                        { 
-                            vm.Test();
+                        {
+                            //var location = await LocationManager.GetPosition();
+                             vm.GetSupportCitesAction();
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
@@ -113,25 +165,89 @@ namespace IndoorMap.ViewModels
             };
         #endregion
 
+        //Request Mall List
+        public CommandModel<ReactiveCommand, String> CommandGetMallList
+        {
+            get { return _CommandGetMallListLocator(this).Value; }
+            set { _CommandGetMallListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandGetMallList Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandGetMallList = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandGetMallListLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandGetMallListLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandGetMallList", model => model.Initialize("CommandGetMallList", ref model._CommandGetMallList, ref _CommandGetMallListLocator, _CommandGetMallListDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandGetMallListDefaultValueFactory =
+            model =>
+            {
+                var resource = "GetSupportCities";           // Command resource  
+                var commandId = "GetSupportCities";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            //var location = await LocationManager.GetPosition();
+                            vm.GetSupportMallListAction();
+                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
+                            //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
         #endregion
 
-        private void Test()
+
+        #endregion
+
+        private void GetSupportCitesAction()
         {
             string url = @"http://op.juhe.cn/atlasyun/city/list?key=" + Configmanager.INDOORMAP_APPKEY;
-            //string url = @"http://op.juhe.cn/atlasyun/mall/list?key=" + Configmanager.INDOORMAP_APPKEY + "&cityid=53d5e4c85620fa7f111a3f67";
             FormAction action = new FormAction(url);
             action.viewModel = this;
             action.Run();
-            action.FormActionCompleted += (ss, ee) =>
+            action.FormActionCompleted += (result, ee) =>
             {
+                JsonCityModel jsonCity = JsonConvert.DeserializeObject<JsonCityModel>(result);
+                if (jsonCity.reason == "成功" || jsonCity.reason == "successed")
+                {
+                    HttpClientReturnCities(jsonCity.result);
+                }
             };
         }
 
-        public void HttpClientReturn(List<CityModel> jsonCity)
+        private void GetSupportMallListAction()
+        {
+            string url = string.Format(@"http://op.juhe.cn/atlasyun/mall/list?key={0}&cityid={1}", Configmanager.INDOORMAP_APPKEY, SupportCities[SelectedCityIndex].id);
+            FormAction action = new FormAction(url);
+            action.viewModel = this;
+            action.Run();
+            action.FormActionCompleted += (result, ee) =>
+            {
+                JsonMallModel jsonMall = JsonConvert.DeserializeObject<JsonMallModel>(result);
+                if (jsonMall.reason == "成功" || jsonMall.reason == "successed")
+                {
+                    HttpClientReturnMallList(jsonMall.result);
+                }
+            };
+        }
+          
+        public void HttpClientReturnCities(List<CityModel> jsonCity)
         {
             this.SupportCities = jsonCity;
-            Debug.WriteLine(SupportCities);
+            SelectedCityIndex = 0;
+        }
 
+        public void HttpClientReturnMallList(List<MallModel> jsonMall)
+        {
+            this.MallList = jsonMall;
+            
         }
 
         #region Life Time Event Handling

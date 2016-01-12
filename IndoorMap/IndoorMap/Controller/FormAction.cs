@@ -9,6 +9,7 @@ using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.UI.Popups;
 
 namespace IndoorMap.Controller
 {
@@ -57,47 +58,55 @@ namespace IndoorMap.Controller
                 }
                 httpClient = new HttpClient() { };
                 HttpRequestMessage requestMessage = new HttpRequestMessage() { };
+
                 requestMessage.Method = HttpMethod.Get;
                 requestMessage.RequestUri = uri;
-
+                requestMessage.Headers.IfModifiedSince = DateTime.Now;
                 HttpResponseMessage responseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationToken);
+                
                 string content = await responseMessage.Content.ReadAsStringAsync();
+                
+                //if (viewModel == null)
+                //{
+                //    //Maybe you can do somthing else there. 
+                //}
+                //else
+                //{
+                //    if(viewModel is MainPage_Model)
+                //    {
+                //        JsonCityModel jsonCity = JsonConvert.DeserializeObject<JsonCityModel>(content);
+                //        if (jsonCity.reason == "成功")
+                //        {
+                //            (viewModel as MainPage_Model).HttpClientReturn(jsonCity.result);
+                //        }
+                //        else
+                //        {
 
-                if (viewModel == null)
-                {
-                    
-                }
-                else
-                {
-                    if(viewModel is MainPage_Model)
-                    {
-                        JsonCityModel jsonCity = JsonConvert.DeserializeObject<JsonCityModel>(content);
-                        if (jsonCity.reason == "成功")
-                        {
-                            (viewModel as MainPage_Model).HttpClientReturn(jsonCity.result);
-                        }
-                        else
-                        {
+                //        }
+                //    }
+                //    else if(viewModel is MainPage_Model)
+                //    {
 
-                        }
-                    }
-                    else if(viewModel is MainPage_Model)
-                    {
-
-                    }
-                }
+                //    }
+                //}
 
                 if (FormActionCompleted != null)
-                    FormActionCompleted("", "");
+                    FormActionCompleted(content, "");
 
                 if (WaitingPanelHelper.IsWaitingPanelExisted())
                     WaitingPanelHelper.HiddenWaitingPanel();
             }
-            catch (Exception ee)
+            catch (Exception exception)
             {
-                if (FormActionError != null)
-                    FormActionError("", "");
+                //if (FormActionError != null)
+                //    FormActionError("", "");
+                ShowMessage(exception);
             }
+        }
+
+        private async void ShowMessage(Exception exception)
+        {
+            await new MessageDialog(exception.Message).ShowAsync();
         }
 
         public void setHeaders()
