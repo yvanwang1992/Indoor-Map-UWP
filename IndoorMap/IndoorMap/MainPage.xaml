@@ -43,7 +43,7 @@
         </StackPanel>
        
         <!--Get All Malls-->
-        <ListView Grid.Row="1" IsItemClickEnabled="True" HorizontalAlignment="Stretch" ItemsSource="{Binding MallList}" >
+        <ListView Grid.Row="1" SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}" IsItemClickEnabled="True" HorizontalAlignment="Stretch" ItemsSource="{Binding MallList}" >
             <ListView.ItemTemplate>
                 <DataTemplate>
                     <Border HorizontalAlignment="Stretch"  Background="Transparent" BorderBrush="Red" BorderThickness="1">
@@ -55,6 +55,12 @@
                     </Border> 
                 </DataTemplate>
             </ListView.ItemTemplate>
+
+            <interactivity:Interaction.Behaviors>
+                <core:EventTriggerBehavior EventName="ItemClick">
+                    <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick, ConverterParameter={Binding SelectedMallIndex}}"/>
+                </core:EventTriggerBehavior>
+            </interactivity:Interaction.Behaviors>
         </ListView>
         
         <Grid Grid.Row="2" Height="200" VerticalAlignment="Bottom" >

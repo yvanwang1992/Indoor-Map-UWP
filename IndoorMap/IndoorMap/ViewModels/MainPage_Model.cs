@@ -17,6 +17,7 @@ using IndoorMap.Models;
 using System.Diagnostics;
 using IndoorMap.Helpers;
 using Newtonsoft.Json;
+using Windows.UI.Popups;
 
 namespace IndoorMap.ViewModels
 {
@@ -82,6 +83,19 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<int>> _SelectedCityIndexLocator = RegisterContainerLocator<int>("SelectedCityIndex", model => model.Initialize("SelectedCityIndex", ref model._SelectedCityIndex, ref _SelectedCityIndexLocator, _SelectedCityIndexDefaultValueFactory));
         static Func<int> _SelectedCityIndexDefaultValueFactory = () => { return -1; };
         #endregion
+
+        //SelectedMallIndex
+        public int SelectedMallIndex
+        {
+            get { return _SelectedMallIndexLocator(this).Value; }
+            set { _SelectedMallIndexLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel SelectedMallIndex Setup        
+        protected Property<int> _SelectedMallIndex = new Property<int> { LocatorFunc = _SelectedMallIndexLocator };
+        static Func<BindableBase, ValueContainer<int>> _SelectedMallIndexLocator = RegisterContainerLocator<int>("SelectedMallIndex", model => model.Initialize("SelectedMallIndex", ref model._SelectedMallIndex, ref _SelectedMallIndexLocator, _SelectedMallIndexDefaultValueFactory));
+        static Func<int> _SelectedMallIndexDefaultValueFactory = () => { return -1; };
+        #endregion
+
 
         #region Commands
 
@@ -190,6 +204,46 @@ namespace IndoorMap.ViewModels
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+         
+        //CommandLvMallItemClick
+        public CommandModel<ReactiveCommand, String> CommandLvMallItemClick
+        {
+            get { return _CommandLvMallItemClickLocator(this).Value; }
+            set { _CommandLvMallItemClickLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandLvMallItemClick Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandLvMallItemClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandLvMallItemClickLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandLvMallItemClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandLvMallItemClick", model => model.Initialize("CommandLvMallItemClick", ref model._CommandLvMallItemClick, ref _CommandLvMallItemClickLocator, _CommandLvMallItemClickDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandLvMallItemClickDefaultValueFactory =
+            model =>
+            {
+                var resource = "LvMallItemClick";           // Command resource  
+                var commandId = "LvMallItemClick";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        { 
+                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
+                            //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+
+                            var mall = vm.MallList[vm.SelectedMallIndex];
+
+                            await new MessageDialog(mall.lat + " " + mall.lon).ShowAsync();
                         }
                     )
 
