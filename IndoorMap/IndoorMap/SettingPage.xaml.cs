@@ -21,6 +21,7 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
+using Windows.Phone.UI.Input;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -31,12 +32,9 @@ namespace IndoorMap
     /// </summary>
     public sealed partial class SettingPage : MVVMPage
     {
-
-
-
         public SettingPage()
         {
-
+            HardwareButtons.BackPressed += HardwareButtons_BackPressed;
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
@@ -45,6 +43,11 @@ namespace IndoorMap
             StrongTypeViewModel = this.ViewModel as SettingPage_Model;
         }
 
+        private void HardwareButtons_BackPressed(object sender, BackPressedEventArgs e)
+        {
+            this.Frame.GoBack();
+            e.Handled = true;
+        }
 
         public SettingPage_Model StrongTypeViewModel
         {
@@ -68,5 +71,6 @@ namespace IndoorMap
             base.OnNavigatedFrom(e);
         }
 
+        
     }
 }

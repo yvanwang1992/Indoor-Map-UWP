@@ -292,9 +292,21 @@ namespace IndoorMap.ViewModels
             };
         }
           
-        public void HttpClientReturnCities(List<CityModel> jsonCity)
+        public async void HttpClientReturnCities(List<CityModel> jsonCity)
         {
             this.SupportCities = jsonCity;
+
+            string city = AppSettings.LocationCityKey;
+            var saveCity = SupportCities.FirstOrDefault(n => n.name == city);
+            if (saveCity == null)
+            {
+                await new MessageDialog("暂不支持" + city + "，为您切换到默认城市").ShowAsync();
+                SelectedCityIndex = 0;
+                return;
+            }
+            SelectedCityIndex = SupportCities.IndexOf(saveCity);
+
+
             SelectedCityIndex = 0;
         }
 

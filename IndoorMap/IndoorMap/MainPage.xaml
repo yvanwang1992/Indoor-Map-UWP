@@ -81,6 +81,7 @@
         <CommandBar x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
             <CommandBar.PrimaryCommands >
                 <AppBarButton x:Name="appbarRefresh"  Icon="Setting" Label="设置" Click="appbarRefresh_Click"/>
+                <AppBarButton x:Name="appbarLocate" Icon="Map" Label="定位" Click="appbarLocate_Click"/>
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
 
