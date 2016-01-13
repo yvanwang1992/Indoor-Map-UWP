@@ -30,7 +30,8 @@ namespace IndoorMap.Helpers
         public const string NetworkSettingKey = "NetworkSettingKey";
         public const string SelectedCityIdKey = "SelectedCityIdKey";
         public const string LocationCityKey = "LocationCityKey";
-
+        public const string IsFirstRunKey = @"IsFirstRunKey";
+        
         private static object _locker = new object();
 
         public AppSettings()
@@ -55,18 +56,15 @@ namespace IndoorMap.Helpers
             }
         }
 
-        public bool _LocationSetting;
         public bool LocationSetting
         {
             get
             {
-                _LocationSetting = StorageHelper.GetSettingsValueWithKey<bool>(LocationSettingKey);
-                return _LocationSetting;
+                return StorageHelper.GetSettingsValueWithKey<bool>(LocationSettingKey);
             }
             set
             {
                 StorageHelper.SetSettingsValueAndKey(value, LocationSettingKey);
-                _LocationSetting = value;
                 NotifyPropertyChanged("LocationSetting");
             }
         }
@@ -110,5 +108,13 @@ namespace IndoorMap.Helpers
             }
         }
 
-    }
+        public bool IsFirstRun
+        {
+            get{ return StorageHelper.GetSettingsValueWithKey<bool>(IsFirstRunKey, true); }
+            set
+            {
+                StorageHelper.SetSettingsValueAndKey(value, IsFirstRunKey);
+            }
+        }
+     }
 }

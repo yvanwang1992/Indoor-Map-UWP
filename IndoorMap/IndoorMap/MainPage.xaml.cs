@@ -22,6 +22,7 @@ using Windows.Devices.Geolocation;
 using Windows.UI.Popups;
 using IndoorMap.Controller;
 using Newtonsoft.Json.Linq;
+using System.Diagnostics;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -53,9 +54,11 @@ namespace IndoorMap
         public static readonly DependencyProperty StrongTypeViewModelProperty =
                     DependencyProperty.Register("StrongTypeViewModel", typeof(MainPage_Model), typeof(MainPage), new PropertyMetadata(null));
 
-        private async void Grid_Loaded(object sender, RoutedEventArgs e)
-        { 
-            
+        private void Grid_Loaded(object sender, RoutedEventArgs e)
+        {
+            Debug.WriteLine("IsFirstRun = " + AppSettings.Intance.IsFirstRun);
+            AppSettings.Intance.IsFirstRun = false;
+            NetworkManager.GetNetworkInfomation();
             
         }
 
@@ -84,7 +87,8 @@ namespace IndoorMap
 
         private void appbarRefresh_Click(object sender, RoutedEventArgs e)
         {
-            this.Frame.Navigate(typeof(SettingPage));
+            CommonHelper.NavigationToSettingUri(CommonHelper.SettingLocation);
+            //this.Frame.Navigate(typeof(SettingPage));
         }
 
         private async void appbarLocate_Click(object sender, RoutedEventArgs e)
@@ -110,6 +114,11 @@ namespace IndoorMap
             {
                 AppSettings.Intance.LocationSetting = false;
             }
+        }
+
+        private void bordHamburg_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            splitView.IsPaneOpen = !splitView.IsPaneOpen;
         }
     }
 }

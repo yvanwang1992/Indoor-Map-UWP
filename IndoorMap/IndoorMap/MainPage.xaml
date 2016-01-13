@@ -16,61 +16,77 @@
         <x:String x:Key="AppName">My Application</x:String>
         <vm:MainPage_Model x:Key="DesignVM"/>
     </Page.Resources>
-    <Grid Loaded="Grid_Loaded" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}" Margin="0,0,-2,0">
-        <Grid.RowDefinitions>
-            <RowDefinition Height="Auto"/>
-            <RowDefinition />
-            <RowDefinition Height="Auto"/>
-        </Grid.RowDefinitions>
-        
-        <StackPanel Grid.Row="0" Orientation="Horizontal">
-            <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{Binding SupportCities[0].name}" />
-            <Button Content="请求" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetSupportCities}"/>
-            <ComboBox HorizontalAlignment="Center" x:Name="cbCity" SelectedIndex="{Binding SelectedCityIndex, Mode=TwoWay}" ItemsSource="{Binding SupportCities}">
-                <ComboBox.ItemTemplate>
-                    <DataTemplate>
-                        <TextBlock Text="{Binding name}"/>
-                    </DataTemplate>
-                </ComboBox.ItemTemplate>
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="SelectionChanged">
-                        <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
-            </ComboBox>
-            <Button Content="MallList" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetMallList}"/>
-            
-        </StackPanel>
-       
-        <!--Get All Malls-->
-        <ListView Grid.Row="1" SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}" IsItemClickEnabled="True" HorizontalAlignment="Stretch" ItemsSource="{Binding MallList}" >
-            <ListView.ItemTemplate>
-                <DataTemplate>
-                    <Border HorizontalAlignment="Stretch"  Background="Transparent" BorderBrush="Red" BorderThickness="1">
-                        <StackPanel Orientation="Vertical">
-                            <TextBlock Text="{Binding name}"/>
-                            <TextBlock Text="{Binding addr}"/>
-                            <TextBlock Text="{Binding opentime}"/>
-                        </StackPanel>
-                    </Border> 
-                </DataTemplate>
-            </ListView.ItemTemplate>
+    <SplitView x:Name="splitView" IsPaneOpen="False" OpenPaneLength="120" Background="Brown" PaneBackground="Transparent" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
+        <SplitView.Pane>
+            <Grid Background="BlanchedAlmond" Margin="0,50,0,0">
+                
+            </Grid>
+        </SplitView.Pane>
+        <SplitView.Content>
+            <Grid Loaded="Grid_Loaded"  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  Margin="0,0,0,0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
 
-            <interactivity:Interaction.Behaviors>
-                <core:EventTriggerBehavior EventName="ItemClick">
-                    <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick, ConverterParameter={Binding SelectedMallIndex}}"/>
-                </core:EventTriggerBehavior>
-            </interactivity:Interaction.Behaviors>
-        </ListView>
-        
-        <Grid Grid.Row="2" Height="200" VerticalAlignment="Bottom" >
-            <maps:MapControl x:Name="maps" 
+                <Border x:Name="bordHamburg" HorizontalAlignment="Left" Background="DarkOrchid" Tapped="bordHamburg_Tapped">
+                    <TextBlock Margin="10"  Text="汉堡" FontSize="20" />
+                </Border>
+                
+                <StackPanel Grid.Row="1" Orientation="Horizontal">
+                    <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{Binding SupportCities[0].name}" />
+                    <Button Content="请求" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetSupportCities}"/>
+                    <ComboBox Background="IndianRed" BorderThickness="0" HorizontalAlignment="Center" x:Name="cbCity" SelectedIndex="{Binding SelectedCityIndex, Mode=TwoWay}" ItemsSource="{Binding SupportCities}">
+                        <ComboBox.ItemTemplate>
+                            <DataTemplate>
+                                <TextBlock Text="{Binding name}"/>
+                            </DataTemplate>
+                        </ComboBox.ItemTemplate>
+                        
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="SelectionChanged">
+                                <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </ComboBox>
+                    <Button Content="MallList" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetMallList}"/>
+
+                </StackPanel>
+
+
+                <!--Get All Malls-->
+
+                <ListView Grid.Row="2" SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}" IsItemClickEnabled="True" HorizontalAlignment="Stretch" ItemsSource="{Binding MallList}" >
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <Border HorizontalAlignment="Stretch"  Background="Transparent" BorderBrush="Red" BorderThickness="1">
+                                <StackPanel Orientation="Vertical">
+                                    <TextBlock Text="{Binding name}"/>
+                                    <TextBlock Text="{Binding addr}"/>
+                                    <TextBlock Text="{Binding opentime}"/>
+                                </StackPanel>
+                            </Border>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="ItemClick">
+                            <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick, ConverterParameter={Binding SelectedMallIndex}}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </ListView>
+
+                <Grid Grid.Row="3" Height="200" VerticalAlignment="Bottom" >
+                    <maps:MapControl x:Name="maps" 
                              MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB"/>
-        </Grid>
-    </Grid>
+                </Grid>
+            </Grid>
+        </SplitView.Content>
+    </SplitView>
 
-    
-
+ 
     <Page.DataContext>
         <Binding  RelativeSource="{RelativeSource Mode=Self}" Path="ViewModel"/>
     </Page.DataContext>
@@ -78,7 +94,7 @@
         <Binding Source="{StaticResource DesignVM}" />
     </mvvm:MVVMPage.ViewModel>
     <mvvm:MVVMPage.BottomAppBar>
-        <CommandBar x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
+        <CommandBar Visibility="Collapsed" x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
             <CommandBar.PrimaryCommands >
                 <AppBarButton x:Name="appbarRefresh"  Icon="Setting" Label="设置" Click="appbarRefresh_Click"/>
                 <AppBarButton x:Name="appbarLocate" Icon="Map" Label="定位" Click="appbarLocate_Click"/>

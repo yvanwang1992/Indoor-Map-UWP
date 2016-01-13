@@ -36,6 +36,8 @@ namespace IndoorMap.ViewModels
             }
         }
 
+        #region --------------------   Properties   -------------------
+
         //propvm tab tab string tab Title
         public String Title
         {
@@ -95,9 +97,10 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<int>> _SelectedMallIndexLocator = RegisterContainerLocator<int>("SelectedMallIndex", model => model.Initialize("SelectedMallIndex", ref model._SelectedMallIndex, ref _SelectedMallIndexLocator, _SelectedMallIndexDefaultValueFactory));
         static Func<int> _SelectedMallIndexDefaultValueFactory = () => { return -1; };
         #endregion
+         
+        #endregion
 
-
-        #region Commands
+        #region -------------------   Commands   -------------------
 
         #region CommandCityChanged
         public CommandModel<ReactiveCommand, String> CommandCityChanged
@@ -257,8 +260,9 @@ namespace IndoorMap.ViewModels
             };
         #endregion
 
-
         #endregion
+
+        #region -------------------   Methods   -------------------
 
         private void GetSupportCitesAction()
         {
@@ -291,12 +295,12 @@ namespace IndoorMap.ViewModels
                 }
             };
         }
-          
+        
         public async void HttpClientReturnCities(List<CityModel> jsonCity)
         {
             this.SupportCities = jsonCity;
 
-            string city = AppSettings.LocationCityKey;
+            string city = AppSettings.Intance.LocationCity;
             var saveCity = SupportCities.FirstOrDefault(n => n.name == city);
             if (saveCity == null)
             {
@@ -315,6 +319,8 @@ namespace IndoorMap.ViewModels
             this.MallList = jsonMall;
             
         }
+
+        #endregion
 
         #region Life Time Event Handling
 

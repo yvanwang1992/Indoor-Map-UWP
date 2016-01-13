@@ -20,13 +20,17 @@ namespace IndoorMap.Helpers
             localSettings.Values[key] = value;
         }
 
-        public static T GetSettingsValueWithKey<T>(string key)
+        public static T GetSettingsValueWithKey<T>(string key, Object defaultValue = null)
         {
-            if (!localSettings.Values.ContainsKey(key))
+            if (localSettings.Values.ContainsKey(key))
             {
-                return default(T);
+                return (T)localSettings.Values[key];
             }
-            return (T)localSettings.Values[key];
+            if(null != defaultValue)
+            {
+                return (T)defaultValue;
+            }
+            return default(T);
         }
     }
 }
