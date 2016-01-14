@@ -23,6 +23,8 @@ using Windows.UI.Popups;
 using IndoorMap.Controller;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using DianDao.Maps.Controls;
+using DianDao.Maps.ViewModels;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -60,6 +62,8 @@ namespace IndoorMap
             AppSettings.Intance.IsFirstRun = false;
             NetworkManager.GetNetworkInfomation();
             
+        
+
         }
 
         private void GetCity(Geocoordinate geocoordinate)
@@ -100,7 +104,7 @@ namespace IndoorMap
                 GetCity(position.Coordinate);
                 maps.Center = position.Coordinate.Point;
                 maps.ZoomLevel = 50;
-
+                maps.
                 foreach (var item in StrongTypeViewModel.MallList)
                 {
                     MapIcon mapIcon = new MapIcon();

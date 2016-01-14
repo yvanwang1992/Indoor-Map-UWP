@@ -16,10 +16,10 @@
         <x:String x:Key="AppName">My Application</x:String>
         <vm:MainPage_Model x:Key="DesignVM"/>
     </Page.Resources>
-    <SplitView x:Name="splitView" IsPaneOpen="False" OpenPaneLength="120" Background="Brown" PaneBackground="Transparent" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
+    <SplitView x:Name="splitView" IsPaneOpen="False" OpenPaneLength="200" Background="Brown" PaneBackground="Transparent" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
         <SplitView.Pane>
-            <Grid Background="BlanchedAlmond" Margin="0,50,0,0">
-                
+            <Grid x:Name="gridMap"  Background="BlanchedAlmond" Margin="0,50,0,0">
+    
             </Grid>
         </SplitView.Pane>
         <SplitView.Content>
@@ -31,6 +31,8 @@
                     <RowDefinition Height="Auto"/>
                 </Grid.RowDefinitions>
 
+                 
+                
                 <Border x:Name="bordHamburg" HorizontalAlignment="Left" Background="DarkOrchid" Tapped="bordHamburg_Tapped">
                     <TextBlock Margin="10"  Text="汉堡" FontSize="20" />
                 </Border>
@@ -54,10 +56,9 @@
                     <Button Content="MallList" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetMallList}"/>
 
                 </StackPanel>
-
+                
 
                 <!--Get All Malls-->
-
                 <ListView Grid.Row="2" SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}" IsItemClickEnabled="True" HorizontalAlignment="Stretch" ItemsSource="{Binding MallList}" >
                     <ListView.ItemTemplate>
                         <DataTemplate>

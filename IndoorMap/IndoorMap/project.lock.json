@@ -244,7 +244,7 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
-      "MVVM-Sidekick/1.6.14": {
+      "MVVM-Sidekick/1.6.15": {
         "dependencies": {
           "CommonServiceLocator": "[1.3.0, 100.0.0)",
           "Microsoft.Bcl": "[1.1.10, 100.0.0)",
@@ -1959,7 +1959,7 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
-      "MVVM-Sidekick/1.6.14": {
+      "MVVM-Sidekick/1.6.15": {
         "dependencies": {
           "CommonServiceLocator": "[1.3.0, 100.0.0)",
           "Microsoft.Bcl": "[1.1.10, 100.0.0)",
@@ -3707,7 +3707,7 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
-      "MVVM-Sidekick/1.6.14": {
+      "MVVM-Sidekick/1.6.15": {
         "dependencies": {
           "CommonServiceLocator": "[1.3.0, 100.0.0)",
           "Microsoft.Bcl": "[1.1.10, 100.0.0)",
@@ -5460,7 +5460,7 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
-      "MVVM-Sidekick/1.6.14": {
+      "MVVM-Sidekick/1.6.15": {
         "dependencies": {
           "CommonServiceLocator": "[1.3.0, 100.0.0)",
           "Microsoft.Bcl": "[1.1.10, 100.0.0)",
@@ -7208,7 +7208,7 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
-      "MVVM-Sidekick/1.6.14": {
+      "MVVM-Sidekick/1.6.15": {
         "dependencies": {
           "CommonServiceLocator": "[1.3.0, 100.0.0)",
           "Microsoft.Bcl": "[1.1.10, 100.0.0)",
@@ -8961,7 +8961,7 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
-      "MVVM-Sidekick/1.6.14": {
+      "MVVM-Sidekick/1.6.15": {
         "dependencies": {
           "CommonServiceLocator": "[1.3.0, 100.0.0)",
           "Microsoft.Bcl": "[1.1.10, 100.0.0)",
@@ -10709,7 +10709,7 @@
           "lib/uap10.0/Microsoft.Xaml.Interactivity.dll": {}
         }
       },
-      "MVVM-Sidekick/1.6.14": {
+      "MVVM-Sidekick/1.6.15": {
         "dependencies": {
           "CommonServiceLocator": "[1.3.0, 100.0.0)",
           "Microsoft.Bcl": "[1.1.10, 100.0.0)",
@@ -13021,14 +13021,15 @@
         "package/services/metadata/core-properties/3c85324cf8b64508a39f4ccba86cb561.psmdcp"
       ]
     },
-    "MVVM-Sidekick/1.6.14": {
-      "sha512": "9MBwR//MSiHTpMgVrh4Y0Mi9tOK23XUZqrVsstjaP+CJC9Gku+aa0NphAwAz96li1N4cX51qM+xGE6v3VT0i6w==",
+    "MVVM-Sidekick/1.6.15": {
+      "sha512": "hS06eHB5vEblvNARXR7OaEFUpTXZJSxf+Zv3QnOHAZHmRRkr6G3x2ViC5uuH+3L8SHs4r7O0O08qzUdBtCby+w==",
       "type": "Package",
       "files": [
         "[Content_Types].xml",
         "_rels/.rels",
         "lib/net45/MVVMSidekick.dll",
         "lib/net45/MVVMSidekick.dll.CodeAnalysisLog.xml",
+        "lib/net45/MVVMSidekick.dll.config",
         "lib/net45/MVVMSidekick.dll.lastcodeanalysissucceeded",
         "lib/net45/MVVMSidekick.pdb",
         "lib/net45/MVVMSidekick.XML",
@@ -13039,9 +13040,6 @@
         "lib/uap10.0/MVVMSidekick_UAP10.dll",
         "lib/uap10.0/MVVMSidekick_UAP10.pdb",
         "lib/uap10.0/MVVMSidekick_UAP10.pri",
-        "lib/uap10.0/x86/Debug/MVVMSidekick_UAP10.dll",
-        "lib/uap10.0/x86/Debug/MVVMSidekick_UAP10.pdb",
-        "lib/uap10.0/x86/Debug/MVVMSidekick_UAP10.pri",
         "lib/win81/MVVMSidekick_Metro.dll",
         "lib/win81/MVVMSidekick_Metro.pdb",
         "lib/win81/MVVMSidekick_Metro.pri",
@@ -13055,7 +13053,7 @@
         "lib/wpa81/MVVMSidekick_Wpa81.pdb",
         "lib/wpa81/MVVMSidekick_Wpa81.pri",
         "MVVM-Sidekick.nuspec",
-        "package/services/metadata/core-properties/ed82ba22c2a9416f8f97eb33798b870a.psmdcp",
+        "package/services/metadata/core-properties/d557a5c2ef044f1d8b52cb3e1c787756.psmdcp",
         "tools/install.ps1",
         "tools/MVVM-Sidekick.snippet"
       ]
@@ -15939,7 +15937,7 @@
   },
   "projectFileDependencyGroups": {
     "": [
-      "MVVM-Sidekick >= 1.6.14",
+      "MVVM-Sidekick >= 1.6.15",
       "Newtonsoft.Json >= 8.0.2"
     ],
     "UAP,Version=v10.0": []
