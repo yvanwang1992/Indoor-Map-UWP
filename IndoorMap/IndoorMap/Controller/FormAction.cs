@@ -51,7 +51,8 @@ namespace IndoorMap.Controller
         public async void Run(bool isWaitingPanelShow = true)
         {
             try
-            { 
+            {
+                (App.Current as App).formAction = this;
                 if (isWaitingPanelShow)
                 {
                     WaitingPanelHelper.ShowWaitingPanel();
@@ -63,9 +64,9 @@ namespace IndoorMap.Controller
                 requestMessage.RequestUri = uri;
                 requestMessage.Headers.IfModifiedSince = DateTime.Now;
                 HttpResponseMessage responseMessage = await httpClient.SendAsync(requestMessage, HttpCompletionOption.ResponseContentRead, cancellationToken);
-                
+
                 string content = await responseMessage.Content.ReadAsStringAsync();
-                
+
                 //if (viewModel == null)
                 //{
                 //    //Maybe you can do somthing else there. 
@@ -98,9 +99,14 @@ namespace IndoorMap.Controller
             }
             catch (Exception exception)
             {
-                //if (FormActionError != null)
-                //    FormActionError("", "");
-                ShowMessage(exception);
+                WaitingPanelHelper.HiddenWaitingPanel();
+
+                if (!(exception is TaskCanceledException))
+                {
+                    //if (FormActionError != null)
+                    //    FormActionError("", "");
+                    ShowMessage(exception);
+                }
             }
         }
 

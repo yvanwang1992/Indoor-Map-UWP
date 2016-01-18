@@ -1,4 +1,5 @@
 ﻿using IndoorMap.Controller;
+using IndoorMap.Helpers;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -8,6 +9,8 @@ using Windows.ApplicationModel;
 using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
+using Windows.Phone.UI.Input;
+using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -23,8 +26,10 @@ namespace IndoorMap
     /// <summary>
     /// Provides application-specific behavior to supplement the default Application class.
     /// </summary>
-    sealed partial class App : Application
+    public partial class App : Application
     {
+        public FormAction formAction;
+
         /// <summary>
         /// Initializes the singleton application object.  This is the first line of authored code
         /// executed, and as such is the logical equivalent of main() or WinMain().
@@ -35,7 +40,7 @@ namespace IndoorMap
             this.Suspending += OnSuspending;
         }
 
-		public static void InitNavigationConfigurationInThisAssembly()
+        public static void InitNavigationConfigurationInThisAssembly()
 		{
 			MVVMSidekick.Startups.StartupFunctions.RunAllConfig();
 		}
@@ -46,6 +51,15 @@ namespace IndoorMap
         /// <param name="e">Details about the launch request and process.</param>
         protected override void OnLaunched(LaunchActivatedEventArgs e)
         {
+            //BackButton
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent
+                ("Windows.Phone.UI.Input.HardwareButtons"))
+            {
+                HardwareButtons.BackPressed += HardwareButtons_BackPressed1;
+            }
+            //Visual BackButton
+            SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
+
 
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
@@ -66,7 +80,7 @@ namespace IndoorMap
                 rootFrame = new Frame();
 
                 rootFrame.NavigationFailed += OnNavigationFailed;
-
+                rootFrame.Navigated += RootFrame_Navigated;
                 if (e.PreviousExecutionState == ApplicationExecutionState.Terminated)
                 {
                     //TODO: Load state from previously suspended application
@@ -85,6 +99,14 @@ namespace IndoorMap
             }
             // Ensure the current window is active
             Window.Current.Activate();
+        }
+
+        private void RootFrame_Navigated(object sender, NavigationEventArgs e)
+        {
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+        CommonHelper.HostPage.BackStack.Any()
+    ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+
         }
 
         /// <summary>
@@ -110,5 +132,49 @@ namespace IndoorMap
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
+        
+        private void HardwareButtons_BackPressed1(object sender, BackPressedEventArgs e)
+        {
+            if (WaitingPanelHelper.IsWaitingPanelExisted())
+            {
+                WaitingPanelHelper.HiddenWaitingPanel();
+                if(formAction != null)
+                {
+                    formAction.Absort();
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            var frame = CommonHelper.HostPage;
+            if (frame != null && frame.CanGoBack)
+            {
+                frame.GoBack();
+                e.Handled = true;
+                return;
+            }
+        }
+        private void App_BackRequested(object sender, BackRequestedEventArgs e)
+        {
+            if (WaitingPanelHelper.IsWaitingPanelExisted())
+            {
+                WaitingPanelHelper.HiddenWaitingPanel();
+                if (formAction != null)
+                {
+                    formAction.Absort();
+                    e.Handled = true;
+                    return;
+                }
+            }
+
+            var frame = CommonHelper.HostPage;
+            if (frame != null && frame.CanGoBack)
+            {
+                frame.GoBack();
+                e.Handled = true;
+                return;
+            }
+        }
+          
     }
 }

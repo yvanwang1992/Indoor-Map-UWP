@@ -22,13 +22,27 @@
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
-        <ToggleSwitch IsOn="{Binding Source={StaticResource AppSettings}, Path=LocationSetting, Mode=TwoWay}" />
-
-        <TextBlock x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <StackPanel Grid.Row="0" Orientation="Horizontal">
+                <TextBox Text="请选择类别"/>
+                <Button x:Name="btnSearchShop" Content="搜索" Click="btnSearchShop_Click"/>
+            </StackPanel>
+            
+            <ToggleSwitch Grid.Row="1" IsOn="{Binding Source={StaticResource AppSettings}, Path=LocationSetting, Mode=TwoWay}" />
+            <Button Grid.Row="2" x:Name="btnInvoker" Content="执行" Click="btnInvoker_Click"/>
+            <TextBlock Grid.Row="3"  x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-        
+            <WebView Grid.Row="4"  x:Name="webView" 
+                     ScriptNotify="webView_ScriptNotify"
+                     Source="ms-appx-web:///VenueAtlasPage.html"/>
+        </Grid>
     </Grid>
-
-
-    
+ 
 </mvvm:MVVMPage>

@@ -12,6 +12,10 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
+using IndoorMap.Models;
+using IndoorMap.Helpers;
+using Windows.UI.Popups;
+using Windows.UI.Core;
 
 namespace IndoorMap.ViewModels
 {
@@ -21,6 +25,23 @@ namespace IndoorMap.ViewModels
     {
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property。
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
+        public Building building;
+
+        public SettingPage_Model()
+        {
+            
+        }
+         
+        public SettingPage_Model(Building buiding)
+        {
+            //[{"Floor1": "541797c6ac4711c3332d6cd1",
+            //"Floor2": "541797c6ac4711c3332d6cs1"}]
+
+            building = buiding;
+            
+            //读取html 
+            //StorageHelper.GetFileUsingUrl();
+        }
 
         public String Title
         {
@@ -32,7 +53,6 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<String>> _TitleLocator = RegisterContainerLocator<String>("Title", model => model.Initialize("Title", ref model._Title, ref _TitleLocator, _TitleDefaultValueFactory));
         static Func<BindableBase, String> _TitleDefaultValueFactory = m => m.GetType().Name;
         #endregion
-
 
 
         #region Life Time Event Handling

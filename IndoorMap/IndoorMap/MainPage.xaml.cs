@@ -23,8 +23,6 @@ using Windows.UI.Popups;
 using IndoorMap.Controller;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
-using DianDao.Maps.Controls;
-using DianDao.Maps.ViewModels;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -46,7 +44,6 @@ namespace IndoorMap
             this.NavigationCacheMode = NavigationCacheMode.Enabled;
         }
 
-
         public MainPage_Model StrongTypeViewModel
         {
             get { return (MainPage_Model)GetValue(StrongTypeViewModelProperty); }
@@ -61,9 +58,6 @@ namespace IndoorMap
             Debug.WriteLine("IsFirstRun = " + AppSettings.Intance.IsFirstRun);
             AppSettings.Intance.IsFirstRun = false;
             NetworkManager.GetNetworkInfomation();
-            
-        
-
         }
 
         private void GetCity(Geocoordinate geocoordinate)
@@ -88,12 +82,7 @@ namespace IndoorMap
                 }
             };
         }
-
-        private void appbarRefresh_Click(object sender, RoutedEventArgs e)
-        {
-            CommonHelper.NavigationToSettingUri(CommonHelper.SettingLocation);
-            //this.Frame.Navigate(typeof(SettingPage));
-        }
+        
 
         private async void appbarLocate_Click(object sender, RoutedEventArgs e)
         {
@@ -104,15 +93,6 @@ namespace IndoorMap
                 GetCity(position.Coordinate);
                 maps.Center = position.Coordinate.Point;
                 maps.ZoomLevel = 50;
-                maps.
-                foreach (var item in StrongTypeViewModel.MallList)
-                {
-                    MapIcon mapIcon = new MapIcon();
-                    mapIcon.Location = new Geopoint(new BasicGeoposition() { Latitude = Double.Parse(item.lat), Longitude = Double.Parse(item.lon) });
-                    mapIcon.Title = item.name;
-                    mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/delete_auto.png"));
-                    maps.MapElements.Add(mapIcon);
-                }
             }
             else
             {

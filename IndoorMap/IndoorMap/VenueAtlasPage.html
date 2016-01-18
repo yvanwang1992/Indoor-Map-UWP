@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
+    <title>Matt's Webview Content Page</title>
+    <link href="http://api.atlasyun.com/AtlasMap/map.min.css" rel="stylesheet">
+    <script src="http://api.atlasyun.com/AtlasMap/api/1.0.1"></script>
+    <script src="http://api.atlasyun.com/AtlasMap/getUI/1.0.1"></script>    
+
+    <script>
+
+        var sdk, floorlist
+
+        function StartInit(jsonFloors)
+        {
+            //对象数组
+            floorlist = JSON.parse(jsonFloors);
+               //[{ FloorB2: "539098c7b8604a3d36934658"},
+               // { FloorB1: "539098c7b8604a3d3693463d" },
+               // { Floor1: "539098c7b8604a3d369345ed" }]
+
+            var params = {
+                width: 480,//dom.offsetWidth - padding,
+                height: 500, //dom.offsetHeight - padding,
+                //cityId: "53d5e4c85620fa7f111a3f67",
+                floorList: floorlist,
+                //[{FloorB2: "539098c7b8604a3d36934658"},
+                //{FloorB1: "539098c7b8604a3d3693463d"},
+                //{Floor1: "539098c7b8604a3d369345ed"},
+                //{Floor2: "539098c7b8604a3d369345fe"},
+                //{Floor3: "539098c7b8604a3d36934610"},
+                //{Floor4: "539098c7b8604a3d36934627"},
+                //{Floor5: "539098c7b8604a3d36934634"}],
+                mapDiv: 'atlas',
+                maxZoom: 8,
+                minZoom: 1,
+                initFloor: 'Floor1',
+                initZoom: 2,
+                //initMarkPoi: '539098d3b8604a3d369367f9',    //初始化 显示商铺ID
+                enFloorUI: true,//楼层单选  默认为false
+                enFacUI: true,  //公共设施高亮单选   默认false
+                enBufferUI: true,    //加载地图时显示缓冲状态  默认false
+
+                //实例化后默认回调函数
+                initCallback: function () {
+                },
+                //点击poi之后 返回其 name和id
+                poiClick: function (poi) {
+                    window.external.notify(poi.id + "&"+ poi.name);
+                    //console.log('poiId:' + poi.id + ';\\n poiName:' + poi.name);
+                },
+                //点击空白处  返回空白处坐标
+                layerClick: function (coords) {
+                    //console.log(JSON.stringify(coords))
+
+                }
+            }
+            sdk = new Atlas(params)
+        }
+    </script>
+</head>
+
+<body>
+    <div id="atlas"></div>
+    <!--body 自动执行-->
+    <!--<script>
+    //var dom = document.getElementById('atlas').parentNode,
+        padding = 30;
+
+        floorlist =
+        [{ FloorB2: "539098c7b8604a3d36934658" },
+        { FloorB1: "539098c7b8604a3d3693463d" },
+        { Floor1: "539098c7b8604a3d369345ed" }]
+        
+
+     var params = {
+        width: 480,//dom.offsetWidth - padding,
+        height: 500, //dom.offsetHeight - padding,
+        cityId: "53d5e4c85620fa7f111a3f67",
+        floorList: floorlist,
+            //[{FloorB2: "539098c7b8604a3d36934658"},
+            //{FloorB1: "539098c7b8604a3d3693463d"},
+            //{Floor1: "539098c7b8604a3d369345ed"},
+            //{Floor2: "539098c7b8604a3d369345fe"},
+            //{Floor3: "539098c7b8604a3d36934610"},
+            //{Floor4: "539098c7b8604a3d36934627"},
+            //{Floor5: "539098c7b8604a3d36934634"}],
+        mapDiv: 'atlas',
+        maxZoom: 8,
+        minZoom: 1,
+        initFloor: 'Floor1',
+        initZoom : 2,
+        //initMarkPoi: '539098d3b8604a3d369367f9',    //初始化 显示商铺ID
+        enFloorUI: true,//楼层单选  默认为false
+        enFacUI: true,  //公共设施高亮单选   默认false
+        enBufferUI: true,    //加载地图时显示缓冲状态  默认false
+
+        //实例化后默认回调函数
+        initCallback: function(){
+        },
+        //点击poi之后 返回其 name和id
+        poiClick: function (poi) {
+            window.external.notify(JSON.stringify(floorlist));
+            //console.log('poiId:' + poi.id + ';\\n poiName:' + poi.name);
+        },
+        //点击空白处  返回空白处坐标
+        layerClick:function(coords){
+            //console.log(JSON.stringify(coords))
+            
+        }
+    }
+    sdk = new Atlas(params)-->
+    <!--</script>-->
+    
+</body>
+
+</html>

@@ -32,5 +32,11 @@ namespace IndoorMap.Helpers
             }
             return default(T);
         }
+
+        public async static void GetFileUsingUrl()
+        {
+            Uri uri = new Uri("ms-appx:///VenueAtlasPage.html");
+            StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+        }
     }
 }
