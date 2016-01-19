@@ -113,6 +113,7 @@
     <Compile Include="Models\CityModel.cs" />
     <Compile Include="Models\FloorJSModel.cs" />
     <Compile Include="Models\MallModel.cs" />
+    <Compile Include="Models\PaneModel.cs" />
     <Compile Include="Models\ShopDetailsModel.cs" />
     <Compile Include="Models\ShopModel.cs" />
     <Compile Include="SettingPage.xaml.cs">

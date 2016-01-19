@@ -84,21 +84,21 @@ namespace IndoorMap
         }
         
 
-        private async void appbarLocate_Click(object sender, RoutedEventArgs e)
-        {
-            var position = await LocationManager.GetPosition();
-            if (position != null)
-            {
-                AppSettings.Intance.LocationSetting = true;
-                GetCity(position.Coordinate);
-                maps.Center = position.Coordinate.Point;
-                maps.ZoomLevel = 50;
-            }
-            else
-            {
-                AppSettings.Intance.LocationSetting = false;
-            }
-        }
+        //private async void appbarLocate_Click(object sender, RoutedEventArgs e)
+        //{
+        //    var position = await LocationManager.GetPosition();
+        //    if (position != null)
+        //    {
+        //        AppSettings.Intance.LocationSetting = true;
+        //        GetCity(position.Coordinate);
+        //        maps.Center = position.Coordinate.Point;
+        //        maps.ZoomLevel = 50;
+        //    }
+        //    else
+        //    {
+        //        AppSettings.Intance.LocationSetting = false;
+        //    }
+        //}
 
         private void bordHamburg_Tapped(object sender, TappedRoutedEventArgs e)
         {

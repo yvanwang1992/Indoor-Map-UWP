@@ -38,10 +38,24 @@ namespace IndoorMap.ViewModels
             if (IsInDesignMode)
             {
                 Title = "Title is a little different in Design mode";
-            }
+                PaneDownList.Add(new PaneModel() { Content = "给我好评", IconText = "\xE700" });
+                PaneDownList.Add(new PaneModel() { Content = "设置", IconText = "\xE700" });
+
+                }
         }
 
         #region --------------------   Properties   -------------------
+
+        public bool IsHumburgShow
+        {
+            get { return _IsHumburgShowLocator(this).Value; }
+            set { _IsHumburgShowLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property bool IsHumburgShow Setup
+        protected Property<bool> _IsHumburgShow = new Property<bool> { LocatorFunc = _IsHumburgShowLocator };
+        static Func<BindableBase, ValueContainer<bool>> _IsHumburgShowLocator = RegisterContainerLocator<bool>("IsHumburgShow", model => model.Initialize("IsHumburgShow", ref model._IsHumburgShow, ref _IsHumburgShowLocator, _IsHumburgShowDefaultValueFactory));
+        static Func<bool> _IsHumburgShowDefaultValueFactory = () => false;
+        #endregion
 
         //propvm tab tab string tab Title
         public String Title
@@ -54,7 +68,18 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<String>> _TitleLocator = RegisterContainerLocator<String>("Title", model => model.Initialize("Title", ref model._Title, ref _TitleLocator, _TitleDefaultValueFactory));
         static Func<String> _TitleDefaultValueFactory = ()=>"Title is Here";
         #endregion
-        
+
+        public List<PaneModel> PaneDownList
+        {
+            get { return _PaneDownListLocator(this).Value; }
+            set { _PaneDownListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property List<PaneModel> PaneDownList Setup
+        protected Property<List<PaneModel>> _PaneDownList = new Property<List<PaneModel>> { LocatorFunc = _PaneDownListLocator };
+        static Func<BindableBase, ValueContainer<List<PaneModel>>> _PaneDownListLocator = RegisterContainerLocator<List<PaneModel>>("PaneDownList", model => model.Initialize("PaneDownList", ref model._PaneDownList, ref _PaneDownListLocator, _PaneDownListDefaultValueFactory));
+        static Func<List<PaneModel>> _PaneDownListDefaultValueFactory = () => { return new List<PaneModel>(); };
+        #endregion
+
         //SupportCities
         public List<CityModel> SupportCities
         {
@@ -190,7 +215,47 @@ namespace IndoorMap.ViewModels
         #endregion
 
         #endregion
-         
+
+        //CommandHamburgClick
+        #region CommandHamburgClick
+        public CommandModel<ReactiveCommand, String> CommandHamburgClick
+        {
+            get { return _CommandHamburgClickLocator(this).Value; }
+            set { _CommandHamburgClickLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandHamburgClick Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandHamburgClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandHamburgClickLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandHamburgClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandHamburgClick", model => model.Initialize("CommandHamburgClick", ref model._CommandHamburgClick, ref _CommandHamburgClickLocator, _CommandHamburgClickDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandHamburgClickDefaultValueFactory =
+            model =>
+            {
+                var resource = "HamburgClick";           // Command resource  
+                var commandId = "HamburgClick";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+
+                            //Todo: Add NavigateToAbout logic here, or
+                            vm.IsHumburgShow = !vm.IsHumburgShow;
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
         //Request City List
         public CommandModel<ReactiveCommand, String> CommandGetSupportCities
         {

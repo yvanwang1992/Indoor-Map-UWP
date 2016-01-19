@@ -14,7 +14,7 @@
     mc:Ignorable="d">
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
-        <x:String x:Key="AppName">My Application</x:String>
+        <x:String x:Key="AppName">室内地图</x:String>
         <vm:MainPage_Model x:Key="DesignVM"/>
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
@@ -39,34 +39,64 @@
         <DataTemplate x:Key="CityListDataTemplate">
             <TextBlock Text="{Binding name}"/>
         </DataTemplate>
+
+        <DataTemplate x:Key="PaneListDataTemplate">
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="3*"/>
+                </Grid.ColumnDefinitions>
+                <Button Grid.Column="0" HorizontalAlignment="Center" Command="{Binding CommandHamburgClick}">
+                    <Button.Content>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="{Binding IconText}" FontSize="24"/>
+                    </Button.Content>
+                </Button>
+                <Border Grid.Column="1" >
+                    <TextBlock Text="{Binding Content}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                </Border>
+            </Grid>
+        </DataTemplate>
+
     </Page.Resources>
     <Grid>
-        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="False" OpenPaneLength="200" Background="Brown" PaneBackground="Red" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
+        
+        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="150" CompactPaneLength="50" Background="Brown" PaneBackground="Red" DisplayMode="CompactOverlay" DataContext="{StaticResource DesignVM}" >
             <SplitView.Pane>
                 <Grid >
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
+                        <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Vertical">
-                        <Button Tapped="bordHamburg_Tapped">
-                            <Button.Content>
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE700;" FontSize="24"/>
-                            </Button.Content>
-                        </Button>
-                        <TextBlock Text="11111111111aaaaaaaaaaaaa"/>
-                    </StackPanel>
+                    <Grid Grid.Row="0" Background="DarkCyan">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="3*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Content="&#xE700;" FontFamily="Segoe MDL2 Assets" Grid.Column="0" HorizontalAlignment="Center" Command="{Binding CommandHamburgClick}"/>
+                    </Grid>
+
+                    <Grid Grid.Row="1" Background="DarkOrchid">
+                        
+                    </Grid>
+                    
+                    <ListView ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                              ItemsSource="{Binding PaneDownList}"
+                              Grid.Row="2"
+                              VerticalAlignment="Bottom"
+                              Background="Gray"/>
+
                 </Grid>
             </SplitView.Pane>
             <SplitView.Content>
                 <Grid Loaded="Grid_Loaded"  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
+                        <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition />
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-
+                    <TextBlock x:Name="tbAppName" FontSize="24" Text="{StaticResource AppName}" VerticalAlignment="Center"/>
                     <StackPanel Grid.Row="1" Orientation="Horizontal">
                         <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{Binding SupportCities[0].name}" />
                         <Button Content="请求" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetSupportCities}"/>
@@ -89,7 +119,6 @@
                         </Button>
 
                     </StackPanel>
-
 
                     <!--Get All Malls-->
                     <ListView x:Name="lvMall" 
@@ -163,8 +192,13 @@
                         <AdaptiveTrigger MinWindowWidth="600"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
+                    <!--SplitView-->
                         <Setter Target="splitView.IsPaneOpen" Value="false"/>
                         <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
+                        <Setter Target="commandBar.Visibility" Value="Collapsed"/>
+
+                        <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
+
                         <Setter Target="commandBar.Visibility" Value="Collapsed"/>
                     </VisualState.Setters>
                 </VisualState>
@@ -179,13 +213,14 @@
         <Binding Source="{StaticResource DesignVM}" />
     </mvvm:MVVMPage.ViewModel>
     <mvvm:MVVMPage.BottomAppBar>
-        <CommandBar  x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
+        <CommandBar Visibility="Collapsed" x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
             <CommandBar.PrimaryCommands >
                 <AppBarButton x:Name="appbarLocate" Icon="Map" Label="定位" Command="{Binding CommandGeoLocation}"/>
                 <AppBarButton x:Name="appbarRefresh" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
-
+                <AppBarButton Label="五星好评呀" Foreground="Black"/>
+                <AppBarButton HorizontalAlignment="Stretch" Label="反馈" Foreground="Black"/>
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </mvvm:MVVMPage.BottomAppBar>
