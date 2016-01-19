@@ -60,7 +60,7 @@
     </Page.Resources>
     <Grid>
         
-        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="150" CompactPaneLength="50" Background="Brown" PaneBackground="Red" DisplayMode="CompactOverlay" DataContext="{StaticResource DesignVM}" >
+        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="240" CompactPaneLength="80" Background="Brown" PaneBackground="Red" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
             <SplitView.Pane>
                 <Grid >
                     <Grid.RowDefinitions>
@@ -83,7 +83,10 @@
                     <ListView ItemTemplate="{StaticResource PaneListDataTemplate}" 
                               ItemsSource="{Binding PaneDownList}"
                               Grid.Row="2"
-                              VerticalAlignment="Bottom"
+                              SelectedItem="{Binding SelectedPaneDownItem, Mode=TwoWay}"
+                              SelectionMode="Single"
+                              IsItemClickEnabled="False"
+                              VerticalAlignment="Top"
                               Background="Gray"/>
 
                 </Grid>
@@ -213,7 +216,7 @@
         <Binding Source="{StaticResource DesignVM}" />
     </mvvm:MVVMPage.ViewModel>
     <mvvm:MVVMPage.BottomAppBar>
-        <CommandBar Visibility="Collapsed" x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
+        <CommandBar x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
             <CommandBar.PrimaryCommands >
                 <AppBarButton x:Name="appbarLocate" Icon="Map" Label="定位" Command="{Binding CommandGeoLocation}"/>
                 <AppBarButton x:Name="appbarRefresh" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>

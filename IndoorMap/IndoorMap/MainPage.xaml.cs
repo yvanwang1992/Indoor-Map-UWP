@@ -104,5 +104,11 @@ namespace IndoorMap
         {
             splitView.IsPaneOpen = !splitView.IsPaneOpen;
         }
+
+        protected override void OnNavigatedTo(NavigationEventArgs e)
+        {
+            base.OnNavigatedTo(e);
+            StrongTypeViewModel.InitPaneListData();
+        }
     }
 }

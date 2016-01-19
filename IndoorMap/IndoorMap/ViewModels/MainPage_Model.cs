@@ -37,11 +37,8 @@ namespace IndoorMap.ViewModels
         {
             if (IsInDesignMode)
             {
-                Title = "Title is a little different in Design mode";
-                PaneDownList.Add(new PaneModel() { Content = "给我好评", IconText = "\xE700" });
-                PaneDownList.Add(new PaneModel() { Content = "设置", IconText = "\xE700" });
-
-                }
+                
+            }
         }
 
         #region --------------------   Properties   -------------------
@@ -68,6 +65,19 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<String>> _TitleLocator = RegisterContainerLocator<String>("Title", model => model.Initialize("Title", ref model._Title, ref _TitleLocator, _TitleDefaultValueFactory));
         static Func<String> _TitleDefaultValueFactory = ()=>"Title is Here";
         #endregion
+
+        //SelectedPaneDownItem
+        public PaneModel SelectedPaneDownItem
+        {
+            get { return _SelectedPaneDownItemLocator(this).Value; }
+            set { _SelectedPaneDownItemLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property PaneModel SelectedPaneDownItem Setup
+        protected Property<PaneModel> _SelectedPaneDownItem = new Property<PaneModel> { LocatorFunc = _SelectedPaneDownItemLocator };
+        static Func<BindableBase, ValueContainer<PaneModel>> _SelectedPaneDownItemLocator = RegisterContainerLocator<PaneModel>("SelectedPaneDownItem", model => model.Initialize("SelectedPaneDownItem", ref model._SelectedPaneDownItem, ref _SelectedPaneDownItemLocator, _SelectedPaneDownItemDefaultValueFactory));
+        static Func<PaneModel> _SelectedPaneDownItemDefaultValueFactory = () => { return new PaneModel(); };
+        #endregion
+
 
         public List<PaneModel> PaneDownList
         {
@@ -652,7 +662,15 @@ namespace IndoorMap.ViewModels
             }
             MapElements = elements;
             MapZoomLevel = 10;
-        } 
+        }
+
+        public void InitPaneListData()
+        {
+            PaneDownList.Add(new PaneModel() { Content = "地图模式", IconText = "" });
+            PaneDownList.Add(new PaneModel() { Content = "列表浏览模式", IconText = "" });
+
+            SelectedPaneDownItem = PaneDownList.FirstOrDefault();
+        }
 
         #endregion
 
@@ -665,7 +683,7 @@ namespace IndoorMap.ViewModels
         ///// <param name="oldValue">Value before set.</param>
         ///// <returns>Task awaiter</returns>
         //protected override Task OnBindedToView(MVVMSidekick.Views.IView view, IViewModel oldValue)
-        //{
+        //{ 
         //    return base.OnBindedToView(view, oldValue);
         //}
 
