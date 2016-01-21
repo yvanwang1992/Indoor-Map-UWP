@@ -14,34 +14,27 @@ using System.Collections.ObjectModel;
 using System.Runtime.Serialization;
 using IndoorMap.Models;
 using IndoorMap.Helpers;
-using Windows.UI.Popups;
-using Windows.UI.Core;
+using IndoorMap.Controller;
+using Newtonsoft.Json;
 
 namespace IndoorMap.ViewModels
 {
 
     [DataContract]
-    public class SettingPage_Model : ViewModelBase<SettingPage_Model>
+    public class SubMallListPage_Model : ViewModelBase<SubMallListPage_Model>
     {
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property。
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
-        public Building building;
-        private bool isLoadSuscribe;
+        bool isLoaded = false;
 
-        public SettingPage_Model()
+        public SubMallListPage_Model(List<MallModel> mallList)
         {
-            isLoadSuscribe = false;
+            this.MallList = mallList;
         }
-         
-        public SettingPage_Model(Building buiding)
-        {
-            //[{"Floor1": "541797c6ac4711c3332d6cd1",
-            //"Floor2": "541797c6ac4711c3332d6cs1"}]
 
-            building = buiding;
-            
-            //读取html 
-            //StorageHelper.GetFileUsingUrl();
+        public SubMallListPage_Model()
+        {
+
         }
 
         public String Title
@@ -56,22 +49,55 @@ namespace IndoorMap.ViewModels
         #endregion
 
 
-        private void SuscribeCommand()
-        { 
+        //MallList
+        public List<MallModel> MallList
+        {
+            get { return _MallListLocator(this).Value; }
+            set { _MallListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel MallList Setup        
+        protected Property<List<MallModel>> _MallList = new Property<List<MallModel>> { LocatorFunc = _MallListLocator };
+        static Func<BindableBase, ValueContainer<List<MallModel>>> _MallListLocator = RegisterContainerLocator<List<MallModel>>("MallList", model => model.Initialize("MallList", ref model._MallList, ref _MallListLocator, _MallListDefaultValueFactory));
+        static Func<List<MallModel>> _MallListDefaultValueFactory = () => { return new List<MallModel>(); };
+        #endregion
 
-            //MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
-            //    .Where(x => x.EventName == "ListButtonClickByEventRouter")
-            //    .Subscribe(
-            //     e =>
-            //    {
-            //        var item = e.EventData as MallModel;
-            //        if (item != null)
-            //        {
-            //            //await new MessageDialog("Setting点击了按钮").ShowAsync();
-            //            //await StageManager.DefaultStage.Show(new AtlasPage_Model(item.buildings.FirstOrDefault()));
-            //        }
-            //    }
-            //    ).DisposeWith(this);
+        private void GetSupportMallListAction()
+        {
+            string url = string.Format(@"http://op.juhe.cn/atlasyun/mall/list?key={0}&cityid={1}", Configmanager.INDOORMAP_APPKEY, AppSettings.Intance.SelectedCityId);
+            FormAction action = new FormAction(url);
+            action.isShowWaitingPanel = true;
+            action.viewModel = this;
+            action.Run();
+            action.FormActionCompleted += (result, ee) =>
+            {
+                JsonMallModel jsonMall = JsonConvert.DeserializeObject<JsonMallModel>(result);
+                if (jsonMall.reason == "成功" || jsonMall.reason == "successed")
+                {
+                    HttpClientReturnMallList(jsonMall.result);
+                }
+            };
+        }
+        public void HttpClientReturnMallList(List<MallModel> jsonMall)
+        {
+            this.MallList = jsonMall;
+        }
+
+        private void SuscribeCommand()
+        {
+            //MallList Item Tapped
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                .Where(x => x.EventName == "CitySelectedChangedEvent")
+                .Subscribe(
+                e =>
+                {
+                    var city = e.EventData as CityModel;
+                    //获取保存的所有城市
+                    AppSettings.Intance.SelectedCityId = city.id;
+
+                    GetSupportMallListAction();
+
+                }
+                ).DisposeWith(this); 
         }
 
 
@@ -99,17 +125,17 @@ namespace IndoorMap.ViewModels
         //    return base.OnUnbindedFromView(view, newValue);
         //}
 
-        /// <summary>
-        /// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
-        /// </summary>
-        /// <param name="view">View that firing Load event</param>
-        /// <returns>Task awaiter</returns>
+        ///// <summary>
+        ///// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
+        ///// </summary>
+        ///// <param name="view">View that firing Load event</param>
+        ///// <returns>Task awaiter</returns>
         protected override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
         {
-            if (!isLoadSuscribe)
+            if (!isLoaded)
             {
                 SuscribeCommand();
-                isLoadSuscribe = true;
+                isLoaded = true;
             }
             return base.OnBindedViewLoad(view);
         }
@@ -137,10 +163,6 @@ namespace IndoorMap.ViewModels
         //}
 
         #endregion
-
-
-
-
     }
 
 }

@@ -19,6 +19,7 @@ using Windows.UI.Popups;
 using IndoorMap.Controller;
 using Windows.Phone.UI.Input;
 using IndoorMap.Helpers;
+using Windows.UI.Core;
 
 namespace IndoorMap.ViewModels
 {
@@ -31,7 +32,8 @@ namespace IndoorMap.ViewModels
         public Building Building;
 
         public AtlasPage_Model()
-        { 
+        {
+            
         } 
 
         public AtlasPage_Model(Building buiding)

@@ -26,6 +26,7 @@
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition/>
+            <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
         <Button HorizontalAlignment="Center" Grid.Row="0" Content="{Binding ShopName}"  />
         <TextBlock Grid.Row="1" x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
@@ -42,5 +43,9 @@
                 </DataTemplate>
             </ListView.ItemTemplate>
         </ListView>
+        <StackPanel>
+            <Button Content="点击测试缓存" Click="Button_Click"/>
+            <TextBlock Text="原始数据" x:Name="txtTest"/>
+        </StackPanel>
     </Grid>
 </mvvm:MVVMPage>

@@ -1,4 +1,5 @@
 ﻿using IndoorMap.Controller;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -51,11 +52,49 @@ namespace IndoorMap.Helpers
             }
         }
 
-        public static async void GetCityUsingMapLocation()
+        public static async Task<String> GetCityUsingMapLocation()
         {
             Geoposition geoposition = await GetPosition();
-            MapLocationFinderResult result = await MapLocationFinder.FindLocationsAtAsync(geoposition.Coordinate.Point);
-            var a = result.Locations[0];
+            if (geoposition != null)
+            {
+                try
+                {
+                    MapLocationFinderResult result = await MapLocationFinder.FindLocationsAtAsync(geoposition.Coordinate.Point);
+                    MapLocation location = result.Locations[0] as MapLocation;
+                    string city = location.Address.Town.Replace("市","");
+                    return city;
+                }
+                catch (Exception e)
+                {
+                    await new MessageDialog("城市信息获取失败.").ShowAsync();
+                    return null;
+                }
+            }
+            else
+                return null;
+        }
+
+        private void PraseCityUsingBaiduAPI(Geocoordinate geocoordinate)
+        {
+            string url = string.Format(@"http://api.map.baidu.com/geocoder/v2/?ak={0}&location={1},{2}&output=json",
+                Configmanager.BAIDUMAP_APPKEY, geocoordinate.Point.Position.Latitude, geocoordinate.Point.Position.Longitude);
+
+            FormAction GeocodingBaiDuAction = new FormAction(url);
+            GeocodingBaiDuAction.Run(false);
+            GeocodingBaiDuAction.FormActionCompleted += (result, ss) =>
+            {
+                /*
+                {"status":0,"result":{"location":{"lng":121.34878897239,"lat":31.219452183508},"formatted_address":"上海市闵行区仙霞西路地道","business":"华漕,虹桥机场","addressComponent":{"city":"上海市","country":"中国","direction":"","distance":"","district":"闵行区","province":"上海市","street":"仙霞西路地道","street_number":"","country_code":0},"poiRegions":[{"direction_desc":"\u5185","name":"\u4e0a\u6d77\u8679\u6865\u673a\u573a"}],"sematic_description":"上海虹桥机场内,许浦港东119米","cityCode":289}}
+                */
+                JToken jtoken = JToken.Parse(result);
+                string status = jtoken["status"].ToString();
+                if (string.Equals(status, "0"))
+                {
+                    string city = jtoken["result"]["addressComponent"]["city"].ToString().Replace("市", "");
+                    //Save the Located City
+                    AppSettings.Intance.LocationCity = city;
+                }
+            };
         }
 
 

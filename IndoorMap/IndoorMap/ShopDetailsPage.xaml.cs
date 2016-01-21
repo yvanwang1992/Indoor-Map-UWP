@@ -31,23 +31,24 @@ namespace IndoorMap
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
     public sealed partial class ShopDetailsPage : MVVMPage
-    {
+    { 
         public ShopDetailsPage()
         {
+           
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
                 StrongTypeViewModel = this.ViewModel as ShopDetailsPage_Model;
             });
             StrongTypeViewModel = this.ViewModel as ShopDetailsPage_Model;
-            this.NavigationCacheMode = NavigationCacheMode.Enabled;
+            //this.NavigationCacheMode = NavigationCacheMode.Enabled;
 
             //SystemNavigationManager.GetForCurrentView().BackRequested += ShopDetailsPage_BackRequested;
 
             //SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility = StrongTypeViewModel.StageManager.DefaultStage.CanGoBack ?
             //    AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
         }
-
+        
         public ShopDetailsPage_Model StrongTypeViewModel
         {
             get { return (ShopDetailsPage_Model)GetValue(StrongTypeViewModelProperty); }
@@ -65,6 +66,11 @@ namespace IndoorMap
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
+        }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            txtTest.Text = "点击后的数据";
         }
         //private void ShopDetailsPage_BackRequested(object sender, BackRequestedEventArgs e)
         //{

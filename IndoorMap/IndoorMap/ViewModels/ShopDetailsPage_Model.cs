@@ -30,6 +30,8 @@ namespace IndoorMap.ViewModels
 
         public ShopDetailsPage_Model()
         {
+            
+
         }
 
         public ShopDetailsPage_Model(string url)

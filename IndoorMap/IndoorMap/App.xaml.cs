@@ -55,10 +55,10 @@ namespace IndoorMap
             if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent
                 ("Windows.Phone.UI.Input.HardwareButtons"))
             {
-                HardwareButtons.BackPressed += HardwareButtons_BackPressed1;
+                HardwareButtons.BackPressed += (sender, eventArgs) => { BackRequested(eventArgs); };
             }
             //Visual BackButton
-            SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
+            //SystemNavigationManager.GetForCurrentView().BackRequested += (sender, eventArgs) => { BackRequested(eventArgs); };
 
 
 #if DEBUG
@@ -104,9 +104,8 @@ namespace IndoorMap
         private void RootFrame_Navigated(object sender, NavigationEventArgs e)
         {
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
-        CommonHelper.HostPage.BackStack.Any()
+        CommonHelper.HostPage.CanGoBack
     ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
-
         }
 
         /// <summary>
@@ -132,49 +131,35 @@ namespace IndoorMap
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
-        
-        private void HardwareButtons_BackPressed1(object sender, BackPressedEventArgs e)
-        {
-            if (WaitingPanelHelper.IsWaitingPanelExisted())
-            {
-                WaitingPanelHelper.HiddenWaitingPanel();
-                if(formAction != null)
-                {
-                    formAction.Absort();
-                    e.Handled = true;
-                    return;
-                }
-            }
-
-            var frame = CommonHelper.HostPage;
-            if (frame != null && frame.CanGoBack)
-            {
-                frame.GoBack();
-                e.Handled = true;
-                return;
-            }
-        }
-        private void App_BackRequested(object sender, BackRequestedEventArgs e)
-        {
+         
+        private void BackRequested(object eventArgs)
+        { 
             if (WaitingPanelHelper.IsWaitingPanelExisted())
             {
                 WaitingPanelHelper.HiddenWaitingPanel();
                 if (formAction != null)
                 {
                     formAction.Absort();
-                    e.Handled = true;
-                    return;
+                    setArgsHandleTrue(eventArgs);
                 }
             }
 
-            var frame = CommonHelper.HostPage;
-            if (frame != null && frame.CanGoBack)
+            var page = CommonHelper.HostPage;
+            if (page != null && page.CanGoBack)
             {
-                frame.GoBack();
-                e.Handled = true;
-                return;
+                page.GoBack();
+                setArgsHandleTrue(eventArgs);
             }
         }
-          
+
+        private void setArgsHandleTrue(object eventArgs)
+        { 
+            if (eventArgs is BackPressedEventArgs)
+                //Hardware Back Button in Windows Mobile 10
+                (eventArgs as BackPressedEventArgs).Handled = true;
+            else
+                //Application Button In Windows 10
+                (eventArgs as BackRequestedEventArgs).Handled = true;
+        }
     }
 }

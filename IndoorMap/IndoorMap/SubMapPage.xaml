@@ -1,0 +1,48 @@
+﻿<mvvm:MVVMPage 
+    x:Name="pageRoot"
+    x:Class="IndoorMap.SubMapPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IndoorMap"
+    xmlns:mvvm="using:MVVMSidekick.Views"     
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:IndoorMap.ViewModels"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:usercontrol="using:IndoorMap.UserControls"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:bahavior="using:MVVMSidekick.Behaviors"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">My Application</x:String>
+        <vm:SubMapPage_Model x:Key="DesignVM"/>
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+            <TextBlock x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+        <Grid  Grid.Row="3" Height="400" VerticalAlignment="Bottom" >
+            <maps:MapControl x:Name="maps"                 
+                                     MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
+
+            </maps:MapControl>
+            <usercontrol:MapUserControl MapUserElements="{Binding MapElements}" MapUserCenter="{Binding MapCenter}" MapUserZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="ElementClickEvent">
+                        <core:InvokeCommandAction Command="{Binding CommandMapItemClick}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </usercontrol:MapUserControl>
+            <Border Background="Red" Height="40" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        </Grid>
+    </Grid>
+</mvvm:MVVMPage>

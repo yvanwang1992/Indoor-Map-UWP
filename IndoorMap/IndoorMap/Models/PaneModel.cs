@@ -8,7 +8,14 @@ namespace IndoorMap.Models
 {
     public class PaneModel
     {
-        public string IconText { get; set; }
-        public string Content { get; set; }
+        public string Icon { get; set; }
+        public string Label { get; set; }
+        public PanelItemType type { get; set; }
+    }
+     
+    public enum PanelItemType
+    {
+        PanelItemMallList,
+        PanelItemMap
     }
 }

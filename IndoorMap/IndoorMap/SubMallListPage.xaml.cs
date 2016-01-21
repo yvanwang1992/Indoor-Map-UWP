@@ -1,4 +1,12 @@
-﻿using MVVMSidekick.Views;
+﻿
+using IndoorMap.ViewModels;
+using System.Reactive;
+using System.Reactive.Linq;
+using MVVMSidekick.ViewModels;
+using MVVMSidekick.Views;
+using MVVMSidekick.Reactive;
+using MVVMSidekick.Services;
+using MVVMSidekick.Commands;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -13,49 +21,51 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using IndoorMap.ViewModels;
-using IndoorMap.Helpers;
-using Windows.UI.Xaml.Controls.Maps;
-using Windows.Storage.Streams;
-using Windows.UI;
-using Windows.Devices.Geolocation;
-using Windows.UI.Popups;
-using IndoorMap.Controller;
-using Newtonsoft.Json.Linq;
-using System.Diagnostics;
 
-// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
+// The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
 namespace IndoorMap
 {
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class MainPage : MVVMPage
+    public sealed partial class SubMallListPage : MVVMPage
     {
-        public MainPage()
+        public SubMallListPage()
         {
+
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
-                StrongTypeViewModel = this.ViewModel as MainPage_Model;
+                StrongTypeViewModel = this.ViewModel as SubMallListPage_Model;
             });
-            StrongTypeViewModel = this.ViewModel as MainPage_Model;
+            StrongTypeViewModel = this.ViewModel as SubMallListPage_Model;
+
             this.NavigationCacheMode = NavigationCacheMode.Required;
         }
 
-        public MainPage_Model StrongTypeViewModel
+
+        public SubMallListPage_Model StrongTypeViewModel
         {
-            get { return (MainPage_Model)GetValue(StrongTypeViewModelProperty); }
+            get { return (SubMallListPage_Model)GetValue(StrongTypeViewModelProperty); }
             set { SetValue(StrongTypeViewModelProperty, value); }
         }
 
         public static readonly DependencyProperty StrongTypeViewModelProperty =
-                    DependencyProperty.Register("StrongTypeViewModel", typeof(MainPage_Model), typeof(MainPage), new PropertyMetadata(null));
-         
+                    DependencyProperty.Register("StrongTypeViewModel", typeof(SubMallListPage_Model), typeof(SubMallListPage), new PropertyMetadata(null));
+
+
+
+
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e); 
+            base.OnNavigatedTo(e);
         }
+
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+        }
+
     }
 }

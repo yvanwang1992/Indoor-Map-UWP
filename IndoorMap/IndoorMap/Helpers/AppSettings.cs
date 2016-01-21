@@ -60,7 +60,7 @@ namespace IndoorMap.Helpers
         {
             get
             {
-                return StorageHelper.GetSettingsValueWithKey<bool>(LocationSettingKey);
+                return StorageHelper.GetSettingsValueWithKey<bool>(LocationSettingKey, true);
             }
             set
             {

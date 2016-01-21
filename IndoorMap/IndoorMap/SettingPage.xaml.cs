@@ -26,6 +26,7 @@ using IndoorMap.Models;
 using Newtonsoft.Json;
 using Windows.UI.Popups;
 using IndoorMap.Controller;
+using Windows.UI.Core;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -44,9 +45,11 @@ namespace IndoorMap
             {
                 StrongTypeViewModel = this.ViewModel as SettingPage_Model;
             });
-            this.NavigationCacheMode = NavigationCacheMode.Enabled;
+            this.NavigationCacheMode = NavigationCacheMode.Required;
 
             StrongTypeViewModel = this.ViewModel as SettingPage_Model;
+
+
         }
         
         public SettingPage_Model StrongTypeViewModel
@@ -61,12 +64,14 @@ namespace IndoorMap
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            SystemNavigationManager.GetForCurrentView().BackRequested += App_BackRequested;
 
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
+            SystemNavigationManager.GetForCurrentView().BackRequested -= App_BackRequested;
         }
 
         private async void webView_ScriptNotify(object sender, NotifyEventArgs e)
@@ -190,6 +195,15 @@ namespace IndoorMap
             {
 
             };
+        }
+
+
+        private void App_BackRequested(object sender, BackRequestedEventArgs e)
+        {
+            if(StrongTypeViewModel.StageManager.DefaultStage.CanGoBack)
+            {    StrongTypeViewModel.StageManager.DefaultStage.Frame.GoBack();
+                e.Handled = true;
+            }
         }
     }
 
