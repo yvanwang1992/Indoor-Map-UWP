@@ -16,6 +16,8 @@ using Windows.Devices.Geolocation;
 using Windows.UI.Xaml.Controls.Maps;
 using IndoorMap.Helpers;
 using Windows.Storage.Streams;
+using IndoorMap.Models;
+using IndoorMap.UserControls;
 
 namespace IndoorMap.ViewModels
 {
@@ -23,12 +25,26 @@ namespace IndoorMap.ViewModels
     [DataContract]
     public class SubMapPage_Model : ViewModelBase<SubMapPage_Model>
     {
+        static Geopoint defaultGeopoint = new Geopoint(new BasicGeoposition() { Latitude = 28.23, Longitude = 117.02 });
+        static Double defaultZoomLevel = 4;
+
+        
+        MallModel SelectedMallItem;
+
+        bool isLoadSuscribe = false;
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property。
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
         public SubMapPage_Model()
         {
-
-        } 
+            if (!isLoadSuscribe)
+            {
+                SuscribeCommand();
+                isLoadSuscribe = true;
+                MapCenter = defaultGeopoint;
+                MapZoomLevel = defaultZoomLevel;
+            }
+           
+        }
 
         public String Title
         {
@@ -41,6 +57,31 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, String> _TitleDefaultValueFactory = m => m.GetType().Name;
         #endregion
 
+        //MallList
+        public List<MallModel> MallList
+        {
+            get { return _MallListLocator(this).Value; }
+            set { _MallListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel MallList Setup        
+        protected Property<List<MallModel>> _MallList = new Property<List<MallModel>> { LocatorFunc = _MallListLocator };
+        static Func<BindableBase, ValueContainer<List<MallModel>>> _MallListLocator = RegisterContainerLocator<List<MallModel>>("MallList", model => model.Initialize("MallList", ref model._MallList, ref _MallListLocator, _MallListDefaultValueFactory));
+        static Func<List<MallModel>> _MallListDefaultValueFactory = () => { return new List<MallModel>(); };
+        #endregion
+
+        //SelectedMapElement
+        public ObservableCollection<MapElement> SelectedMapElement
+        {
+            get { return _SelectedMapElementLocator(this).Value; }
+            set { _SelectedMapElementLocator(this).SetValueAndTryNotify(value); }
+        }
+
+        #region Property Channel SelectedMapElement Setup        
+        protected Property<ObservableCollection<MapElement>> _SelectedMapElement = new Property<ObservableCollection<MapElement>> { LocatorFunc = _SelectedMapElementLocator };
+        static Func<BindableBase, ValueContainer<ObservableCollection<MapElement>>> _SelectedMapElementLocator = RegisterContainerLocator<ObservableCollection<MapElement>>("SelectedMapElement", model => model.Initialize("SelectedMapElement", ref model._SelectedMapElement, ref _SelectedMapElementLocator, _SelectedMapElementDefaultValueFactory));
+        static Func<ObservableCollection<MapElement>> _SelectedMapElementDefaultValueFactory = () => { return new ObservableCollection<MapElement>(); };
+        #endregion
+
 
 
         //All the Map Element
@@ -49,6 +90,7 @@ namespace IndoorMap.ViewModels
             get { return _MapElementsLocator(this).Value; }
             set { _MapElementsLocator(this).SetValueAndTryNotify(value); }
         }
+
         #region Property Channel MapElements Setup        
         protected Property<ObservableCollection<MapElement>> _MapElements = new Property<ObservableCollection<MapElement>> { LocatorFunc = _MapElementsLocator };
         static Func<BindableBase, ValueContainer<ObservableCollection<MapElement>>> _MapElementsLocator = RegisterContainerLocator<ObservableCollection<MapElement>>("MapElements", model => model.Initialize("MapElements", ref model._MapElements, ref _MapElementsLocator, _MapElementsDefaultValueFactory));
@@ -103,8 +145,8 @@ namespace IndoorMap.ViewModels
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            var param = e.EventArgs.Parameter as MapElementClickEventArgs;
-                            foreach (var item in param.MapElements)
+                            var param = e.EventArgs.Parameter as MapElementClickItemEventArgs;
+                            foreach (var item in param.args.MapElements)
                             {
                                 if (item is MapPolygon)
                                 {
@@ -119,13 +161,15 @@ namespace IndoorMap.ViewModels
                                 else if (item is MapIcon)
                                 {
                                     var icon = item as MapIcon;
+                                    vm.SelectedMallItem = vm.MallList.Where(n => n.name == icon.Title).First();
                                     //Is MapIcon
                                     //
                                     //MallModel mall = vm.MallList.FirstOrDefault(n => n.name == icon.Title);
                                     //await vm.StageManager.DefaultStage.Show(new AtlasPage_Model(mall.buildings[0]));
-
+                                    if(param.isMaxZoom)
+                                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(null, vm.SelectedMallItem, typeof(MallModel), "NavigateToDetailByEventRouter", true);
+                                    
                                     vm.MapCenter = icon.Location;
-
                                 }
                             }
                         }
@@ -191,30 +235,77 @@ namespace IndoorMap.ViewModels
         #endregion
 
 
-        //public void AddAllMallsInMap()
-        //{
-        //    var elements = new ObservableCollection<MapElement>();
+        public void AddSelectedMallInMap(MallModel item)
+        {
+            var elements = new ObservableCollection<MapElement>();
 
-        //    foreach (var item in MallList)
-        //    {
-        //        MapIcon mapIcon = new MapIcon();
-        //        var bdPosition = new Geopoint(new BasicGeoposition()
-        //        {
-        //            Latitude = Double.Parse(item.lat),
-        //            Longitude = Double.Parse(item.lon)
-        //        });
-        //        if (MallList.IndexOf(item) == 0)
-        //        {
-        //            MapCenter = bdPosition;
-        //        }
-        //        mapIcon.Location = bdPosition;//LocationManager.TransformFromWorldlToMars(bdPosition);
-        //        mapIcon.Title = item.name;
-        //        mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/delete_auto.png"));
-        //        elements.Add(mapIcon);
-        //    }
-        //    MapElements = elements;
-        //    MapZoomLevel = 10;
-        //}
+            MapIcon mapIcon = new MapIcon();
+                var bdPosition = new Geopoint(new BasicGeoposition()
+                {
+                    Latitude = Double.Parse(item.lat),
+                    Longitude = Double.Parse(item.lon)
+                }); 
+                mapIcon.Location = bdPosition;//LocationManager.TransformFromWorldlToMars(bdPosition);
+                mapIcon.Title = item.name;
+                mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/delete_auto.png"));
+                elements.Add(mapIcon);
+           
+            MapElements = elements;
+            MapCenter = new Geopoint(new BasicGeoposition() { Latitude = Double.Parse(item.lat), Longitude = Double.Parse(item.lon)});
+            MapZoomLevel = 15;
+        }
+
+        public void AddAllMallsInMap()
+        {
+            var elements = new ObservableCollection<MapElement>();
+
+            foreach (var item in MallList)
+            {
+                MapIcon mapIcon = new MapIcon();
+                var bdPosition = new Geopoint(new BasicGeoposition()
+                {
+                    Latitude = Double.Parse(item.lat),
+                    Longitude = Double.Parse(item.lon)
+                });
+                if (MallList.IndexOf(item) == 0)
+                {
+                    MapCenter = bdPosition;
+                }
+                mapIcon.Location = bdPosition;//LocationManager.TransformFromWorldlToMars(bdPosition);
+                mapIcon.Title = item.name;
+                mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/delete_auto.png"));
+                elements.Add(mapIcon);
+            }
+            MapElements = elements;
+            MapZoomLevel = 12;
+        }
+
+        private void SuscribeCommand()
+        {
+            //MallList Button Tapped
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                    .Where(x => x.EventName == "ListButtonClickByEventRouter")
+                    .Subscribe(
+                    e =>
+                    {
+                        var item = e.EventData as MallModel;
+                        AddSelectedMallInMap(item);
+                    }
+                    ).DisposeWith(this);
+
+
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                .Where(x => x.EventName == "CitySelectedChangedEvent")
+                .Subscribe(
+                e =>
+                { 
+                    var mallList = e.EventData as List<MallModel>;
+                    this.MallList = mallList;
+                    //Display all the icons in map
+                    AddAllMallsInMap();
+                }
+                ).DisposeWith(this);
+        }
 
         #region Life Time Event Handling
 
@@ -245,9 +336,9 @@ namespace IndoorMap.ViewModels
         ///// </summary>
         ///// <param name="view">View that firing Load event</param>
         ///// <returns>Task awaiter</returns>
-        //protected override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
-        //{
-        //    return base.OnBindedViewLoad(view);
+        //protected async override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
+        //{ 
+        //    await base.OnBindedViewLoad(view);
         //}
 
         ///// <summary>
@@ -272,10 +363,7 @@ namespace IndoorMap.ViewModels
         //    await TaskExHelper.Yield();
         //}
 
-        #endregion
-
-
-
+        #endregion 
 
     }
 

@@ -58,7 +58,7 @@ namespace IndoorMap
                 HardwareButtons.BackPressed += (sender, eventArgs) => { BackRequested(eventArgs); };
             }
             //Visual BackButton
-            //SystemNavigationManager.GetForCurrentView().BackRequested += (sender, eventArgs) => { BackRequested(eventArgs); };
+            SystemNavigationManager.GetForCurrentView().BackRequested += (sender, eventArgs) => { BackRequested(eventArgs); };
 
 
 #if DEBUG

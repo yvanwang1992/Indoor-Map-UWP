@@ -57,5 +57,10 @@ namespace IndoorMap
         {
             base.OnNavigatedTo(e); 
         }
+
+        private void AutoSuggestBox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            splitView.IsPaneOpen = false;
+        }
     }
 }

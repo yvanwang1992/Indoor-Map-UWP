@@ -40,7 +40,6 @@ namespace IndoorMap
                 StrongTypeViewModel = this.ViewModel as AtlasPage_Model;
             });
             StrongTypeViewModel = this.ViewModel as AtlasPage_Model;
-
         }
 
 
@@ -64,5 +63,10 @@ namespace IndoorMap
             base.OnNavigatedFrom(e);
         }
 
+        private async void Button_Click(object sender, RoutedEventArgs e)
+        { 
+            string param = StrongTypeViewModel.GetInvokeParamsInJson();
+            await webView.InvokeScriptAsync("StartInit", new string[] { param });
+        }
     }
 }

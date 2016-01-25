@@ -23,7 +23,7 @@ namespace MVVMSidekick.Startups
         {
             ViewModelLocator<SubMapPage_Model>
                 .Instance
-                .Register(context =>
+                .Register(context => 
                     new SubMapPage_Model())
                 .GetViewMapper()
                 .MapToDefault<SubMapPage>();

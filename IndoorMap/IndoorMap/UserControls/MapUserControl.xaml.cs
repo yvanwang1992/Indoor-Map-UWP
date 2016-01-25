@@ -20,9 +20,15 @@ using Windows.UI.Xaml.Navigation;
 
 namespace IndoorMap.UserControls
 {
+    public class MapElementClickItemEventArgs
+    {
+        public MapElementClickEventArgs args;
+        public bool isMaxZoom;  //ture: 为了放大的时候能够将点击的图标置于中间
+    }
+
     public sealed partial class MapUserControl : UserControl
     {
-        public delegate void MapElementClickHandler(MapControl sender, MapElementClickEventArgs args);
+        public delegate void MapElementClickHandler(MapControl sender, MapElementClickItemEventArgs args);
         public event MapElementClickHandler ElementClickEvent;
 
         public MapUserControl()
@@ -114,14 +120,22 @@ namespace IndoorMap.UserControls
                             maps.StopContinuousZoom();
                         }
                     };
+                    if (ElementClickEvent != null)
+                    {
+                        ElementClickEvent(sender, new MapElementClickItemEventArgs() { args = args, isMaxZoom = false });
+                    }
+                }
+                else
+                {
+                    if (ElementClickEvent != null)
+                    {
+                        ElementClickEvent(sender, new MapElementClickItemEventArgs() { args = args, isMaxZoom = true });
+                    }
                 }
 
             });
 
-            if (ElementClickEvent != null)
-            {
-                ElementClickEvent(sender, args);
-            }
+            
         }
     }
 }

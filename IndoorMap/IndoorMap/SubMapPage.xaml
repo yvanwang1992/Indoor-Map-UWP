@@ -12,7 +12,7 @@
     xmlns:usercontrol="using:IndoorMap.UserControls"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
-    xmlns:bahavior="using:MVVMSidekick.Behaviors"
+    xmlns:behavior="using:MVVMSidekick.Behaviors"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -31,16 +31,15 @@
             <TextBlock x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
         <Grid  Grid.Row="3" Height="400" VerticalAlignment="Bottom" >
-            <maps:MapControl x:Name="maps"                 
-                                     MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
+            <!--<maps:MapControl x:Name="maps"      MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
 
-            </maps:MapControl>
+            </maps:MapControl>-->
             <usercontrol:MapUserControl MapUserElements="{Binding MapElements}" MapUserCenter="{Binding MapCenter}" MapUserZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="ElementClickEvent">
                         <core:InvokeCommandAction Command="{Binding CommandMapItemClick}"/>
                     </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
+                </interactivity:Interaction.Behaviors> 
             </usercontrol:MapUserControl>
             <Border Background="Red" Height="40" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top"/>
         </Grid>

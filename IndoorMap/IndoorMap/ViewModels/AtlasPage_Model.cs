@@ -41,8 +41,9 @@ namespace IndoorMap.ViewModels
             //[{"Floor1": "541797c6ac4711c3332d6cd1",
             //"Floor2": "541797c6ac4711c3332d6cs1"}]
             Building = buiding;
+            Title = Building.name; 
         }
-
+         
         public String Title
         {
             get { return _TitleLocator(this).Value; }
@@ -54,8 +55,7 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, String> _TitleDefaultValueFactory = m => m.GetType().Name;
         #endregion
 
-
-
+         
         #region Life Time Event Handling
 
         ///// <summary>
@@ -142,7 +142,7 @@ namespace IndoorMap.ViewModels
 
                             WebView webView = e.EventArgs.Parameter as WebView;
                             string param = vm.GetInvokeParamsInJson();
-                            await webView.InvokeScriptAsync("StartInit", new string[] { param });
+                            await webView.InvokeScriptAsync("StartInit", new string[] { param});
 
                         }
                     )

@@ -16,6 +16,8 @@ using IndoorMap.Models;
 using IndoorMap.Helpers;
 using IndoorMap.Controller;
 using Newtonsoft.Json;
+using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Input;
 
 namespace IndoorMap.ViewModels
 {
@@ -27,14 +29,14 @@ namespace IndoorMap.ViewModels
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
         bool isLoaded = false;
 
-        public SubMallListPage_Model(List<MallModel> mallList)
-        {
-            this.MallList = mallList;
-        }
 
         public SubMallListPage_Model()
         {
-
+            if (!isLoaded)
+            {
+                SuscribeCommand();
+                isLoaded = true;
+            }
         }
 
         public String Title
@@ -48,6 +50,17 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, String> _TitleDefaultValueFactory = m => m.GetType().Name;
         #endregion
 
+        public int SelectedIndex
+        {
+            get { return _SelectedIndexLocator(this).Value; }
+            set { _SelectedIndexLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property int SelectedIndex Setup
+        protected Property<int> _SelectedIndex = new Property<int> { LocatorFunc = _SelectedIndexLocator };
+        static Func<BindableBase, ValueContainer<int>> _SelectedIndexLocator = RegisterContainerLocator<int>("SelectedIndex", model => model.Initialize("SelectedIndex", ref model._SelectedIndex, ref _SelectedIndexLocator, _SelectedIndexDefaultValueFactory));
+        static Func<BindableBase, int> _SelectedIndexDefaultValueFactory = m => -1;
+        #endregion
+        
 
         //MallList
         public List<MallModel> MallList
@@ -60,6 +73,90 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<List<MallModel>>> _MallListLocator = RegisterContainerLocator<List<MallModel>>("MallList", model => model.Initialize("MallList", ref model._MallList, ref _MallListLocator, _MallListDefaultValueFactory));
         static Func<List<MallModel>> _MallListDefaultValueFactory = () => { return new List<MallModel>(); };
         #endregion
+
+        //CommandShowOneMallInMap
+        public CommandModel<ReactiveCommand, String> CommandShowOneMallInMap
+        {
+            get { return _CommandShowOneMallInMapLocator(this).Value; }
+            set { _CommandShowOneMallInMapLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandShowOneMallInMap Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandShowOneMallInMap = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandShowOneMallInMapLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandShowOneMallInMapLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandShowOneMallInMap", model => model.Initialize("CommandShowOneMallInMap", ref model._CommandShowOneMallInMap, ref _CommandShowOneMallInMapLocator, _CommandShowOneMallInMapDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandShowOneMallInMapDefaultValueFactory =
+            model =>
+            {
+                var resource = "ShowAllMallInMap";           // Command resource  
+                var commandId = "ShowAllMallInMap";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
+                            //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            MallModel mall = e.EventArgs.Parameter as MallModel;
+                            MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "ListButtonClickByEventRouter", true);
+
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        //CommandLvMallItemClick
+        public CommandModel<ReactiveCommand, String> CommandLvMallItemClick
+        {
+            get { return _CommandLvMallItemClickLocator(this).Value; }
+            set { _CommandLvMallItemClickLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandLvMallItemClick Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandLvMallItemClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandLvMallItemClickLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandLvMallItemClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandLvMallItemClick", model => model.Initialize("CommandLvMallItemClick", ref model._CommandLvMallItemClick, ref _CommandLvMallItemClickLocator, _CommandLvMallItemClickDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandLvMallItemClickDefaultValueFactory =
+            model =>
+            {
+                var resource = "LvMallItemClick";           // Command resource  
+                var commandId = "LvMallItemClick";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
+                            //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            ItemClickEventArgs eventArgs = e.EventArgs.Parameter as ItemClickEventArgs;
+                            var mall = eventArgs.ClickedItem as MallModel;
+                            
+                            MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "NavigateToDetailByEventRouter", true);
+
+                            //await vm.StageManager.DefaultStage.Show(new AtlasPage_Model(mall.buildings.FirstOrDefault()));
+
+                            //await new MessageDialog(mall.lat + " " + mall.lon).ShowAsync();
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
 
         private void GetSupportMallListAction()
         {
@@ -90,17 +187,29 @@ namespace IndoorMap.ViewModels
                 .Subscribe(
                 e =>
                 {
-                    var city = e.EventData as CityModel;
-                    //获取保存的所有城市
-                    AppSettings.Intance.SelectedCityId = city.id;
+                    //var city = e.EventData as CityModel;
+                    ////获取保存的城市
+                    //AppSettings.Intance.SelectedCityId = city.id;
 
-                    GetSupportMallListAction();
+                    //GetSupportMallListAction();
+
+                    var mallList = e.EventData as List<MallModel>;
+                    this.MallList = mallList;
 
                 }
-                ).DisposeWith(this); 
+                ).DisposeWith(this);
+
+            //When Search One Mall, Mark It And go for it;
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                .Where(x => x.EventName == "MarkSearchedMall")
+                .Subscribe(
+                e =>
+                {
+                    var mall = e.EventData as MallModel;
+                    SelectedIndex = MallList.IndexOf(mall);
+                }
+                ).DisposeWith(this);
         }
-
-
         #region Life Time Event Handling
 
         ///// <summary>
@@ -130,15 +239,10 @@ namespace IndoorMap.ViewModels
         ///// </summary>
         ///// <param name="view">View that firing Load event</param>
         ///// <returns>Task awaiter</returns>
-        protected override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
-        {
-            if (!isLoaded)
-            {
-                SuscribeCommand();
-                isLoaded = true;
-            }
-            return base.OnBindedViewLoad(view);
-        }
+        //protected override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
+        //{ 
+        //    return base.OnBindedViewLoad(view);
+        //}
 
         ///// <summary>
         ///// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property

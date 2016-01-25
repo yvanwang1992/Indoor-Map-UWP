@@ -20,7 +20,7 @@
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
-
+ 
         <!--<DataTemplate x:Key="MallListDataTemplate">
             <Grid Background="Transparent" BorderBrush="Red" BorderThickness="1">
                 
@@ -57,9 +57,8 @@
 
         <DataTemplate x:Key="CityListDataTemplate">
             <Grid>
-            <TextBlock Text="{Binding name}"/> 
+                <TextBlock Text="{Binding name}"/>
             </Grid>
-            
         </DataTemplate>
 
         <DataTemplate x:Key="PaneListDataTemplate">
@@ -91,7 +90,7 @@
     </Page.Resources>
     <Grid>
         
-        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="240" CompactPaneLength="80" Background="Brown" PaneBackground="Red" DisplayMode="CompactOverlay" DataContext="{StaticResource DesignVM}" >
+        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="240" CompactPaneLength="80" Background="Brown" PaneBackground="Red" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
             <SplitView.Pane>
                 <Grid >
                     <Grid.RowDefinitions>
@@ -106,35 +105,31 @@
                         </Grid.ColumnDefinitions>
                         <Button Content="&#xE700;" FontFamily="Segoe MDL2 Assets" Grid.Column="0" HorizontalAlignment="Center" Command="{Binding CommandHamburgClick}"/>
                     </Grid>
-
                     <Grid Grid.Row="1" Background="DarkOrchid">
-
-                    </Grid>
-
-                    <ListView ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                        <ListView Visibility="Visible" ItemTemplate="{StaticResource PaneListDataTemplate}" 
                               ItemsSource="{Binding PaneDownList}"
                               Grid.Row="2"
+                              SelectedItem="{Binding SelectedPaneDownItem, Mode=TwoWay}"
                               SelectionMode="Single"
                               IsItemClickEnabled="False"
-                              SelectedItem="{Binding SelectedPaneDownItem, Mode=TwoWay}"
-                              SelectedIndex="{Binding SelectedPaneDownIndex}"
+                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
                               Background="Gray">
-                        <ListView.ItemContainerStyle>
-                            <Style TargetType="ListViewItem">
-                                <Setter Property="HorizontalAlignment" Value="Stretch"/>
-                            </Style>
-                        </ListView.ItemContainerStyle>
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="SelectionChanged">
-                                <bahavior:SendToEventRouterAction EventRoutingName="SplitViewPaneItemClick"
-                                                          IsEventFiringToAllBaseClassesChannels="True"
-                                                          EventData="{Binding SelectedPaneDownItem}"/>
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </ListView>
+                            <ItemsPanelTemplate>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsPanelTemplate>
 
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="SelectionChanged">
+                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}" CommandParameter="{Binding SelectedPaneDownItem}"/>
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                        </ListView>
+                    </Grid> 
                 </Grid>
             </SplitView.Pane>
+            
             <SplitView.Content>
                 <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
                     <Grid.RowDefinitions>
@@ -143,25 +138,54 @@
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="Auto"/>
                     </Grid.RowDefinitions>
-                    <TextBlock x:Name="tbAppName" FontSize="24" Text="{StaticResource AppName}" VerticalAlignment="Center"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBlock x:Name="tbAppName" FontSize="24" Text="{StaticResource AppName}" VerticalAlignment="Center"/>
+                        <AutoSuggestBox ItemsSource="{Binding AutoSuggests}" 
+                                        UpdateTextOnSelect="True" 
+                                        TextMemberPath ="name"
+                                        PlaceholderText="请输入要搜索的关键词" 
+                                        QueryIcon="Find" 
+                                        Grid.Column="1" 
+                                        GotFocus="AutoSuggestBox_GotFocus"
+                                        Text="{Binding AutoSuggestText, Mode=TwoWay}"
+                                        HorizontalAlignment="Stretch">
+                            <AutoSuggestBox.ItemTemplate>
+                                <DataTemplate>
+                                    <TextBlock Text="{Binding name, Mode=TwoWay}"/>
+                                </DataTemplate>
+                            </AutoSuggestBox.ItemTemplate>
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="TextChanged">
+                                    <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionTextChange}"/>
+                                </core:EventTriggerBehavior>
+                                <core:EventTriggerBehavior EventName="QuerySubmitted">
+                                    <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionSubmitted}"/>
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                        </AutoSuggestBox>
+                    </Grid>
                     <StackPanel Grid.Row="1" Orientation="Horizontal">
                         <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{Binding SupportCities[0].name}" />
-                         <ComboBox CompositeMode="MinBlend" Background="IndianRed" BorderThickness="0" HorizontalAlignment="Center" x:Name="cbCity" 
+                        <ComboBox CompositeMode="MinBlend" Background="IndianRed" BorderThickness="0" HorizontalAlignment="Center" x:Name="cbCity" 
                                 SelectedIndex="{Binding SelectedCityIndex}"
                                    SelectedItem="{Binding SelectedCity, Mode=TwoWay}" ItemsSource="{Binding SupportCities}"
                               ItemTemplate="{StaticResource CityListDataTemplate}">
-                            <interactivity:Interaction.Behaviors>
+                            <!--<interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <bahavior:SendToEventRouterAction EventRoutingName="CitySelectedChangedEvent"
                                                           IsEventFiringToAllBaseClassesChannels="True"
                                                           EventData="{Binding SelectedCity}"/>
                                 </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                            <!--<interactivity:Interaction.Behaviors>
+                            </interactivity:Interaction.Behaviors>-->
+                            <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
                                 </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>-->
+                            </interactivity:Interaction.Behaviors>
                             
                         </ComboBox>
                         <Button Visibility="Collapsed" Content="(地图模式)显示所有"  HorizontalAlignment="Right" VerticalAlignment="Top" >
@@ -171,7 +195,26 @@
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
                         </Button>
+                        <!--<ListView ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                              ItemsSource="{Binding PaneDownList}"
+                              Grid.Row="2"
+                              SelectedItem="{Binding SelectedPaneDownItem, Mode=TwoWay}"
+                              SelectionMode="Single"
+                              IsItemClickEnabled="False"
+                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
+                              Background="Gray">
+                            <ItemsPanelTemplate>
+                                <ItemsPanelTemplate>
+                                    <StackPanel Orientation="Horizontal"/>
+                                </ItemsPanelTemplate>
+                            </ItemsPanelTemplate>
 
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="SelectionChanged">
+                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}" CommandParameter="{Binding SelectedPaneDownItem}"/>
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                        </ListView>-->
                     </StackPanel>
 
                     <Frame  Visibility="Visible"

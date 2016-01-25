@@ -106,6 +106,7 @@
     <Compile Include="Helpers\AppSettings.cs" />
     <Compile Include="Helpers\CommonHelper.cs" />
     <Compile Include="Helpers\ConverterHelper.cs" />
+    <Compile Include="Helpers\DataManager.cs" />
     <Compile Include="Helpers\LocationManager.cs" />
     <Compile Include="Helpers\NetworkManager.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />

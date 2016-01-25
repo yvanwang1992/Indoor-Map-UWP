@@ -20,7 +20,7 @@
                // { Floor1: "539098c7b8604a3d369345ed" }]
 
             var params = {
-                width: 480,//dom.offsetWidth - padding,
+                width: 400,//dom.offsetWidth - padding,
                 height: 500, //dom.offsetHeight - padding,
                 //cityId: "53d5e4c85620fa7f111a3f67",
                 floorList: floorlist,
@@ -56,12 +56,13 @@
                 }
             }
             sdk = new Atlas(params)
+            
         }
     </script>
 </head>
 
 <body>
-    <div id="atlas"></div>
+    <div id="atlas" ></div>
     <!--body 自动执行-->
     <!--<script>
     //var dom = document.getElementById('atlas').parentNode,

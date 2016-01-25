@@ -34,7 +34,6 @@ namespace IndoorMap
     { 
         public ShopDetailsPage()
         {
-           
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
