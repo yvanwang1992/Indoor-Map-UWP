@@ -15,6 +15,7 @@ namespace IndoorMap.Helpers
 {
     public class CommonHelper
     {
+
         public const string SettingLocation = "ms-settings:privacy-location";
 
         #region Go To System Settings   
@@ -72,6 +73,9 @@ namespace IndoorMap.Helpers
             return result;
         }
          
+
+
+        
     }
 
 

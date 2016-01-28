@@ -6,14 +6,12 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
-    mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="400">
+    mc:Ignorable="d" >
 
     <Grid>
-        <maps:MapControl x:Name="maps"  MapElementClick="maps_MapElementClick" 
+        <maps:MapControl x:Name="maps" VerticalAlignment="Stretch"  MapElementClick="maps_MapElementClick" 
                         MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
         </maps:MapControl>
-        
+        <Border Background="Red" Height="40" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top"/>
     </Grid>
 </UserControl>

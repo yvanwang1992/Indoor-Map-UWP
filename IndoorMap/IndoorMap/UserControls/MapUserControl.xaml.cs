@@ -71,7 +71,7 @@ namespace IndoorMap.UserControls
 
         private void ChangeCenter()
         {
-            maps.Center = MapUserCenter;
+            maps.Center = MapUserCenter; 
         }
 
         //Map Element
@@ -112,7 +112,7 @@ namespace IndoorMap.UserControls
             {
                 if (maps.ZoomLevel < 15)
                 {
-                    maps.StartContinuousZoom(1);
+                    maps.StartContinuousZoom(2);
                     maps.ZoomLevelChanged += (ss, ee) =>
                     {
                         if (maps.ZoomLevel >= 15)

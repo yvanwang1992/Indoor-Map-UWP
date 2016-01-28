@@ -26,8 +26,13 @@ namespace IndoorMap.ViewModels
     public class SubMallListPage_Model : ViewModelBase<SubMallListPage_Model>
     {
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property。
-        // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
+        // 如果您已经安装了 MVVMSidekick 代码片段,请用 propvm +tab +tab 输入属性
         bool isLoaded = false;
+        public static String[]   catelogs = {
+        "吃","喝","玩","家用百货","生活服务","食品",  "儿童用品",
+        "服装饰品","男装",   "女装",   "运动休闲",  "箱包皮具", "化妆品",
+        "电器","数码产品","家具","文化办公","金银珠宝",  "钟表眼镜",
+        "会议","促销特卖","其他"};
 
 
         public SubMallListPage_Model()
@@ -60,8 +65,7 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<int>> _SelectedIndexLocator = RegisterContainerLocator<int>("SelectedIndex", model => model.Initialize("SelectedIndex", ref model._SelectedIndex, ref _SelectedIndexLocator, _SelectedIndexDefaultValueFactory));
         static Func<BindableBase, int> _SelectedIndexDefaultValueFactory = m => -1;
         #endregion
-        
-
+         
         //MallList
         public List<MallModel> MallList
         {
@@ -73,6 +77,20 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<List<MallModel>>> _MallListLocator = RegisterContainerLocator<List<MallModel>>("MallList", model => model.Initialize("MallList", ref model._MallList, ref _MallListLocator, _MallListDefaultValueFactory));
         static Func<List<MallModel>> _MallListDefaultValueFactory = () => { return new List<MallModel>(); };
         #endregion
+
+        //MallGroupList
+        public List<MallGroup> MallGroupList
+        {
+            get { return _MallGroupListLocator(this).Value; }
+            set { _MallGroupListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel MallGroupList Setup        
+        protected Property<List<MallGroup>> _MallGroupList = new Property<List<MallGroup>> { LocatorFunc = _MallGroupListLocator };
+        static Func<BindableBase, ValueContainer<List<MallGroup>>> _MallGroupListLocator = RegisterContainerLocator<List<MallGroup>>("MallGroupList", model => model.Initialize("MallGroupList", ref model._MallGroupList, ref _MallGroupListLocator, _MallGroupListDefaultValueFactory));
+        static Func<List<MallGroup>> _MallGroupListDefaultValueFactory = () => { return new List<MallGroup>(); };
+        #endregion
+
+
 
         //CommandShowOneMallInMap
         public CommandModel<ReactiveCommand, String> CommandShowOneMallInMap
@@ -186,15 +204,12 @@ namespace IndoorMap.ViewModels
                 .Where(x => x.EventName == "CitySelectedChangedEvent")
                 .Subscribe(
                 e =>
-                {
-                    //var city = e.EventData as CityModel;
-                    ////获取保存的城市
-                    //AppSettings.Intance.SelectedCityId = city.id;
-
-                    //GetSupportMallListAction();
-
+                { 
+                    //未分组数据
                     var mallList = e.EventData as List<MallModel>;
                     this.MallList = mallList;
+
+                    //分组
 
                 }
                 ).DisposeWith(this);
@@ -269,5 +284,10 @@ namespace IndoorMap.ViewModels
         #endregion
     }
 
+    public class MallGroup
+    {
+        public string District { get; set; }
+        public List<MallModel> MallList { get; set; }
+    }
 }
 

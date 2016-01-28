@@ -9,7 +9,12 @@ namespace IndoorMap.Helpers
 {
     public class StorageHelper
     {
+        #region Setting  Can Save bool、 string 
+
+        #endregion
         static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
+        static StorageFolder folder = ApplicationData.Current.LocalFolder;
+
 
         public static void SetSettingsValueAndKey(object value ,string key)
         {
@@ -37,6 +42,26 @@ namespace IndoorMap.Helpers
         {
             Uri uri = new Uri("ms-appx:///VenueAtlasPage.html");
             StorageFile file = await StorageFile.GetFileFromApplicationUriAsync(uri);
+        }
+
+        public async static Task SetLocalTextFile(string fileName, string content)
+        {
+            var file = await folder.CreateFileAsync(fileName, CreationCollisionOption.ReplaceExisting);
+            await FileIO.WriteTextAsync(file, content);
+        }
+
+        public async static Task<String> GetLocalTextFile(string fileName)
+        {
+            try
+            {
+                var file = await folder.GetFileAsync(fileName);
+                string text = await FileIO.ReadTextAsync(file);
+                return text;
+            }
+            catch
+            {
+                return null;
+            }
         }
     }
 }

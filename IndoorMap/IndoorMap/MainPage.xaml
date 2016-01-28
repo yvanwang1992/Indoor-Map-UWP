@@ -13,48 +13,17 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:bahavior="using:MVVMSidekick.Behaviors"
     mc:Ignorable="d">
+    
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">室内地图</x:String>
+        
         <vm:MainPage_Model x:Key="DesignVM"/>
+        
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
- 
-        <!--<DataTemplate x:Key="MallListDataTemplate">
-            <Grid Background="Transparent" BorderBrush="Red" BorderThickness="1">
-                
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
-
-                <StackPanel Grid.Column="0" >
-                    <TextBlock Text="{Binding name}"/>
-                    <TextBlock Text="{Binding addr}"/>
-                    <TextBlock Text="{Binding opentime}"/>
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <bahavior:SendToEventRouterAction EventRoutingName="NavigateToDetailByEventRouter" 
-                                                          EventData="{Binding}"                                           
-                                                          IsEventFiringToAllBaseClassesChannels="True"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </StackPanel>
-                --><!--<Button Background="Yellow" Grid.Column="1" Content="按钮" Command="{Binding ElementName=lvMall, Path=DataContext.CommandShowOneMallInMap}"/>--><!--
-                <Button Background="Yellow" Grid.Column="1" Content="按钮">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <bahavior:SendToEventRouterAction EventData="{Binding}"
-                                                              IsEventFiringToAllBaseClassesChannels="True"
-                                                              EventRoutingName="ListButtonClickByEventRouter"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </Button>
-
-            </Grid>
-        </DataTemplate>-->
-
+         
         <DataTemplate x:Key="CityListDataTemplate">
             <Grid>
                 <TextBlock Text="{Binding name}"/>
@@ -70,29 +39,34 @@
                                                           EventData="{Binding}"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>-->
-                
+
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition MinWidth="48"/>
-                    <ColumnDefinition />
+                    <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <!--<Button Grid.Column="0" HorizontalAlignment="Center">
                     <Button.Content>
                         <TextBlock FontFamily="Segoe MDL2 Assets" Text="{Binding IconText}" FontSize="24"/>
                     </Button.Content>
                 </Button>-->
-                <TextBlock Grid.Column="0" HorizontalAlignment="Center" FontFamily="Segoe MDL2 Assets" Text="{Binding Icon}" FontSize="24"/>
-                 <Border Grid.Column="1" >
+
+                <TextBlock FontFamily="Segoe MDL2 Assets"  Grid.Column="0" HorizontalAlignment="Center" Text="{Binding Icon}" FontSize="24"/>
+                <Border Grid.Column="1" >
                     <TextBlock Text="{Binding Label}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Border>
             </Grid>
         </DataTemplate>
-
+         
     </Page.Resources>
-    <Grid>
-        
-        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="240" CompactPaneLength="80" Background="Brown" PaneBackground="Red" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
+    <Grid Margin="0,0,0,0" >
+        <interactivity:Interaction.Behaviors>
+            <core:EventTriggerBehavior x:Name="Loaded">
+                <core:InvokeCommandAction Command="{Binding CommandGridLoaded}"/>
+            </core:EventTriggerBehavior>
+        </interactivity:Interaction.Behaviors>
+        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="100" CompactPaneLength="50" Background="Brown" PaneBackground="Red" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
             <SplitView.Pane>
-                <Grid >
+                <Grid>
                     <Grid.RowDefinitions>
                         <RowDefinition Height="Auto"/>
                         <RowDefinition Height="*"/>
@@ -106,19 +80,19 @@
                         <Button Content="&#xE700;" FontFamily="Segoe MDL2 Assets" Grid.Column="0" HorizontalAlignment="Center" Command="{Binding CommandHamburgClick}"/>
                     </Grid>
                     <Grid Grid.Row="1" Background="DarkOrchid">
-                        <ListView Visibility="Visible" ItemTemplate="{StaticResource PaneListDataTemplate}" 
-                              ItemsSource="{Binding PaneDownList}"
-                              Grid.Row="2"
+                        <ListView Grid.Row="2"
+                              ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                              ItemsSource="{Binding PaneDownList}" 
                               SelectedItem="{Binding SelectedPaneDownItem, Mode=TwoWay}"
                               SelectionMode="Single"
                               IsItemClickEnabled="False"
                               SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
                               Background="Gray">
-                            <ItemsPanelTemplate>
+                            <!--<ItemsPanelTemplate>
                                 <ItemsPanelTemplate>
                                     <StackPanel Orientation="Horizontal"/>
                                 </ItemsPanelTemplate>
-                            </ItemsPanelTemplate>
+                            </ItemsPanelTemplate>-->
 
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
@@ -126,54 +100,56 @@
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
                         </ListView>
-                    </Grid> 
+                    </Grid>
+                    <Button Grid.Row="2" Content="设置" Command="{Binding CommandGoToSettingPage}" VerticalAlignment="Bottom"/>
                 </Grid>
             </SplitView.Pane>
-            
+
             <SplitView.Content>
-                <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid>
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="*"/>
-                        </Grid.ColumnDefinitions>
-                        <TextBlock x:Name="tbAppName" FontSize="24" Text="{StaticResource AppName}" VerticalAlignment="Center"/>
-                        <AutoSuggestBox ItemsSource="{Binding AutoSuggests}" 
-                                        UpdateTextOnSelect="True" 
+                <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+                    <RelativePanel Visibility="{Binding MainVisibility}" x:Name="rpMain" Background="BurlyWood">
+                        <Grid x:Name="topGrid" Width="500" RelativePanel.AlignRightWithPanel="True">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="Auto"/>
+                                <ColumnDefinition Width="*"/>
+                            </Grid.ColumnDefinitions>
+                            <TextBlock Grid.Column="0" x:Name="tbAppName" FontSize="24" Text="{StaticResource AppName}" VerticalAlignment="Center"/>
+                            <AutoSuggestBox  Grid.Column="1" 
+                                x:Name="autoSuggestBox"
+                                        ItemsSource="{Binding AutoSuggests}" 
                                         TextMemberPath ="name"
-                                        PlaceholderText="请输入要搜索的关键词" 
-                                        QueryIcon="Find" 
-                                        Grid.Column="1" 
-                                        GotFocus="AutoSuggestBox_GotFocus"
+                                        PlaceholderText="搜索"  
+                                        
                                         Text="{Binding AutoSuggestText, Mode=TwoWay}"
-                                        HorizontalAlignment="Stretch">
-                            <AutoSuggestBox.ItemTemplate>
-                                <DataTemplate>
-                                    <TextBlock Text="{Binding name, Mode=TwoWay}"/>
-                                </DataTemplate>
-                            </AutoSuggestBox.ItemTemplate>
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="TextChanged">
-                                    <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionTextChange}"/>
-                                </core:EventTriggerBehavior>
-                                <core:EventTriggerBehavior EventName="QuerySubmitted">
-                                    <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionSubmitted}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                        </AutoSuggestBox>
-                    </Grid>
-                    <StackPanel Grid.Row="1" Orientation="Horizontal">
-                        <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{Binding SupportCities[0].name}" />
-                        <ComboBox CompositeMode="MinBlend" Background="IndianRed" BorderThickness="0" HorizontalAlignment="Center" x:Name="cbCity" 
-                                SelectedIndex="{Binding SelectedCityIndex}"
-                                   SelectedItem="{Binding SelectedCity, Mode=TwoWay}" ItemsSource="{Binding SupportCities}"
-                              ItemTemplate="{StaticResource CityListDataTemplate}">
+                                        HorizontalAlignment="Stretch" QueryIcon="Find" >
+                                <AutoSuggestBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding name}"/>
+                                    </DataTemplate>
+                                </AutoSuggestBox.ItemTemplate>
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="TextChanged">
+                                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionTextChange}"/>
+                                    </core:EventTriggerBehavior>
+                                    <core:EventTriggerBehavior EventName="QuerySubmitted">
+                                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionSubmitted}"/>
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                            </AutoSuggestBox>
+                        </Grid>
+                        <ComboBox
+                                  RelativePanel.Below="topGrid"
+                                  RelativePanel.AlignRightWith="topGrid"  
+                                  CompositeMode="MinBlend" 
+                                  Background="IndianRed"
+                                  BorderThickness="0"  
+                                  HorizontalAlignment="Stretch"
+                                  x:Name="cbCity"  
+                                  SelectedIndex="{Binding SelectedCityIndex}"
+                                  SelectedItem="{Binding SelectedCity, Mode=TwoWay}" 
+                                  ItemsSource="{Binding SupportCities}"
+                                  ItemTemplate="{StaticResource CityListDataTemplate}">
                             <!--<interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <bahavior:SendToEventRouterAction EventRoutingName="CitySelectedChangedEvent"
@@ -186,125 +162,108 @@
                                     <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
-                            
+
                         </ComboBox>
-                        <Button Visibility="Collapsed" Content="(地图模式)显示所有"  HorizontalAlignment="Right" VerticalAlignment="Top" >
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="Tapped">
-                                    <core:InvokeCommandAction Command="{Binding CommandShowAllMallInMap}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                        </Button>
-                        <!--<ListView ItemTemplate="{StaticResource PaneListDataTemplate}" 
-                              ItemsSource="{Binding PaneDownList}"
-                              Grid.Row="2"
-                              SelectedItem="{Binding SelectedPaneDownItem, Mode=TwoWay}"
-                              SelectionMode="Single"
-                              IsItemClickEnabled="False"
-                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
-                              Background="Gray">
-                            <ItemsPanelTemplate>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsPanelTemplate>
+                        <Frame
+                            x:Name="frameSplitContent"
+                            Background="Yellow" 
+                            
+                            RelativePanel.Below="cbCity"
+                            RelativePanel.AlignRightWithPanel="True"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            mvvm:StageManager.Beacon="frameMain"/>
+                    </RelativePanel>
 
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="SelectionChanged">
-                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}" CommandParameter="{Binding SelectedPaneDownItem}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                        </ListView>-->
-                    </StackPanel>
-
-                    <Frame  Visibility="Visible"
-                           Grid.Row="2" 
-                           x:Name="frameSplitContent"
-                           Background="Yellow"
-                           mvvm:StageManager.Beacon="frameMain"/>
-
-                    <!--Get All Malls-->
-                    <!--<ListView Visibility="Collapsed" x:Name="lvMall" 
-                          Background="Blue" 
-                          Grid.Row="3" 
-                          IsItemClickEnabled="True"
-                          ItemsSource="{Binding MallList}"
-                          ItemTemplate="{StaticResource MallListDataTemplate}"
-                          SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}">-->
-                        <!--<interactivity:Interaction.Behaviors>-->
-                            <!--<core:EventTriggerBehavior EventName="ItemClick">
-                                <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick, ConverterParameter={Binding SelectedMallIndex}}"/>
-                            </core:EventTriggerBehavior>-->
-                        <!--</interactivity:Interaction.Behaviors>-->
-                    <!--</ListView>-->
-
-                    <!--<Grid Visibility="Collapsed" Grid.Row="3" Height="400" VerticalAlignment="Bottom" >
-                        <maps:MapControl x:Name="maps"                
-                                    Visibility="Collapsed"
-                                     MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
-                                    
-                        </maps:MapControl>
-                        <usercontrol:MapUserControl MapUserElements="{Binding MapElements}" MapUserCenter="{Binding MapCenter}" MapUserZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}">
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="ElementClickEvent">
-                                    <core:InvokeCommandAction Command="{Binding CommandMapItemClick}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                        </usercontrol:MapUserControl>
-                        <Border Background="Red" Height="40" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    </Grid>-->
-                </Grid>
+                    <Frame Navigated="frameAtals_Navigated"
+                           Visibility="{Binding FrameVisibility}"
+                           x:Name="frameAtals"
+                           Background="Blue"   
+                           
+                           mvvm:StageManager.Beacon="frameSub">
+                        
+                    </Frame>
+                </RelativePanel>
             </SplitView.Content>
         </SplitView>
+        
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
-                <!--<VisualState x:Name="WideState">
+                <VisualState x:Name="WideState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="800"/>
+                        <AdaptiveTrigger MinWindowWidth="720"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="splitView.IsPaneOpen" Value="true"/>
-                        <Setter Target="splitView.PaneBackground" Value="Blue"/>
-                        <Setter Target="splitView.DisplayMode" Value="CompactInline"/>
-                    </VisualState.Setters>
-                </VisualState>-->
-                <!--<VisualState x:Name="MiddleState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="700"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
-                        <Setter Target="splitView.PaneBackground" Value="Yellow"/>
-                        <Setter Target="splitView.DisplayMode" Value="CompactInline"/>
-                    </VisualState.Setters>
-                </VisualState>-->
-                <!--<VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="700"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
-                        <Setter Target="splitView.PaneBackground" Value="Green"/>
-                        <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
-                    </VisualState.Setters>
-                </VisualState>-->
-                <!--普通为红  超过600 变绿  超过700 变黄  超过800 变蓝-->
- 
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="600"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                    <!--SplitView-->
-                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
-                        <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
-                        <Setter Target="commandBar.Visibility" Value="Collapsed"/>
 
+                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
+                        <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
+ 
                         <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
 
                         <Setter Target="commandBar.Visibility" Value="Collapsed"/>
+
+                        <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="rpMain.MaxWidth" Value="500"/>
+                        <Setter Target="rpMain.Visibility" Value="Visible"/>
+
+                        <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+
                     </VisualState.Setters>
                 </VisualState>
+ 
+                <VisualState x:Name="MiddleState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="501"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--SplitView-->
+                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
+                        <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
+ 
+                        <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
+
+                        <Setter Target="commandBar.Visibility" Value="Collapsed"/>
+
+                        <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="rpMain.MaxWidth" Value="500"/>
+                        <Setter Target="rpMain.Visibility" Value="Visible"/>
+
+                        
+                        <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+
+                    </VisualState.Setters>
+                </VisualState>
+                
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+
+                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
+                        <Setter Target="splitView.DisplayMode" Value="Overlay"/>
+
+                        <Setter Target="tbAppName.Visibility" Value="Visible"/>
+
+                        <Setter Target="commandBar.Visibility" Value="Visible"/>
+
+                        <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="rpMain.MaxWidth" Value="500"/>
+
+                        <Setter Target="frameAtals.MinWidth" Value="500"/>
+                        <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+  
+                    </VisualState.Setters>
+                </VisualState>
+
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
@@ -319,7 +278,8 @@
         <CommandBar x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
             <CommandBar.PrimaryCommands >
                 <AppBarButton x:Name="appbarLocate" Icon="Map" Label="定位" Command="{Binding CommandGeoLocation}"/>
-                <AppBarButton x:Name="appbarRefresh" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>
+                <AppBarButton x:Name="appbarSetting" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>
+                <AppBarButton x:Name="appbarRefresh" Icon="Refresh" Label="刷新" Command="{Binding CommandGoToRefreshPage}"/>
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="五星好评呀" Foreground="Black"/>

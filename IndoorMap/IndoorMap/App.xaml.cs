@@ -106,6 +106,7 @@ namespace IndoorMap
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
         CommonHelper.HostPage.CanGoBack
     ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+
         }
 
         /// <summary>

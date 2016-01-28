@@ -20,6 +20,7 @@ using IndoorMap.Controller;
 using Windows.Phone.UI.Input;
 using IndoorMap.Helpers;
 using Windows.UI.Core;
+using Windows.Graphics.Display;
 
 namespace IndoorMap.ViewModels
 {
@@ -30,6 +31,7 @@ namespace IndoorMap.ViewModels
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property。
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
         public Building Building;
+        public WebView webView;
 
         public AtlasPage_Model()
         {
@@ -43,7 +45,20 @@ namespace IndoorMap.ViewModels
             Building = buiding;
             Title = Building.name; 
         }
-         
+
+        //AutoSuggestText
+        public String AutoSuggestText
+        {
+            get { return _AutoSuggestTextLocator(this).Value; }
+            set { _AutoSuggestTextLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property String AutoSuggestText Setup
+        protected Property<String> _AutoSuggestText = new Property<String> { LocatorFunc = _AutoSuggestTextLocator };
+        static Func<BindableBase, ValueContainer<String>> _AutoSuggestTextLocator = RegisterContainerLocator<String>("AutoSuggestText", model => model.Initialize("AutoSuggestText", ref model._AutoSuggestText, ref _AutoSuggestTextLocator, _AutoSuggestTextDefaultValueFactory));
+        static Func<BindableBase, String> _AutoSuggestTextDefaultValueFactory = m => string.Empty;
+        #endregion
+
+
         public String Title
         {
             get { return _TitleLocator(this).Value; }
@@ -55,7 +70,19 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, String> _TitleDefaultValueFactory = m => m.GetType().Name;
         #endregion
 
-         
+        //ShopSearchList
+        public List<ShopSearchResultModel> ShopSearchList
+        {
+            get { return _ShopSearchListLocator(this).Value; }
+            set { _ShopSearchListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property         List<ShopSearchResultModel> ShopSearchList Setup
+        protected Property<        List<ShopSearchResultModel>> _ShopSearchList = new Property<        List<ShopSearchResultModel>> { LocatorFunc = _ShopSearchListLocator };
+        static Func<BindableBase, ValueContainer<        List<ShopSearchResultModel>>> _ShopSearchListLocator = RegisterContainerLocator<        List<ShopSearchResultModel>>("ShopSearchList", model => model.Initialize("ShopSearchList", ref model._ShopSearchList, ref _ShopSearchListLocator, _ShopSearchListDefaultValueFactory));
+        static Func<BindableBase,         List<ShopSearchResultModel>> _ShopSearchListDefaultValueFactory = m => new List<ShopSearchResultModel>();
+        #endregion
+
+
         #region Life Time Event Handling
 
         ///// <summary>
@@ -140,9 +167,9 @@ namespace IndoorMap.ViewModels
                             //Todo: Add NavigateToAbout logic here, or                  
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
 
-                            WebView webView = e.EventArgs.Parameter as WebView;
+                            vm.webView = e.EventArgs.Parameter as WebView;
                             string param = vm.GetInvokeParamsInJson();
-                            await webView.InvokeScriptAsync("StartInit", new string[] { param});
+                            await vm.webView.InvokeScriptAsync("StartInit", new string[] { param, "480"});
 
                         }
                     )
@@ -211,7 +238,68 @@ namespace IndoorMap.ViewModels
                 return cmdmdl;
             };
         #endregion
-        
+
+
+        //CommandAutoSuggestionTextChange
+          public CommandModel<ReactiveCommand, String> CommandAutoSuggestionTextChange
+        {
+            get { return _CommandAutoSuggestionTextChangeLocator(this).Value; }
+            set { _CommandAutoSuggestionTextChangeLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandAutoSuggestionTextChange Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionTextChange = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandAutoSuggestionTextChangeLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandAutoSuggestionTextChangeLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandAutoSuggestionTextChange", model => model.Initialize("CommandAutoSuggestionTextChange", ref model._CommandAutoSuggestionTextChange, ref _CommandAutoSuggestionTextChangeLocator, _CommandAutoSuggestionTextChangeDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionTextChangeDefaultValueFactory =
+            model =>
+            {
+                var resource = "AutoSuggestionTextChange";           // Command resource  
+                var commandId = "AutoSuggestionTextChange";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
+                            //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+
+                            if (string.IsNullOrEmpty(vm.AutoSuggestText)) return;
+
+                            string searchUrl = string.Format(@"http://ap.atlasyun.com/poi/shop/search?kw={0}&bid={1}", vm.AutoSuggestText, vm.Building.id);
+                            FormAction action = new FormAction(searchUrl);
+                            action.isShowWaitingPanel = true;
+                            action.Run();
+                            action.FormActionCompleted += (result, tag)=>
+                            {
+                                vm.PraseSearchResult(result, tag);
+                            };
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+
+        private async void PraseSearchResult(string result, string tag)
+        {
+            ShopSearchList = JsonConvert.DeserializeObject<List<ShopSearchResultModel>>(result);
+            if (ShopSearchList.Any())
+            {
+                var shop = ShopSearchList.First();
+                await webView.InvokeScriptAsync("SetFloor", new string[] { shop.floor.name });
+                
+             }
+        }
+
+        #endregion
+
+
         #endregion
 
 

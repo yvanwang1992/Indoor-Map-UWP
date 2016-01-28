@@ -21,12 +21,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Windows.Phone.UI.Input;
-using IndoorMap.Models;
-using Newtonsoft.Json;
-using Windows.UI.Popups;
-using IndoorMap.Controller;
-using Windows.UI.Core;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -35,31 +29,32 @@ namespace IndoorMap
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class SettingPage : MVVMPage
+    public sealed partial class AtlasBlankPage : MVVMPage
     {
-        public SettingPage()
+
+        public AtlasBlankPage()
         {
 
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
-                StrongTypeViewModel = this.ViewModel as SettingPage_Model;
+                StrongTypeViewModel = this.ViewModel as AtlasBlankPage_Model;
             });
-            this.NavigationCacheMode = NavigationCacheMode.Required;
-
-            StrongTypeViewModel = this.ViewModel as SettingPage_Model;
-
-
+            StrongTypeViewModel = this.ViewModel as AtlasBlankPage_Model;
         }
 
-        public SettingPage_Model StrongTypeViewModel
+
+        public AtlasBlankPage_Model StrongTypeViewModel
         {
-            get { return (SettingPage_Model)GetValue(StrongTypeViewModelProperty); }
+            get { return (AtlasBlankPage_Model)GetValue(StrongTypeViewModelProperty); }
             set { SetValue(StrongTypeViewModelProperty, value); }
         }
 
         public static readonly DependencyProperty StrongTypeViewModelProperty =
-                    DependencyProperty.Register("StrongTypeViewModel", typeof(SettingPage_Model), typeof(SettingPage), new PropertyMetadata(null));
+                    DependencyProperty.Register("StrongTypeViewModel", typeof(AtlasBlankPage_Model), typeof(AtlasBlankPage), new PropertyMetadata(null));
+
+
+
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -70,5 +65,6 @@ namespace IndoorMap
         {
             base.OnNavigatedFrom(e);
         }
+
     }
 }

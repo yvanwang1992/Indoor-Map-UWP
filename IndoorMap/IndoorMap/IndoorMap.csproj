@@ -90,9 +90,13 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
+    <None Include="ClassDiagram1.cd" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AtlasBlankPage.xaml.cs">
+      <DependentUpon>AtlasBlankPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AtlasPage.xaml.cs">
       <DependentUpon>AtlasPage.xaml</DependentUpon>
     </Compile>
@@ -114,14 +118,17 @@
     <Compile Include="Models\FloorJSModel.cs" />
     <Compile Include="Models\MallModel.cs" />
     <Compile Include="Models\PaneModel.cs" />
+    <Compile Include="Models\SaveDataModel.cs" />
     <Compile Include="Models\ShopDetailsModel.cs" />
     <Compile Include="Models\ShopModel.cs" />
+    <Compile Include="Models\ShopSearchResultModel.cs" />
     <Compile Include="SettingPage.xaml.cs">
       <DependentUpon>SettingPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="ShopDetailsPage.xaml.cs">
       <DependentUpon>ShopDetailsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Startups\AtlasBlankPage.cs" />
     <Compile Include="Startups\AtlasPage.cs" />
     <Compile Include="Startups\SettingPage.cs" />
     <Compile Include="Startups\ShopDetailsPage.cs" />
@@ -136,6 +143,7 @@
     <Compile Include="UserControls\MapUserControl.xaml.cs">
       <DependentUpon>MapUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\AtlasBlankPage_Model.cs" />
     <Compile Include="ViewModels\AtlasPage_Model.cs" />
     <Compile Include="ViewModels\MainPage_Model.cs" />
     <Compile Include="Startups\StartupFunctions.cs" />
@@ -167,6 +175,7 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
+    <Content Include="Resources\SplashScreenImage.jpg" />
     <Content Include="VenueAtlasPage.html" />
   </ItemGroup>
   <ItemGroup>
@@ -174,6 +183,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="AtlasBlankPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AtlasPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

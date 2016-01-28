@@ -17,22 +17,12 @@
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">My Application</x:String>
         <vm:SubMallListPage_Model x:Key="DesignVM"/>
-
+        <!--<CollectionViewSource x:Name="cv_items" IsSourceGrouped="True"
+                              ItemsPath="MallList"
+                              Source="{Binding MallGroupList}"/>-->
 
         <DataTemplate x:Key="MallListDataTemplate">
-            <Grid Background="Transparent" BorderBrush="Red" BorderThickness="1">
-                <!--<interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="Tapped">
-                        <behavior:SendToEventRouterAction EventData="{Binding}"
-                                                              EventRoutingName="NavigateToDetailByEventRouter"
-                                                              IsEventFiringToAllBaseClassesChannels="True"/>
-                    </core:EventTriggerBehavior> 
-                </interactivity:Interaction.Behaviors>-->
-                <!--<interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="Tapped">
-                        <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick}" CommandParameter="{Binding}"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>-->
+            <Grid Background="Transparent" BorderBrush="Red" BorderThickness="1"> 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
@@ -42,7 +32,7 @@
                     <TextBlock Text="{Binding name}"/>
                     <TextBlock Text="{Binding addr}"/>
                     <TextBlock Text="{Binding opentime}"/>
-                    
+                    <TextBlock Text="{Binding district}"/>
                 </StackPanel>
 
                 <Button Content="查看" Background="Yellow" Grid.Column="1">
@@ -51,18 +41,10 @@
                             <core:InvokeCommandAction Command="{Binding ElementName=lvMall, Path=DataContext.CommandShowOneMallInMap}" CommandParameter="{Binding}"/>
                         </core:EventTriggerBehavior>
                     </interactivity:Interaction.Behaviors>
-                </Button> 
-                 <!--<Button Background="Yellow" Grid.Column="1" Content="按钮">
-                    <interactivity:Interaction.Behaviors>
-                        <core:EventTriggerBehavior EventName="Tapped">
-                            <behavior:SendToEventRouterAction EventData="{Binding}"
-                                                              IsEventFiringToAllBaseClassesChannels="True"
-                                                              EventRoutingName="ListButtonClickByEventRouter"/>
-                        </core:EventTriggerBehavior>
-                    </interactivity:Interaction.Behaviors>
-                </Button>-->
+                </Button>  
             </Grid>
         </DataTemplate>
+ 
     </Page.Resources>
 
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
@@ -77,7 +59,7 @@
         <!--Get All Malls-->
         <Grid>
             <ListView   x:Name="lvMall" 
-                        Height="400"
+                        VerticalAlignment="Stretch"
                         Background="LightCoral" 
                         Grid.Row="3" 
                         IsItemClickEnabled="True"
@@ -90,6 +72,7 @@
                         <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick}"/>
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
+ 
             </ListView>
             <!--SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}">-->
 

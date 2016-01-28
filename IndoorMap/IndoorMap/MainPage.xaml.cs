@@ -23,6 +23,7 @@ using Windows.UI.Popups;
 using IndoorMap.Controller;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using Windows.UI.Core;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -42,7 +43,10 @@ namespace IndoorMap
             });
             StrongTypeViewModel = this.ViewModel as MainPage_Model;
             this.NavigationCacheMode = NavigationCacheMode.Required;
+            SystemNavigationManager.GetForCurrentView().BackRequested += MainPage_BackRequested;
+            this.SizeChanged += MainPage_SizeChanged;
         }
+
 
         public MainPage_Model StrongTypeViewModel
         {
@@ -58,9 +62,47 @@ namespace IndoorMap
             base.OnNavigatedTo(e); 
         }
 
-        private void AutoSuggestBox_GotFocus(object sender, RoutedEventArgs e)
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
-            splitView.IsPaneOpen = false;
+            base.OnNavigatedFrom(e);
+        }
+
+        private void frameAtals_Navigated(object sender, NavigationEventArgs e)
+        {
+ 
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                this.frameAtals.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+         }
+
+
+        private void MainPage_BackRequested(object sender, BackRequestedEventArgs e)
+        {
+            if (frameAtals.CanGoBack)
+            {
+                if (this.ActualWidth <= 500 && frameAtals.BackStackDepth == 1)
+                {
+                    StrongTypeViewModel.MainVisibility = Visibility.Visible;
+                }
+                frameAtals.GoBack();
+                e.Handled = true;
+            }
+        }
+
+
+        private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (this.ActualWidth <= 500)
+            {
+                if (frameAtals.CanGoBack)
+                {
+                    StrongTypeViewModel.MainVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    StrongTypeViewModel.MainVisibility = Visibility.Visible;
+                }
+
+            }
         }
     }
 }

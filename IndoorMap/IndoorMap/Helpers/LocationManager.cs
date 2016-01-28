@@ -74,6 +74,14 @@ namespace IndoorMap.Helpers
                 return null;
         }
 
+        public static async Task<String> GetDistrictUsingLocation(Geopoint point)
+        {
+            MapLocationFinderResult result = await MapLocationFinder.FindLocationsAtAsync(point);
+            MapLocation location = result.Locations[0] as MapLocation;
+            string district = location.Address.District;
+            return district;
+        }
+
         private void PraseCityUsingBaiduAPI(Geocoordinate geocoordinate)
         {
             string url = string.Format(@"http://api.map.baidu.com/geocoder/v2/?ak={0}&location={1},{2}&output=json",

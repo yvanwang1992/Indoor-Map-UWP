@@ -61,12 +61,6 @@ namespace IndoorMap
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-        }
-
-        private async void Button_Click(object sender, RoutedEventArgs e)
-        { 
-            string param = StrongTypeViewModel.GetInvokeParamsInJson();
-            await webView.InvokeScriptAsync("StartInit", new string[] { param });
-        }
+        } 
     }
 }

@@ -1,8 +1,10 @@
-﻿using System;
+﻿using IndoorMap.Helpers;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.Devices.Geolocation;
 
 namespace IndoorMap.Models
 {
@@ -25,6 +27,7 @@ namespace IndoorMap.Models
         public string traffic { get; set; }
         public List<Building> buildings { get; set; }
         public List<string> catelogs { get; set; }
+        public string district { get; set; }
     }
 
     public class Building

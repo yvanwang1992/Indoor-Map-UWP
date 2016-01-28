@@ -27,13 +27,37 @@
         <Grid Background="CadetBlue">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
+            
+            <TextBlock x:Name="pageTitle" Text="{Binding Title}"  Grid.Column="1" 
+                         TextWrapping="NoWrap"/>
+            <AutoSuggestBox Grid.Row="1" 
+                            ItemsSource="{Binding AutoSuggests}" 
+                            UpdateTextOnSelect="True" 
+                            TextMemberPath ="name"
+                            PlaceholderText="请输入商铺" 
+                            QueryIcon="Find" 
+                            Grid.Column="1"  
+                            Text="{Binding AutoSuggestText, Mode=TwoWay}"
+                            HorizontalAlignment="Stretch" >
+                <AutoSuggestBox.ItemTemplate>
+                    <DataTemplate>
+                        <TextBlock Text="{Binding name, Mode=TwoWay}"/>
+                    </DataTemplate>
+                </AutoSuggestBox.ItemTemplate>
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="TextChanged">
+                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionTextChange}"/>
+                    </core:EventTriggerBehavior>
+                    <!--<core:EventTriggerBehavior EventName="QuerySubmitted">
+                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionSubmitted}"/>
+                    </core:EventTriggerBehavior>-->
+                </interactivity:Interaction.Behaviors>
+            </AutoSuggestBox>
 
-            <TextBlock x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            <Button Content="!!!!!再次加载" Click="Button_Click"/>
-            <WebView Grid.Row="1"  x:Name="webView"  Margin="10"
+            <WebView Grid.Row="2" Margin="10"  x:Name="webView"  
                      Source="ms-appx-web:///VenueAtlasPage.html">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="LoadCompleted">
