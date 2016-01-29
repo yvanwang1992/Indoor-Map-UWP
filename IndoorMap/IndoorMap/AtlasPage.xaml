@@ -34,22 +34,25 @@
             <TextBlock x:Name="pageTitle" Text="{Binding Title}"  Grid.Column="1" 
                          TextWrapping="NoWrap"/>
             <AutoSuggestBox Grid.Row="1" 
-                            ItemsSource="{Binding AutoSuggests}" 
+                            ItemsSource="{Binding ShopSearchList}" 
                             UpdateTextOnSelect="True" 
-                            TextMemberPath ="name"
-                            PlaceholderText="请输入商铺" 
+                            TextMemberPath ="ch_name"
+                            PlaceholderText="请输入需要查询的商铺" 
                             QueryIcon="Find" 
                             Grid.Column="1"  
                             Text="{Binding AutoSuggestText, Mode=TwoWay}"
                             HorizontalAlignment="Stretch" >
                 <AutoSuggestBox.ItemTemplate>
                     <DataTemplate>
-                        <TextBlock Text="{Binding name, Mode=TwoWay}"/>
+                        <StackPanel Orientation="Horizontal">
+                            <TextBlock Text="{Binding ch_name, Mode=TwoWay}"/>
+                            <TextBlock Text="{Binding floor.name, Mode=TwoWay}"/>
+                        </StackPanel> 
                     </DataTemplate>
                 </AutoSuggestBox.ItemTemplate>
                 <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="TextChanged">
-                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionTextChange}"/>
+                    <core:EventTriggerBehavior EventName="QuerySubmitted">
+                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionQuerySubmitted}"/>
                     </core:EventTriggerBehavior>
                     <!--<core:EventTriggerBehavior EventName="QuerySubmitted">
                         <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionSubmitted}"/>

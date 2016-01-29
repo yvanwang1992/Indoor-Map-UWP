@@ -76,10 +76,10 @@ namespace IndoorMap.ViewModels
             get { return _ShopSearchListLocator(this).Value; }
             set { _ShopSearchListLocator(this).SetValueAndTryNotify(value); }
         }
-        #region Property         List<ShopSearchResultModel> ShopSearchList Setup
-        protected Property<        List<ShopSearchResultModel>> _ShopSearchList = new Property<        List<ShopSearchResultModel>> { LocatorFunc = _ShopSearchListLocator };
-        static Func<BindableBase, ValueContainer<        List<ShopSearchResultModel>>> _ShopSearchListLocator = RegisterContainerLocator<        List<ShopSearchResultModel>>("ShopSearchList", model => model.Initialize("ShopSearchList", ref model._ShopSearchList, ref _ShopSearchListLocator, _ShopSearchListDefaultValueFactory));
-        static Func<BindableBase,         List<ShopSearchResultModel>> _ShopSearchListDefaultValueFactory = m => new List<ShopSearchResultModel>();
+        #region Property List<ShopSearchResultModel> ShopSearchList Setup
+        protected Property<List<ShopSearchResultModel>> _ShopSearchList = new Property<List<ShopSearchResultModel>> { LocatorFunc = _ShopSearchListLocator };
+        static Func<BindableBase, ValueContainer<List<ShopSearchResultModel>>> _ShopSearchListLocator = RegisterContainerLocator<List<ShopSearchResultModel>>("ShopSearchList", model => model.Initialize("ShopSearchList", ref model._ShopSearchList, ref _ShopSearchListLocator, _ShopSearchListDefaultValueFactory));
+        static Func<BindableBase, List<ShopSearchResultModel>> _ShopSearchListDefaultValueFactory = m => new List<ShopSearchResultModel>();
         #endregion
 
 
@@ -238,42 +238,60 @@ namespace IndoorMap.ViewModels
                 return cmdmdl;
             };
         #endregion
-
-
-        //CommandAutoSuggestionTextChange
-          public CommandModel<ReactiveCommand, String> CommandAutoSuggestionTextChange
+        
+        //CommandAutoSuggestionQuerySubmitted
+          public CommandModel<ReactiveCommand, String> CommandAutoSuggestionQuerySubmitted
         {
-            get { return _CommandAutoSuggestionTextChangeLocator(this).Value; }
-            set { _CommandAutoSuggestionTextChangeLocator(this).SetValueAndTryNotify(value); }
+            get { return _CommandAutoSuggestionQuerySubmittedLocator(this).Value; }
+            set { _CommandAutoSuggestionQuerySubmittedLocator(this).SetValueAndTryNotify(value); }
         }
-        #region Property CommandModel<ReactiveCommand, String> CommandAutoSuggestionTextChange Setup        
-        protected Property<CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionTextChange = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandAutoSuggestionTextChangeLocator };
-        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandAutoSuggestionTextChangeLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandAutoSuggestionTextChange", model => model.Initialize("CommandAutoSuggestionTextChange", ref model._CommandAutoSuggestionTextChange, ref _CommandAutoSuggestionTextChangeLocator, _CommandAutoSuggestionTextChangeDefaultValueFactory));
-        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionTextChangeDefaultValueFactory =
+        #region Property CommandModel<ReactiveCommand, String> CommandAutoSuggestionQuerySubmitted Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionQuerySubmitted = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandAutoSuggestionQuerySubmittedLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandAutoSuggestionQuerySubmittedLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandAutoSuggestionQuerySubmitted", model => model.Initialize("CommandAutoSuggestionQuerySubmitted", ref model._CommandAutoSuggestionQuerySubmitted, ref _CommandAutoSuggestionQuerySubmittedLocator, _CommandAutoSuggestionQuerySubmittedDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionQuerySubmittedDefaultValueFactory =
             model =>
             {
-                var resource = "AutoSuggestionTextChange";           // Command resource  
-                var commandId = "AutoSuggestionTextChange";
+                var resource = "AutoSuggestionQuerySubmitted";           // Command resource  
+                var commandId = "AutoSuggestionQuerySubmitted";
                 var vm = CastToCurrentType(model);
                 var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
                 cmd.DoExecuteUIBusyTask(
                         vm,
                         async e =>
                         {
+
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
 
                             if (string.IsNullOrEmpty(vm.AutoSuggestText)) return;
 
-                            string searchUrl = string.Format(@"http://ap.atlasyun.com/poi/shop/search?kw={0}&bid={1}", vm.AutoSuggestText, vm.Building.id);
-                            FormAction action = new FormAction(searchUrl);
-                            action.isShowWaitingPanel = true;
-                            action.Run();
-                            action.FormActionCompleted += (result, tag)=>
+                            var args = e.EventArgs.Parameter as AutoSuggestBoxQuerySubmittedEventArgs;
+                            if (args.ChosenSuggestion != null)
                             {
-                                vm.PraseSearchResult(result, tag);
-                            };
+                                var selectedShop = (args.ChosenSuggestion as ShopSearchResultModel);
+                                if(selectedShop.ch_name == "未查询到结果")
+                                {
+                                    return;
+                                }
+
+                                await vm.webView.InvokeScriptAsync("SetFloor", new string[] { selectedShop.floor.name });
+                                await vm.webView.InvokeScriptAsync("MoveToPoiId", new string[] { selectedShop.id, "true" });
+                                await vm.webView.InvokeScriptAsync("SetWidth", new string[] { "100" });
+
+                                
+                            }
+                            else
+                            { 
+                                string searchUrl = string.Format(@"http://ap.atlasyun.com/poi/shop/search?kw={0}&bid={1}", vm.AutoSuggestText, vm.Building.id);
+                                FormAction action = new FormAction(searchUrl);
+                                action.isShowWaitingPanel = true;
+                                action.Run();
+                                action.FormActionCompleted += (result, tag) =>
+                                {
+                                    vm.PraseSearchResult(result, tag);
+                                };
+                            }
                         }
                     )
 
@@ -286,15 +304,18 @@ namespace IndoorMap.ViewModels
                 return cmdmdl;
             };
 
-        private async void PraseSearchResult(string result, string tag)
+        private void PraseSearchResult(string result, string tag)
         {
-            ShopSearchList = JsonConvert.DeserializeObject<List<ShopSearchResultModel>>(result);
-            if (ShopSearchList.Any())
+            var shopList = JsonConvert.DeserializeObject<List<ShopSearchResultModel>>(result);
+            if (shopList.Any())
             {
-                var shop = ShopSearchList.First();
-                await webView.InvokeScriptAsync("SetFloor", new string[] { shop.floor.name });
-                
+                ShopSearchList = shopList;
              }
+            else
+            {
+                //没有数据
+                ShopSearchList = new List<ShopSearchResultModel>() { new ShopSearchResultModel() { ch_name = "未查询到结果" } };
+            }
         }
 
         #endregion

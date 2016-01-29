@@ -164,10 +164,8 @@
                             </interactivity:Interaction.Behaviors>
 
                         </ComboBox>
-                        <Frame
+                        <Frame Height="600"
                             x:Name="frameSplitContent"
-                            Background="Yellow" 
-                            
                             RelativePanel.Below="cbCity"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignLeftWithPanel="True"
@@ -177,8 +175,7 @@
                     <Frame Navigated="frameAtals_Navigated"
                            Visibility="{Binding FrameVisibility}"
                            x:Name="frameAtals"
-                           Background="Blue"   
-                           
+                           Background="Blue"    
                            mvvm:StageManager.Beacon="frameSub">
                         
                     </Frame>
@@ -254,6 +251,7 @@
 
                         <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
                         <Setter Target="rpMain.MaxWidth" Value="500"/>
+                        
 
                         <Setter Target="frameAtals.MinWidth" Value="500"/>
                         <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>

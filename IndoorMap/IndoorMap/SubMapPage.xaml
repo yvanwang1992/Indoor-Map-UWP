@@ -28,10 +28,9 @@
             </TransitionCollection>
         </Grid.ChildrenTransitions>
 
-        <Grid >
+        <Grid> 
             <usercontrol:MapUserControl 
                 HorizontalAlignment="Stretch"
-                Height="500"
                 MapUserElements="{Binding MapElements}" 
                 MapUserCenter="{Binding MapCenter}" 
                 MapUserZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}">
@@ -41,6 +40,19 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </usercontrol:MapUserControl>
+            <Grid VerticalAlignment="Bottom" Visibility="{Binding SelectedItemVisibility}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Grid.Column="0"> 
+                    <TextBlock Text="{Binding SelectedMallItem.name}"/>
+                    <TextBlock Text="{Binding SelectedMallItem.addr}"/>
+                    <TextBlock Text="{Binding SelectedMallItem.opentime}"/> 
+                    <TextBlock Text="分类"/>
+                </StackPanel>
+                <Button Grid.Column="1" Content="查看室内地图" Command="{Binding CommandGoToAtalsPage}"/>
+            </Grid>
         </Grid>
     </Grid>
 </mvvm:MVVMPage>

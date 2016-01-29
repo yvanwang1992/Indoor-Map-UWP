@@ -9,9 +9,17 @@
     mc:Ignorable="d" >
 
     <Grid>
-        <maps:MapControl x:Name="maps" VerticalAlignment="Stretch"  MapElementClick="maps_MapElementClick" 
-                        MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
+        <maps:MapControl x:Name="maps" VerticalAlignment="Stretch" 
+                         TiltInteractionMode="GestureAndControl"
+                         MapElementClick="maps_MapElementClick"   
+                         LandmarksVisible="True"  
+                         MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
         </maps:MapControl>
-        <Border Background="Red" Height="40" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top"/>
+        <Border Background="Red" HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0,50,20,0">
+            <StackPanel>
+                <Button x:Name="btnStyle" Content="地图"  Click="btnStyle_Click"/>
+                <Button Content="定位" Tapped="Border_Tapped"/>
+            </StackPanel>
+        </Border> 
     </Grid>
 </UserControl>

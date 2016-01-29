@@ -9,19 +9,26 @@
 
     <script>
 
-        var sdk, floorlist
-        
+        var sdk, floorlist;
+         
         function SetFloor(floorid) {
             sdk.setFloor(floorid);
+         }
+        function MoveToPoiId(poiid, iszoomin) {
+            sdk.moveToPoiId(poiid, iszoomin); 
         }
-          
+
+        function SetWidth(width) {
+
+         }
+
         function StartInit(jsonFloors,screenwidth) {
             //对象数组
             floorlist = JSON.parse(jsonFloors);
             //[{ FloorB2: "539098c7b8604a3d36934658"},
             // { FloorB1: "539098c7b8604a3d3693463d" },
             // { Floor1: "539098c7b8604a3d369345ed" }]
-
+            
             var params = {
                 width: screenwidth,//dom.offsetWidth - padding,
                 height: screenwidth, //dom.offsetHeight - padding,
@@ -46,7 +53,8 @@
 
                 //实例化后默认回调函数
                 initCallback: function () {
-
+                    //var txt = document.getElementById("txt");
+                    //txt.innerText = sdk.geoScale.x;
                 },
                 //点击poi之后 返回其 name和id
                 poiClick: function (poi) {
@@ -56,11 +64,12 @@
                 //点击空白处  返回空白处坐标
                 layerClick: function (coords) {
                     //console.log(JSON.stringify(coords))
-                }
+                } 
             }
+             
+            sdk = new Atlas(params);
             
-            sdk = new Atlas(params) 
-        }
+        } 
     </script>
 </head>
 

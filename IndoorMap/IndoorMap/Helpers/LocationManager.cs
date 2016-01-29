@@ -117,8 +117,7 @@ namespace IndoorMap.Helpers
         // ee = (a^2 - b^2) / a^2;
         const double a = 6378245.0;
         const double ee = 0.00669342162296594323;
-
-
+         
         public static Geopoint TransformFromWorldlToMars(Geopoint wgPosition)
         {
             double wgLat = wgPosition.Position.Latitude;

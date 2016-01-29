@@ -696,7 +696,7 @@ namespace IndoorMap.ViewModels
                     HttpClientReturnCities(jsonCity.result);
                 }
             };
-            await StageManager["frameMain"].Show(SubMallListPageModel); 
+            await StageManager["frameMain"].Show(SubMallListPageModel);
         }
 
         private async void GetSupportMallList()
