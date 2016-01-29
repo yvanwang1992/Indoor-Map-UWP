@@ -19,7 +19,20 @@
         <x:String x:Key="AppName">室内地图</x:String>
         
         <vm:MainPage_Model x:Key="DesignVM"/>
-        
+
+        <Style x:Key="horizontalListViewStyle" TargetType="ListView">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
@@ -31,7 +44,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="PaneListDataTemplate">
-            <Grid Background="Green" HorizontalAlignment="Stretch">
+            <Grid HorizontalAlignment="Left" Background="Green">
                 <!--<interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Tapped">
                         <bahavior:SendToEventRouterAction EventRoutingName="SplitViewPaneItemClick"
@@ -64,52 +77,64 @@
                 <core:InvokeCommandAction Command="{Binding CommandGridLoaded}"/>
             </core:EventTriggerBehavior>
         </interactivity:Interaction.Behaviors>
-        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="100" CompactPaneLength="50" Background="Brown" PaneBackground="Red" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
+        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="100" CompactPaneLength="50" Background="Brown" PaneBackground="Red" DisplayMode="Inline" DataContext="{StaticResource DesignVM}" >
             <SplitView.Pane>
-                <Grid>
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
-                    <Grid Grid.Row="0" Background="DarkCyan">
-                        <Grid.ColumnDefinitions>
-                            <ColumnDefinition Width="*"/>
-                            <ColumnDefinition Width="3*"/>
-                        </Grid.ColumnDefinitions>
-                        <Button Content="&#xE700;" FontFamily="Segoe MDL2 Assets" Grid.Column="0" HorizontalAlignment="Center" Command="{Binding CommandHamburgClick}"/>
-                    </Grid>
-                    <Grid Grid.Row="1" Background="DarkOrchid">
-                        <ListView Grid.Row="2"
+                <RelativePanel>
+
+                    <Button RelativePanel.AlignTopWithPanel="True"
+                            x:Name="btnHamburg"
+                            Content="&#xE700;"
+                            FontFamily="Segoe MDL2 Assets"
+                            HorizontalAlignment="Center" Command="{Binding CommandHamburgClick}"/>
+                    <ComboBox   x:Name="leftCbCity"
+                                  RelativePanel.Below="btnHamburg"
+                                  RelativePanel.AlignLeftWithPanel="True"  
+                                  CompositeMode="MinBlend" 
+                                  Background="IndianRed"
+                                  BorderThickness="0"  
+                                  HorizontalAlignment="Stretch"
+                                  SelectedIndex="{Binding SelectedCityIndex}"
+                                  SelectedItem="{Binding SelectedCity, Mode=TwoWay}" 
+                                  ItemsSource="{Binding SupportCities}"
+                                  ItemTemplate="{StaticResource CityListDataTemplate}">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="SelectionChanged">
+                                <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+
+                    </ComboBox>
+  
+                        <ListView 
+                              RelativePanel.Below="leftCbCity"
                               ItemTemplate="{StaticResource PaneListDataTemplate}" 
                               ItemsSource="{Binding PaneDownList}" 
-                              SelectedItem="{Binding SelectedPaneDownItem, Mode=TwoWay}"
                               SelectionMode="Single"
                               IsItemClickEnabled="False"
                               SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
-                              Background="Gray">
-                            <!--<ItemsPanelTemplate>
-                                <ItemsPanelTemplate>
-                                    <StackPanel Orientation="Horizontal"/>
-                                </ItemsPanelTemplate>
-                            </ItemsPanelTemplate>-->
-
+                              Background="Gray"> 
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
-                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}" CommandParameter="{Binding SelectedPaneDownItem}"/>
+                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
-                        </ListView>
-                    </Grid>
-                    <Button Grid.Row="2" Content="设置" Command="{Binding CommandGoToSettingPage}" VerticalAlignment="Bottom"/>
-                </Grid>
+                        </ListView> 
+                    <Button 
+                        RelativePanel.AlignBottomWithPanel="True"
+                        Content="设置"
+                            Command="{Binding CommandGoToSettingPage}" VerticalAlignment="Bottom"/>
+                
+                </RelativePanel>
             </SplitView.Pane>
 
             <SplitView.Content>
                 <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
                     <RelativePanel Visibility="{Binding MainVisibility}" x:Name="rpMain" Background="BurlyWood">
-                        <Grid x:Name="topGrid" Width="500" RelativePanel.AlignRightWithPanel="True">
+              
+                        <Grid x:Name="topGrid" Width="500"
+                              RelativePanel.AlignTopWithPanel="True"
+                              RelativePanel.AlignRightWithPanel="True">
                             <Grid.ColumnDefinitions>
                                 <ColumnDefinition Width="Auto"/>
                                 <ColumnDefinition Width="*"/>
@@ -138,6 +163,25 @@
                                 </interactivity:Interaction.Behaviors>
                             </AutoSuggestBox>
                         </Grid>
+                        <ListView
+                              RelativePanel.AlignHorizontalCenterWithPanel="True"
+                              RelativePanel.Below="topGrid"
+                              x:Name="lvHorizontal"
+                              ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                              ItemsSource="{Binding PaneDownList}" 
+                              SelectionMode="Single"
+                              IsItemClickEnabled="False"
+                              Style="{StaticResource horizontalListViewStyle}"
+                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
+                              Background="Gray">
+                             
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="SelectionChanged">
+                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                        </ListView>
+
                         <ComboBox
                                   RelativePanel.Below="topGrid"
                                   RelativePanel.AlignRightWith="topGrid"  
@@ -150,13 +194,6 @@
                                   SelectedItem="{Binding SelectedCity, Mode=TwoWay}" 
                                   ItemsSource="{Binding SupportCities}"
                                   ItemTemplate="{StaticResource CityListDataTemplate}">
-                            <!--<interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="SelectionChanged">
-                                    <bahavior:SendToEventRouterAction EventRoutingName="CitySelectedChangedEvent"
-                                                          IsEventFiringToAllBaseClassesChannels="True"
-                                                          EventData="{Binding SelectedCity}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>-->
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
@@ -197,6 +234,7 @@
                         <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
 
                         <Setter Target="commandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="lvHorizontal.Visibility" Value="Collapsed"/>
 
                         <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
                         <Setter Target="rpMain.MaxWidth" Value="500"/>
@@ -222,6 +260,7 @@
                         <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
 
                         <Setter Target="commandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="lvHorizontal.Visibility" Value="Collapsed"/>
 
                         <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
                         <Setter Target="rpMain.MaxWidth" Value="500"/>
@@ -248,7 +287,7 @@
                         <Setter Target="tbAppName.Visibility" Value="Visible"/>
 
                         <Setter Target="commandBar.Visibility" Value="Visible"/>
-
+                        <Setter Target="lvHorizontal.Visibility" Value="Visible"/>
                         <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
                         <Setter Target="rpMain.MaxWidth" Value="500"/>
                         

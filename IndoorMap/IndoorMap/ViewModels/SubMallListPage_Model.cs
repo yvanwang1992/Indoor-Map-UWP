@@ -104,8 +104,8 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandShowOneMallInMapDefaultValueFactory =
             model =>
             {
-                var resource = "ShowAllMallInMap";           // Command resource  
-                var commandId = "ShowAllMallInMap";
+                var resource = "ShowOneMallInMap";           // Command resource  
+                var commandId = "ShowOneMallInMap";
                 var vm = CastToCurrentType(model);
                 var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
                 cmd.DoExecuteUIBusyTask(

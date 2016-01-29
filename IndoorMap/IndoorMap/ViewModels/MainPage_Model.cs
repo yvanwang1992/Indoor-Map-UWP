@@ -67,13 +67,17 @@ namespace IndoorMap.ViewModels
         {
             if (IsInDesignMode)
             {
+                IsHumburgShow = true;
+
                 InitPaneListData();
             }
-            subMapPageModel = new SubMapPage_Model();
-            subMallListPageModel = new SubMallListPage_Model();
+            else
+            {
+                subMapPageModel = new SubMapPage_Model();
+                subMallListPageModel = new SubMallListPage_Model();
 
-            InitPaneListData();
-
+                InitPaneListData();
+            }
         }
 
         #region --------------------   Properties   -------------------
@@ -418,12 +422,13 @@ namespace IndoorMap.ViewModels
                                 if (mall.name == NoResultString) return;
 
                                 vm.AutoSuggestText = mall.name;
-                                if (vm.SelectedPaneDownItem.type == PanelItemType.PanelItemMallList)
+                                var selectedItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
+                                if (selectedItem.type == PanelItemType.PanelItemMallList)
                                 {
                                     MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "NavigateToDetailByEventRouter", true);
                                     MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "MarkSearchedMall", true);
                                 }
-                                else if (vm.SelectedPaneDownItem.type == PanelItemType.PanelItemMap)
+                                else if (selectedItem.type == PanelItemType.PanelItemMap)
                                 {
 
                                 }
@@ -603,7 +608,7 @@ namespace IndoorMap.ViewModels
                         async e =>
                         {
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            var navItem = e.EventArgs.Parameter as PaneModel;
+                            var navItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
                             MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, navItem, typeof(PaneModel), "SplitViewPaneItemClick", true);
                         }
                     )
@@ -784,7 +789,7 @@ namespace IndoorMap.ViewModels
             PaneDownList.Add(new PaneModel() { Label = "列表", Icon = "\xEA37", type = PanelItemType.PanelItemMallList }); 
             PaneDownList.Add(new PaneModel() { Label = "地图", Icon = "\xE774", type = PanelItemType.PanelItemMap }); 
 
-            SelectedPaneDownItem = PaneDownList.FirstOrDefault(); 
+            //SelectedPaneDownItem = PaneDownList.FirstOrDefault(); 
         }
 
         //Subscribe
@@ -821,10 +826,10 @@ namespace IndoorMap.ViewModels
                     var item = e.EventData as MallModel;
                     if (item != null)
                     {
-                        Debug.WriteLine(SelectedPaneDownIndex + ":" + SelectedPaneDownItem.Label);
+                        //Debug.WriteLine(SelectedPaneDownIndex + ":" + SelectedPaneDownItem.Label);
                         
                         SelectedPaneDownIndex = 1;
-                        SelectedPaneDownItem = PaneDownList[1];
+                        //SelectedPaneDownItem = PaneDownList[1];
                         
                     }
                 }
