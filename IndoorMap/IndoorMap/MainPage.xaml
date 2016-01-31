@@ -13,11 +13,11 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:bahavior="using:MVVMSidekick.Behaviors"
     mc:Ignorable="d">
-    
+
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">室内地图</x:String>
-        
+
         <vm:MainPage_Model x:Key="DesignVM"/>
 
         <Style x:Key="horizontalListViewStyle" TargetType="ListView">
@@ -36,7 +36,7 @@
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
-         
+
         <DataTemplate x:Key="CityListDataTemplate">
             <Grid>
                 <TextBlock Text="{Binding name}"/>
@@ -44,7 +44,7 @@
         </DataTemplate>
 
         <DataTemplate x:Key="PaneListDataTemplate">
-            <Grid HorizontalAlignment="Left" Background="Green">
+            <Grid Width="150">
                 <!--<interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="Tapped">
                         <bahavior:SendToEventRouterAction EventRoutingName="SplitViewPaneItemClick"
@@ -54,7 +54,7 @@
                 </interactivity:Interaction.Behaviors>-->
 
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition MinWidth="48"/>
+                    <ColumnDefinition Width="48"/>
                     <ColumnDefinition/>
                 </Grid.ColumnDefinitions>
                 <!--<Button Grid.Column="0" HorizontalAlignment="Center">
@@ -63,13 +63,18 @@
                     </Button.Content>
                 </Button>-->
 
-                <TextBlock FontFamily="Segoe MDL2 Assets"  Grid.Column="0" HorizontalAlignment="Center" Text="{Binding Icon}" FontSize="24"/>
-                <Border Grid.Column="1" >
-                    <TextBlock Text="{Binding Label}" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                <TextBlock FontFamily="Segoe MDL2 Assets"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Icon}" FontSize="24"/>
+                <Border Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <TextBlock Text="{Binding Label}" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center"/>
                 </Border>
             </Grid>
         </DataTemplate>
-         
+        <DataTemplate x:Key="PaneListDataHorizontalTemplate">
+            <Border Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <TextBlock Text="{Binding Label}" FontSize="18" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            </Border>
+        </DataTemplate>
+
     </Page.Resources>
     <Grid Margin="0,0,0,0" >
         <interactivity:Interaction.Behaviors>
@@ -77,15 +82,19 @@
                 <core:InvokeCommandAction Command="{Binding CommandGridLoaded}"/>
             </core:EventTriggerBehavior>
         </interactivity:Interaction.Behaviors>
-        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="100" CompactPaneLength="50" Background="Brown" PaneBackground="Red" DisplayMode="Inline" DataContext="{StaticResource DesignVM}" >
+        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="150" CompactPaneLength="50" Background="Brown" PaneBackground="{ThemeResource ThemeColor}" DisplayMode="Inline" DataContext="{StaticResource DesignVM}" >
             <SplitView.Pane>
                 <RelativePanel>
 
                     <Button RelativePanel.AlignTopWithPanel="True"
                             x:Name="btnHamburg"
+                            Height="48"
+                            Width="48"
+                            FontSize="24"
                             Content="&#xE700;"
                             FontFamily="Segoe MDL2 Assets"
                             HorizontalAlignment="Center" Command="{Binding CommandHamburgClick}"/>
+                     
                     <ComboBox   x:Name="leftCbCity"
                                   RelativePanel.Below="btnHamburg"
                                   RelativePanel.AlignLeftWithPanel="True"  
@@ -104,26 +113,27 @@
                         </interactivity:Interaction.Behaviors>
 
                     </ComboBox>
-  
-                        <ListView 
+
+                    <ListView 
                               RelativePanel.Below="leftCbCity"
+                              RelativePanel.AlignLeftWithPanel="True"
+                              RelativePanel.AlignRightWithPanel="True"
                               ItemTemplate="{StaticResource PaneListDataTemplate}" 
                               ItemsSource="{Binding PaneDownList}" 
                               SelectionMode="Single"
                               IsItemClickEnabled="False"
-                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
-                              Background="Gray"> 
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="SelectionChanged">
-                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
-                        </ListView> 
+                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}">
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="SelectionChanged">
+                                <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </ListView>
                     <Button 
                         RelativePanel.AlignBottomWithPanel="True"
                         Content="设置"
                             Command="{Binding CommandGoToSettingPage}" VerticalAlignment="Bottom"/>
-                
+
                 </RelativePanel>
             </SplitView.Pane>
 
@@ -131,7 +141,7 @@
                 <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
 
                     <RelativePanel Visibility="{Binding MainVisibility}" x:Name="rpMain" Background="BurlyWood">
-              
+
                         <Grid x:Name="topGrid" Width="500"
                               RelativePanel.AlignTopWithPanel="True"
                               RelativePanel.AlignRightWithPanel="True">
@@ -164,17 +174,16 @@
                             </AutoSuggestBox>
                         </Grid>
                         <ListView
-                              RelativePanel.AlignHorizontalCenterWithPanel="True"
+                              RelativePanel.AlignLeftWithPanel="True"
                               RelativePanel.Below="topGrid"
                               x:Name="lvHorizontal"
-                              ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                              ItemTemplate="{StaticResource PaneListDataHorizontalTemplate}" 
                               ItemsSource="{Binding PaneDownList}" 
                               SelectionMode="Single"
                               IsItemClickEnabled="False"
                               Style="{StaticResource horizontalListViewStyle}"
-                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}"
-                              Background="Gray">
-                             
+                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}">
+
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
@@ -182,14 +191,13 @@
                             </interactivity:Interaction.Behaviors>
                         </ListView>
 
-                        <ComboBox
+                        <ComboBox x:Name="cbCity"  
                                   RelativePanel.Below="topGrid"
                                   RelativePanel.AlignRightWith="topGrid"  
                                   CompositeMode="MinBlend" 
                                   Background="IndianRed"
                                   BorderThickness="0"  
                                   HorizontalAlignment="Stretch"
-                                  x:Name="cbCity"  
                                   SelectedIndex="{Binding SelectedCityIndex}"
                                   SelectedItem="{Binding SelectedCity, Mode=TwoWay}" 
                                   ItemsSource="{Binding SupportCities}"
@@ -201,9 +209,9 @@
                             </interactivity:Interaction.Behaviors>
 
                         </ComboBox>
-                        <Frame Height="600"
+                        <Frame
                             x:Name="frameSplitContent"
-                            RelativePanel.Below="cbCity"
+                            RelativePanel.Below="lvHorizontal"
                             RelativePanel.AlignRightWithPanel="True"
                             RelativePanel.AlignLeftWithPanel="True"
                             mvvm:StageManager.Beacon="frameMain"/>
@@ -214,12 +222,12 @@
                            x:Name="frameAtals"
                            Background="Blue"    
                            mvvm:StageManager.Beacon="frameSub">
-                        
+
                     </Frame>
                 </RelativePanel>
             </SplitView.Content>
         </SplitView>
-        
+
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
                 <VisualState x:Name="WideState">
@@ -230,8 +238,9 @@
 
                         <Setter Target="splitView.IsPaneOpen" Value="false"/>
                         <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
- 
+
                         <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
+                        <Setter Target="cbCity.Visibility" Value="Collapsed"/>
 
                         <Setter Target="commandBar.Visibility" Value="Collapsed"/>
                         <Setter Target="lvHorizontal.Visibility" Value="Collapsed"/>
@@ -247,7 +256,7 @@
 
                     </VisualState.Setters>
                 </VisualState>
- 
+
                 <VisualState x:Name="MiddleState">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="501"/>
@@ -256,9 +265,9 @@
                         <!--SplitView-->
                         <Setter Target="splitView.IsPaneOpen" Value="false"/>
                         <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
- 
-                        <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
 
+                        <Setter Target="tbAppName.Visibility" Value="Collapsed"/>
+                        <Setter Target="cbCity.Visibility" Value="Collapsed"/>
                         <Setter Target="commandBar.Visibility" Value="Collapsed"/>
                         <Setter Target="lvHorizontal.Visibility" Value="Collapsed"/>
 
@@ -266,7 +275,7 @@
                         <Setter Target="rpMain.MaxWidth" Value="500"/>
                         <Setter Target="rpMain.Visibility" Value="Visible"/>
 
-                        
+
                         <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
                         <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
                         <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
@@ -274,7 +283,7 @@
 
                     </VisualState.Setters>
                 </VisualState>
-                
+
                 <VisualState x:Name="NarrowState">
                     <VisualState.StateTriggers>
                         <AdaptiveTrigger MinWindowWidth="0"/>
@@ -285,19 +294,19 @@
                         <Setter Target="splitView.DisplayMode" Value="Overlay"/>
 
                         <Setter Target="tbAppName.Visibility" Value="Visible"/>
-
+                        <Setter Target="cbCity.Visibility" Value="Visible"/>
                         <Setter Target="commandBar.Visibility" Value="Visible"/>
                         <Setter Target="lvHorizontal.Visibility" Value="Visible"/>
                         <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
                         <Setter Target="rpMain.MaxWidth" Value="500"/>
-                        
+
 
                         <Setter Target="frameAtals.MinWidth" Value="500"/>
                         <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
                         <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
                         <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
                         <Setter Target="frameAtals.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
-  
+
                     </VisualState.Setters>
                 </VisualState>
 
@@ -314,9 +323,9 @@
     <mvvm:MVVMPage.BottomAppBar>
         <CommandBar x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
             <CommandBar.PrimaryCommands >
-                <AppBarButton x:Name="appbarLocate" Icon="Map" Label="定位" Command="{Binding CommandGeoLocation}"/>
-                <AppBarButton x:Name="appbarSetting" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>
+                <AppBarButton Visibility="Collapsed" x:Name="appbarLocate" Icon="Map" Label="定位" Command="{Binding CommandGeoLocation}"/>
                 <AppBarButton x:Name="appbarRefresh" Icon="Refresh" Label="刷新" Command="{Binding CommandGoToRefreshPage}"/>
+                <AppBarButton x:Name="appbarSetting" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
                 <AppBarButton Label="五星好评呀" Foreground="Black"/>
@@ -324,5 +333,4 @@
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </mvvm:MVVMPage.BottomAppBar>
-
 </mvvm:MVVMPage>

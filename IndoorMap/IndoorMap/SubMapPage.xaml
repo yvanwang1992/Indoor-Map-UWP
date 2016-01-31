@@ -30,6 +30,7 @@
 
         <Grid> 
             <usercontrol:MapUserControl 
+                 Height="600"
                 HorizontalAlignment="Stretch"
                 MapUserElements="{Binding MapElements}" 
                 MapUserCenter="{Binding MapCenter}" 
@@ -40,7 +41,7 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </usercontrol:MapUserControl>
-            <Grid VerticalAlignment="Bottom" Visibility="{Binding SelectedItemVisibility}">
+            <Grid VerticalAlignment="Bottom" Background="{ThemeResource ThemeColor}" Visibility="{Binding SelectedItemVisibility}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>

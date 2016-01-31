@@ -166,7 +166,6 @@
     <None Include="IndoorMap_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Assets\delete_auto.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />
@@ -176,6 +175,8 @@
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
     <Content Include="Resources\SplashScreenImage.jpg" />
+    <Content Include="Resources\TappedIcon.png" />
+    <Content Include="Resources\UnTappedIcon.png" />
     <Content Include="VenueAtlasPage.html" />
   </ItemGroup>
   <ItemGroup>

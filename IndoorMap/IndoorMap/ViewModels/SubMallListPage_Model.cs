@@ -65,7 +65,7 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<int>> _SelectedIndexLocator = RegisterContainerLocator<int>("SelectedIndex", model => model.Initialize("SelectedIndex", ref model._SelectedIndex, ref _SelectedIndexLocator, _SelectedIndexDefaultValueFactory));
         static Func<BindableBase, int> _SelectedIndexDefaultValueFactory = m => -1;
         #endregion
-         
+
         //MallList
         public List<MallModel> MallList
         {
@@ -176,26 +176,26 @@ namespace IndoorMap.ViewModels
         #endregion
 
 
-        private void GetSupportMallListAction()
-        {
-            string url = string.Format(@"http://op.juhe.cn/atlasyun/mall/list?key={0}&cityid={1}", Configmanager.INDOORMAP_APPKEY, AppSettings.Intance.SelectedCityId);
-            FormAction action = new FormAction(url);
-            action.isShowWaitingPanel = true;
-            action.viewModel = this;
-            action.Run();
-            action.FormActionCompleted += (result, ee) =>
-            {
-                JsonMallModel jsonMall = JsonConvert.DeserializeObject<JsonMallModel>(result);
-                if (jsonMall.reason == "成功" || jsonMall.reason == "successed")
-                {
-                    HttpClientReturnMallList(jsonMall.result);
-                }
-            };
-        }
-        public void HttpClientReturnMallList(List<MallModel> jsonMall)
-        {
-            this.MallList = jsonMall;
-        }
+        //private void GetSupportMallListAction()
+        //{
+        //    string url = string.Format(@"http://op.juhe.cn/atlasyun/mall/list?key={0}&cityid={1}", Configmanager.INDOORMAP_APPKEY, AppSettings.Intance.SelectedCityId);
+        //    FormAction action = new FormAction(url);
+        //    action.isShowWaitingPanel = true;
+        //    action.viewModel = this;
+        //    action.Run();
+        //    action.FormActionCompleted += (result, ee) =>
+        //    {
+        //        JsonMallModel jsonMall = JsonConvert.DeserializeObject<JsonMallModel>(result);
+        //        if (jsonMall.reason == "成功" || jsonMall.reason == "successed")
+        //        {
+        //            HttpClientReturnMallList(jsonMall.result);
+        //        }
+        //    };
+        //}
+        //public void HttpClientReturnMallList(List<MallModel> jsonMall)
+        //{
+        //    this.MallList = jsonMall;
+        //}
 
         private void SuscribeCommand()
         {
@@ -210,6 +210,19 @@ namespace IndoorMap.ViewModels
                     this.MallList = mallList;
 
                     //分组
+                    MallGroupList.Clear();
+                    List<MallGroup> tempMallGroupList = new List<MallGroup>();
+                    var groups = MallList.GroupBy(n => n.district);
+                    foreach (IGrouping<string, MallModel> group in groups)
+                    {
+                        tempMallGroupList.Add(new MallGroup()
+                        {
+                            District = group.Key,
+                            MallList = group.Select(x => x).ToList()
+                        });
+                    }
+                    MallGroupList = tempMallGroupList;
+
 
                 }
                 ).DisposeWith(this);
@@ -221,7 +234,6 @@ namespace IndoorMap.ViewModels
                 e =>
                 {
                     var mall = e.EventData as MallModel;
-                    SelectedIndex = MallList.IndexOf(mall);
                 }
                 ).DisposeWith(this);
         }

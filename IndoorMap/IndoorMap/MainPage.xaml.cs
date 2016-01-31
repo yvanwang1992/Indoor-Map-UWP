@@ -24,6 +24,7 @@ using IndoorMap.Controller;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -59,7 +60,14 @@ namespace IndoorMap
          
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
-            base.OnNavigatedTo(e); 
+            base.OnNavigatedTo(e);
+            //////StatusBar
+            ////if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            ////{
+            ////    StatusBar statusBar = StatusBar.GetForCurrentView();
+            ////    await statusBar.ShowAsync();
+            ////    statusBar.BackgroundColor = Colors.Red;
+            ////}
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -68,8 +76,7 @@ namespace IndoorMap
         }
 
         private void frameAtals_Navigated(object sender, NavigationEventArgs e)
-        {
- 
+        { 
             SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
                 this.frameAtals.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
          }

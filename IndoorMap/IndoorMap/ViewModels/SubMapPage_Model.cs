@@ -27,8 +27,8 @@ namespace IndoorMap.ViewModels
     [DataContract]
     public class SubMapPage_Model : ViewModelBase<SubMapPage_Model>
     {
-        static RandomAccessStreamReference TappedIcon = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/StoreLogo.png"));
-        static RandomAccessStreamReference UnTappedIcon = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/delete_auto.png"));
+        static RandomAccessStreamReference TappedIcon = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Resources/TappedIcon.png"));
+        static RandomAccessStreamReference UnTappedIcon = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Resources/UnTappedIcon.png"));
 
         static Geopoint defaultGeopoint = new Geopoint(new BasicGeoposition() { Latitude = 28.23, Longitude = 117.02 });
         static Double defaultZoomLevel = 4;

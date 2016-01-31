@@ -1,4 +1,5 @@
 ﻿using IndoorMap.Helpers;
+using IndoorMap.Models;
 using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
@@ -24,6 +25,13 @@ using Windows.UI.Xaml.Shapes;
 
 namespace IndoorMap.UserControls
 {
+    public enum MapOptionItemType
+    {
+        MapOptionItemGridPerspective,
+        MapOptionItemGPS,
+        MapOptionItemLayer
+    }
+
     public class MapElementClickItemEventArgs
     {
         public MapElementClickEventArgs args;
@@ -35,12 +43,21 @@ namespace IndoorMap.UserControls
         public delegate void MapElementClickHandler(MapControl sender, MapElementClickItemEventArgs args);
         public event MapElementClickHandler ElementClickEvent;
 
+        public List<PaneModel> MapOptionList { get; set; }
+
         public MapUserControl()
         {
             this.InitializeComponent();
             maps.Style = MapStyle.Road;
+
+            //所有的应该用同一个PaneModel类   以后更改
+            MapOptionList = new List<PaneModel>();
+            MapOptionList.Add(new PaneModel() { Label = "倾斜", Icon = "\xE809" });
+            MapOptionList.Add(new PaneModel() { Label = "定位", Icon = "\xE1D2" });
+            MapOptionList.Add(new PaneModel() { Label = "视图", Icon = "\xE81E" });
+
         }
-         
+
         public int MapUserZoomLevel
         {
             get { return (int)GetValue(MapUserZoomLevelProperty); }
@@ -68,7 +85,7 @@ namespace IndoorMap.UserControls
 
         // Using a DependencyProperty as the backing store for MapUserCenter.  This enables animation, styling, binding, etc...
         public static readonly DependencyProperty MapUserCenterProperty =
-            DependencyProperty.Register("MapUserCenter", typeof(Geopoint), typeof(MapUserControl), new PropertyMetadata(new Geopoint(new BasicGeoposition() { }), (sender,args)=> 
+            DependencyProperty.Register("MapUserCenter", typeof(Geopoint), typeof(MapUserControl), new PropertyMetadata(new Geopoint(new BasicGeoposition() { }), (sender, args) =>
             {
                 MapUserControl mapUser = sender as MapUserControl;
                 mapUser.ChangeCenter();
@@ -76,7 +93,7 @@ namespace IndoorMap.UserControls
 
         private void ChangeCenter()
         {
-            maps.Center = MapUserCenter; 
+            maps.Center = MapUserCenter;
         }
 
         //Map Element
@@ -103,10 +120,10 @@ namespace IndoorMap.UserControls
         }
 
         public void AddMapElementInMap()
-        { 
+        {
             foreach (var element in MapUserElements)
             {
-                maps.MapElements.Add(element);    
+                maps.MapElements.Add(element);
             }
         }
 
@@ -141,14 +158,15 @@ namespace IndoorMap.UserControls
 
             });
 
-            
+
         }
 
-        private async void Border_Tapped(object sender, TappedRoutedEventArgs e)
-        { 
+        private async void Location()
+        {
             var position = await LocationManager.GetPosition();
             if (position != null)
             {
+                maps.Children.Clear();
                 var markerLocation = LocationMarker();
                 maps.Children.Add(markerLocation);
                 var marsPosition = LocationManager.TransformFromWorldlToMars(position.Coordinate.Point);
@@ -166,7 +184,7 @@ namespace IndoorMap.UserControls
         private static UIElement LocationMarker()
         {
             Canvas marker = new Canvas();
-            Ellipse outer = new Ellipse() { Height = 25, Width = 25};
+            Ellipse outer = new Ellipse() { Height = 25, Width = 25 };
             outer.Fill = new SolidColorBrush(Color.FromArgb(255, 240, 240, 240));
             outer.Margin = new Thickness(-12.5, -12.5, 0, 0);
 
@@ -193,15 +211,35 @@ namespace IndoorMap.UserControls
         //        btn.Content = maps.Style.ToString();
         //        await Task.Delay(5000);
         //    } 
-        //}
-
-        private void btnStyle_Click(object sender, RoutedEventArgs e)
+        //} 
+        bool isTilt = false;
+        private async void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
-            if (maps.Style == MapStyle.Road)
-                maps.Style = MapStyle.Aerial;
-            else
-                maps.Style = MapStyle.Road;
+            var model = (sender as Button).DataContext as PaneModel;
+            switch (model.Label)
+            {
+                case "倾斜":
+                    if (!isTilt)//Not Tilt
+                    {
+                        await maps.TryTiltAsync(70);
+                        isTilt = true;
+                    }
+                    else
+                    {
+                        await maps.TryTiltAsync(-70);
+                        isTilt = false;
+                    }
+                    break;
+                case "定位":
+                    Location();
+                    break;
+                case "视图":
+                    if (maps.Style == MapStyle.Road)
+                        maps.Style = MapStyle.Aerial;
+                    else
+                        maps.Style = MapStyle.Road;
+                    break;
+            }
         }
- 
     }
 }

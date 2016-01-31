@@ -10,7 +10,9 @@ using Windows.ApplicationModel.Activation;
 using Windows.Foundation;
 using Windows.Foundation.Collections;
 using Windows.Phone.UI.Input;
+using Windows.UI;
 using Windows.UI.Core;
+using Windows.UI.ViewManagement;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Controls.Primitives;
@@ -59,12 +61,12 @@ namespace IndoorMap
             }
             //Visual BackButton
             SystemNavigationManager.GetForCurrentView().BackRequested += (sender, eventArgs) => { BackRequested(eventArgs); };
-
+             
 
 #if DEBUG
             if (System.Diagnostics.Debugger.IsAttached)
             {
-                this.DebugSettings.EnableFrameRateCounter = true;
+               // this.DebugSettings.EnableFrameRateCounter = true;
             }
 #endif
             //Init MVVM-Sidekick Navigations:

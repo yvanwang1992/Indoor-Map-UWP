@@ -8,6 +8,24 @@
 
     <Application.Resources>
         <helpers:AppSettings x:Key="AppSettings"/>
+
+        <SolidColorBrush  x:Key="ThemeColor" Color="#5AA5F0"/>
+        
+        <!--ZoomViewOut Grid-->
+        <DataTemplate x:Key="MallGridDataTemplate">
+            <Grid Margin="1">
+                <Border Background="{ThemeResource ThemeColor}">
+                    <TextBlock FontSize="20" Margin="10" Foreground="White" Text="{Binding Group.District}"></TextBlock>
+                </Border>
+            </Grid>
+        </DataTemplate>
+        
+        <!--Icon Button-->
+        <Style TargetType="Button" x:Key="SegoeIconButton">
+            <Setter Property="FontFamily" Value="Segoe MDL2 Assets"/>
+            <Setter Property="FontSize" Value="20"/>
+        </Style>
+        
     </Application.Resources>
     
 </Application>

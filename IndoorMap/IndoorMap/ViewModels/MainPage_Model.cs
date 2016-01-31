@@ -423,21 +423,21 @@ namespace IndoorMap.ViewModels
 
                                 vm.AutoSuggestText = mall.name;
                                 var selectedItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
-                                if (selectedItem.type == PanelItemType.PanelItemMallList)
-                                {
+                                //if (selectedItem.type == PanelItemType.PanelItemMallList)
+                                //{
                                     MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "NavigateToDetailByEventRouter", true);
                                     MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "MarkSearchedMall", true);
-                                }
-                                else if (selectedItem.type == PanelItemType.PanelItemMap)
-                                {
+                                //}
+                                //else if (selectedItem.type == PanelItemType.PanelItemMap)
+                                //{
 
-                                }
+                                //}
                             }
-                            //else
-                            //{
-                            //    vm.SearchMallFromInputKey();
-                                  //自己处理  
-                            //}
+                            else
+                            {
+                                vm.SearchMallFromInputKey();
+                                //自己处理
+                            }
                         }) 
                     .DoNotifyDefaultEventRouter(vm, commandId)
                     .Subscribe()
@@ -787,7 +787,7 @@ namespace IndoorMap.ViewModels
         public void InitPaneListData()
         {
             PaneDownList.Add(new PaneModel() { Label = "列表", Icon = "\xEA37", type = PanelItemType.PanelItemMallList }); 
-            PaneDownList.Add(new PaneModel() { Label = "地图", Icon = "\xE774", type = PanelItemType.PanelItemMap }); 
+            PaneDownList.Add(new PaneModel() { Label = "地图", Icon = "\xE128", type = PanelItemType.PanelItemMap }); 
 
             //SelectedPaneDownItem = PaneDownList.FirstOrDefault(); 
         }

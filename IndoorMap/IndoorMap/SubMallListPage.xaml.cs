@@ -32,8 +32,7 @@ namespace IndoorMap
     public sealed partial class SubMallListPage : MVVMPage
     {
         public SubMallListPage()
-        {
-
+        { 
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
@@ -41,8 +40,9 @@ namespace IndoorMap
             });
             StrongTypeViewModel = this.ViewModel as SubMallListPage_Model;
 
-            this.NavigationCacheMode = NavigationCacheMode.Required;
-        }
+            //this.NavigationCacheMode = NavigationCacheMode.Required;
+
+         }
 
 
         public SubMallListPage_Model StrongTypeViewModel
@@ -53,13 +53,12 @@ namespace IndoorMap
 
         public static readonly DependencyProperty StrongTypeViewModelProperty =
                     DependencyProperty.Register("StrongTypeViewModel", typeof(SubMallListPage_Model), typeof(SubMallListPage), new PropertyMetadata(null));
-
-
-
-
+         
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            //Groups.Source = StrongTypeViewModel.MallGroupList;
+
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)

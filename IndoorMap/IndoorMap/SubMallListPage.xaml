@@ -11,31 +11,30 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:behavior="using:MVVMSidekick.Behaviors"
+    xmlns:converter="using:IndoorMap.Helpers"
     mc:Ignorable="d">
 
     <Page.Resources>
+        <!--Converter-->
+        <converter:OpenTimeConverter x:Key="OpenTimeConverter"/>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">My Application</x:String>
         <vm:SubMallListPage_Model x:Key="DesignVM"/>
-        <!--<CollectionViewSource x:Name="cv_items" IsSourceGrouped="True"
-                              ItemsPath="MallList"
-                              Source="{Binding MallGroupList}"/>-->
-
+        
         <DataTemplate x:Key="MallListDataTemplate">
-            <Grid Background="Transparent" BorderBrush="Red" BorderThickness="1"> 
+            <Grid Background="Transparent" BorderBrush="Gray" BorderThickness="0,0,0,1"> 
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <StackPanel Grid.Column="0" >
-                    <TextBlock Text="{Binding name}"/>
-                    <TextBlock Text="{Binding addr}"/>
-                    <TextBlock Text="{Binding opentime}"/>
-                    <TextBlock Text="{Binding district}"/>
+                <StackPanel Grid.Column="0" Margin="5">
+                    <TextBlock Text="{Binding name}" FontFamily="微软雅黑" FontSize="19"/>
+                    <TextBlock Text="{Binding addr}"  FontFamily="微软雅黑" FontSize="15"/>
+                    <TextBlock Text="{Binding opentime, Converter={StaticResource OpenTimeConverter}}" FontFamily="微软雅黑" FontSize="14"/>
                 </StackPanel>
 
-                <Button Content="查看" Background="Yellow" Grid.Column="1">
+                <Button Content="&#xE1C4;"  Margin="0,0,20,0"  FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Column="1">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Tapped">
                             <core:InvokeCommandAction Command="{Binding ElementName=lvMall, Path=DataContext.CommandShowOneMallInMap}" CommandParameter="{Binding}"/>
@@ -44,10 +43,16 @@
                 </Button>  
             </Grid>
         </DataTemplate>
- 
+        
+        <CollectionViewSource x:Name="Groups"
+                              ItemsPath="MallList" 
+                              Source="{Binding ElementName=rootGrid,Path=DataContext.MallGroupList}"
+                              IsSourceGrouped="True"/>
+
     </Page.Resources>
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
+    <Grid x:Name="rootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"     DataContext="{StaticResource DesignVM}"
+>
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
@@ -57,26 +62,49 @@
         <TextBlock Visibility="Collapsed" x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
         <!--Get All Malls-->
-        <Grid>
-            <ListView   x:Name="lvMall" 
+        <Grid Background="Transparent">
+            <SemanticZoom>
+                <!--列表-->
+                <SemanticZoom.ZoomedInView>
+                    <ListView   
+                        x:Name="lvMall" 
                         VerticalAlignment="Stretch"
-                        Background="LightCoral" 
                         Grid.Row="3" 
                         IsItemClickEnabled="True"
-                        SelectedIndex="{Binding SelectedIndex}"
-                        ItemsSource="{Binding MallList}"
+                        ItemsSource="{Binding Source={StaticResource Groups}}"
                         ItemTemplate="{StaticResource MallListDataTemplate}">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <Border >
+                                            <TextBlock Grid.Row="1" Foreground="{ThemeResource ThemeColor}" Text="{Binding District, Mode=TwoWay}" FontSize="26"  />
+                                        </Border>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
 
-                <interactivity:Interaction.Behaviors>
-                    <core:EventTriggerBehavior EventName="ItemClick">
-                        <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick}"/>
-                    </core:EventTriggerBehavior>
-                </interactivity:Interaction.Behaviors>
- 
-            </ListView>
-            <!--SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}">-->
-
-
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick}"/>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </ListView>
+                </SemanticZoom.ZoomedInView>
+                <!--点击后分组-->
+                <SemanticZoom.ZoomedOutView>
+                    <GridView HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Background="Transparent"
+                              Margin="20"
+                              ItemTemplate="{StaticResource MallGridDataTemplate}"
+                              ItemsSource="{Binding Source={StaticResource Groups},Path=CollectionGroups}">
+                    </GridView>
+                </SemanticZoom.ZoomedOutView>
+            </SemanticZoom>
+            
+            
         </Grid>
 
     </Grid>
