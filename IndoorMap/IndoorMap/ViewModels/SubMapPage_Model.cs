@@ -31,9 +31,9 @@ namespace IndoorMap.ViewModels
         static RandomAccessStreamReference UnTappedIcon = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Resources/UnTappedIcon.png"));
 
         static Geopoint defaultGeopoint = new Geopoint(new BasicGeoposition() { Latitude = 28.23, Longitude = 117.02 });
-        static Double defaultZoomLevel = 4;
+        static Double defaultZoomLevel = 10;
 
-         
+
         bool isLoadSuscribe = false;
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property。
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
@@ -42,11 +42,9 @@ namespace IndoorMap.ViewModels
             if (!isLoadSuscribe)
             {
                 SuscribeCommand();
-                isLoadSuscribe = true;
-                MapCenter = defaultGeopoint;
-                MapZoomLevel = defaultZoomLevel;
+                isLoadSuscribe = true; 
             }
-           
+
         }
 
         public String Title
@@ -125,6 +123,19 @@ namespace IndoorMap.ViewModels
         static Func<ObservableCollection<MapElement>> _MapElementsDefaultValueFactory = () => { return new ObservableCollection<MapElement>(); };
         #endregion
 
+        //MapLandMarkVisible
+        public bool MapLandMarkVisible
+        {
+            get { return _MapLandMarkVisibleLocator(this).Value; }
+            set { _MapLandMarkVisibleLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel MapLandMarkVisible Setup        
+        protected Property<bool> _MapLandMarkVisible = new Property<bool> { LocatorFunc = _MapLandMarkVisibleLocator };
+        static Func<BindableBase, ValueContainer<bool>> _MapLandMarkVisibleLocator = RegisterContainerLocator<bool>("MapLandMarkVisible", model => model.Initialize("MapLandMarkVisible", ref model._MapLandMarkVisible, ref _MapLandMarkVisibleLocator, _MapLandMarkVisibleDefaultValueFactory));
+        static Func<bool> _MapLandMarkVisibleDefaultValueFactory = () => { return (bool)AppSettings.Intance.GetAppSetting(AppSettings.LandmarksVisibleSettingKey); };
+        #endregion
+
+
         //MapZoomLevel
         public Double MapZoomLevel
         {
@@ -134,7 +145,7 @@ namespace IndoorMap.ViewModels
         #region Property Channel MapZoomLevel Setup        
         protected Property<Double> _MapZoomLevel = new Property<Double> { LocatorFunc = _MapZoomLevelLocator };
         static Func<BindableBase, ValueContainer<Double>> _MapZoomLevelLocator = RegisterContainerLocator<Double>("MapZoomLevel", model => model.Initialize("MapZoomLevel", ref model._MapZoomLevel, ref _MapZoomLevelLocator, _MapZoomLevelDefaultValueFactory));
-        static Func<Double> _MapZoomLevelDefaultValueFactory = () => { return 0; };
+        static Func<Double> _MapZoomLevelDefaultValueFactory = () => { return defaultZoomLevel; };
         #endregion
 
         //MapCenter GeopoGeopoint
@@ -146,10 +157,10 @@ namespace IndoorMap.ViewModels
         #region Property Channel MapCenter Setup        
         protected Property<Geopoint> _MapCenter = new Property<Geopoint> { LocatorFunc = _MapCenterLocator };
         static Func<BindableBase, ValueContainer<Geopoint>> _MapCenterLocator = RegisterContainerLocator<Geopoint>("MapCenter", model => model.Initialize("MapCenter", ref model._MapCenter, ref _MapCenterLocator, _MapCenterDefaultValueFactory));
-        static Func<Geopoint> _MapCenterDefaultValueFactory = () => { return new Geopoint(new BasicGeoposition() { }); };
+        static Func<Geopoint> _MapCenterDefaultValueFactory = () => { return defaultGeopoint; };
         #endregion
 
-         
+
         //CommandMapItemClick
         public CommandModel<ReactiveCommand, String> CommandMapItemClick
         {
@@ -172,9 +183,9 @@ namespace IndoorMap.ViewModels
                         {
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
-                            if(vm.MapElements.Count > 1)
+                            if (vm.MapElements.Count > 1)
                             {
-                                foreach(var element in vm.MapElements)
+                                foreach (var element in vm.MapElements)
                                 {
                                     (element as MapIcon).Image = UnTappedIcon;
                                 }
@@ -185,32 +196,32 @@ namespace IndoorMap.ViewModels
                             //foreach (var item in param.args.MapElements)
                             //{
                             var item = param.args.MapElements[0];
-                                if (item is MapPolygon)
-                                {
-                                    var poly = item as MapPolygon;
-                                    //Is MapPolygon
-                                }
-                                else if (item is MapPolyline)
-                                {
-                                    var poly = item as MapPolyline;
-                                    //Is MapPolyline
-                                }
-                                else if (item is MapIcon)
-                                {
-                                    var icon = item as MapIcon;
-                                    icon.Image = TappedIcon;
-                                
-                                    vm.SelectedMallItem = vm.MallList.Where(n => n.name == icon.Title).First();
-                                    vm.SelectedItemVisibility = Visibility.Visible;
-                                    //Is MapIcon
-                                    //
-                                    //MallModel mall = vm.MallList.FirstOrDefault(n => n.name == icon.Title);
-                                    //await vm.StageManager.DefaultStage.Show(new AtlasPage_Model(mall.buildings[0]));
-                                    //if(param.isMaxZoom)
-                                    //MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(null, vm.SelectedMallItem, typeof(MallModel), "NavigateToDetailByEventRouter", true);
+                            if (item is MapPolygon)
+                            {
+                                var poly = item as MapPolygon;
+                                //Is MapPolygon
+                            }
+                            else if (item is MapPolyline)
+                            {
+                                var poly = item as MapPolyline;
+                                //Is MapPolyline
+                            }
+                            else if (item is MapIcon)
+                            {
+                                var icon = item as MapIcon;
+                                icon.Image = TappedIcon;
 
-                                    vm.MapCenter = icon.Location;
-                                }
+                                vm.SelectedMallItem = vm.MallList.Where(n => n.name == icon.Title).First();
+                                vm.SelectedItemVisibility = Visibility.Visible;
+                                //Is MapIcon
+                                //
+                                //MallModel mall = vm.MallList.FirstOrDefault(n => n.name == icon.Title);
+                                //await vm.StageManager.DefaultStage.Show(new AtlasPage_Model(mall.buildings[0]));
+                                //if(param.isMaxZoom)
+                                //MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(null, vm.SelectedMallItem, typeof(MallModel), "NavigateToDetailByEventRouter", true);
+
+                                vm.MapCenter = icon.Location;
+                            }
                             //}
                         }
                     )
@@ -252,14 +263,14 @@ namespace IndoorMap.ViewModels
                             var position = await LocationManager.GetPosition();
                             if (position != null)
                             {
-                                AppSettings.Intance.LocationSetting = true;
+                                AppSettings.Intance.SetAppSetting(AppSettings.LocationSettingKey, true);
                                 //GetCity(position.Coordinate);
                                 vm.MapCenter = LocationManager.TransformFromWorldlToMars(position.Coordinate.Point);
                                 vm.MapZoomLevel = 15;
                             }
                             else
                             {
-                                AppSettings.Intance.LocationSetting = false;
+                                AppSettings.Intance.SetAppSetting(AppSettings.LocationSettingKey, false);
                             }
                         }
                     )
@@ -294,7 +305,7 @@ namespace IndoorMap.ViewModels
                 cmd.DoExecuteUIBusyTask(
                         vm,
                         async e =>
-                        { 
+                        {
                             //    await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
@@ -343,7 +354,7 @@ namespace IndoorMap.ViewModels
             SelectedMallItem = null;
             SelectedItemVisibility = Visibility.Collapsed;
 
-           var elements = new ObservableCollection<MapElement>();
+            var elements = new ObservableCollection<MapElement>();
 
             foreach (var item in MallList)
             {
@@ -384,74 +395,95 @@ namespace IndoorMap.ViewModels
                 .Where(x => x.EventName == "CitySelectedChangedEvent")
                 .Subscribe(
                 e =>
-                { 
+                {
                     var mallList = e.EventData as List<MallModel>;
                     this.MallList = mallList;
                     //Display all the icons in map
                     AddAllMallsInMap();
                 }
                 ).DisposeWith(this);
+
+            //MallList Item Tapped
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                .Where(x => x.EventName == "ChangeMapLandMarks")
+                .Subscribe(
+                e =>
+                {
+                    var visibile = (bool)e.EventData;
+                    MapLandMarkVisible = visibile;
+                }
+                ).DisposeWith(this);
+
+            //When Search One Mall, Mark It And go for it;
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                .Where(x => x.EventName == "MarkMapSearchedMall")
+                .Subscribe(
+                e =>
+                {
+                    var mall = e.EventData as MallModel;
+                    AddSelectedMallInMap(mall);
+                }
+                ).DisposeWith(this);
+
+            #region Life Time Event Handling
+
+            ///// <summary>
+            ///// This will be invoked by view when this viewmodel instance is set to view's ViewModel property. 
+            ///// </summary>
+            ///// <param name="view">Set target</param>
+            ///// <param name="oldValue">Value before set.</param>
+            ///// <returns>Task awaiter</returns>
+            //protected override Task OnBindedToView(MVVMSidekick.Views.IView view, IViewModel oldValue)
+            //{
+            //    return base.OnBindedToView(view, oldValue);
+            //}
+
+            ///// <summary>
+            ///// This will be invoked by view when this instance of viewmodel in ViewModel property is overwritten.
+            ///// </summary>
+            ///// <param name="view">Overwrite target view.</param>
+            ///// <param name="newValue">The value replacing </param>
+            ///// <returns>Task awaiter</returns>
+            //protected override Task OnUnbindedFromView(MVVMSidekick.Views.IView view, IViewModel newValue)
+            //{
+            //    return base.OnUnbindedFromView(view, newValue);
+            //}
+
+            ///// <summary>
+            ///// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
+            ///// </summary>
+            ///// <param name="view">View that firing Load event</param>
+            ///// <returns>Task awaiter</returns>
+            //protected async override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
+            //{ 
+            //    await base.OnBindedViewLoad(view);
+            //}
+
+            ///// <summary>
+            ///// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property
+            ///// </summary>
+            ///// <param name="view">View that firing Unload event</param>
+            ///// <returns>Task awaiter</returns>
+            //protected override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
+            //{
+            //    return base.OnBindedViewUnload(view);
+            //}
+
+            ///// <summary>
+            ///// <para>If dispose actions got exceptions, will handled here. </para>
+            ///// </summary>
+            ///// <param name="exceptions">
+            ///// <para>The exception and dispose infomation</para>
+            ///// </param>
+            //protected override async void OnDisposeExceptions(IList<DisposeInfo> exceptions)
+            //{
+            //    base.OnDisposeExceptions(exceptions);
+            //    await TaskExHelper.Yield();
+            //}
+
+            #endregion
+
         }
-
-        #region Life Time Event Handling
-
-        ///// <summary>
-        ///// This will be invoked by view when this viewmodel instance is set to view's ViewModel property. 
-        ///// </summary>
-        ///// <param name="view">Set target</param>
-        ///// <param name="oldValue">Value before set.</param>
-        ///// <returns>Task awaiter</returns>
-        //protected override Task OnBindedToView(MVVMSidekick.Views.IView view, IViewModel oldValue)
-        //{
-        //    return base.OnBindedToView(view, oldValue);
-        //}
-
-        ///// <summary>
-        ///// This will be invoked by view when this instance of viewmodel in ViewModel property is overwritten.
-        ///// </summary>
-        ///// <param name="view">Overwrite target view.</param>
-        ///// <param name="newValue">The value replacing </param>
-        ///// <returns>Task awaiter</returns>
-        //protected override Task OnUnbindedFromView(MVVMSidekick.Views.IView view, IViewModel newValue)
-        //{
-        //    return base.OnUnbindedFromView(view, newValue);
-        //}
-
-        ///// <summary>
-        ///// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
-        ///// </summary>
-        ///// <param name="view">View that firing Load event</param>
-        ///// <returns>Task awaiter</returns>
-        //protected async override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
-        //{ 
-        //    await base.OnBindedViewLoad(view);
-        //}
-
-        ///// <summary>
-        ///// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property
-        ///// </summary>
-        ///// <param name="view">View that firing Unload event</param>
-        ///// <returns>Task awaiter</returns>
-        //protected override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
-        //{
-        //    return base.OnBindedViewUnload(view);
-        //}
-
-        ///// <summary>
-        ///// <para>If dispose actions got exceptions, will handled here. </para>
-        ///// </summary>
-        ///// <param name="exceptions">
-        ///// <para>The exception and dispose infomation</para>
-        ///// </param>
-        //protected override async void OnDisposeExceptions(IList<DisposeInfo> exceptions)
-        //{
-        //    base.OnDisposeExceptions(exceptions);
-        //    await TaskExHelper.Yield();
-        //}
-
-        #endregion 
-
     }
-
 }
 

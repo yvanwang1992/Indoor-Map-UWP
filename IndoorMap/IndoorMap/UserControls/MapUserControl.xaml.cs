@@ -25,6 +25,7 @@ using Windows.UI.Xaml.Shapes;
 
 namespace IndoorMap.UserControls
 {
+
     public enum MapOptionItemType
     {
         MapOptionItemGridPerspective,
@@ -40,22 +41,42 @@ namespace IndoorMap.UserControls
 
     public sealed partial class MapUserControl : UserControl
     {
+        public Geopoint defaultGeopoint = new Geopoint(new BasicGeoposition() { Latitude = 28.23, Longitude = 117.02 });
+
         public delegate void MapElementClickHandler(MapControl sender, MapElementClickItemEventArgs args);
         public event MapElementClickHandler ElementClickEvent;
 
         public List<PaneModel> MapOptionList { get; set; }
-
-        public MapUserControl()
+         public MapUserControl()
         {
             this.InitializeComponent();
             maps.Style = MapStyle.Road;
+            maps.Center = defaultGeopoint;
 
             //所有的应该用同一个PaneModel类   以后更改
             MapOptionList = new List<PaneModel>();
             MapOptionList.Add(new PaneModel() { Label = "倾斜", Icon = "\xE809" });
             MapOptionList.Add(new PaneModel() { Label = "定位", Icon = "\xE1D2" });
             MapOptionList.Add(new PaneModel() { Label = "视图", Icon = "\xE81E" });
+        }
 
+        public bool MapUserLandMarkVisible
+        {
+            get { return (bool)GetValue(MapUserLandMarkVisibleProperty); }
+            set { SetValue(MapUserLandMarkVisibleProperty, value); }
+        }
+
+        // Using a DependencyProperty as the backing store for MapUserLandMarkVisible.  This enables animation, styling, binding, etc...
+        public static readonly DependencyProperty MapUserLandMarkVisibleProperty =
+            DependencyProperty.Register("MapUserLandMarkVisible", typeof(bool), typeof(MapUserControl), new PropertyMetadata(true, (sender, args) =>
+            {
+                MapUserControl mapUser = sender as MapUserControl;
+                mapUser.ChangeLandMarkVisible();
+            }));
+
+        public void ChangeLandMarkVisible()
+        {
+            maps.LandmarksVisible = MapUserLandMarkVisible;
         }
 
         public int MapUserZoomLevel
@@ -93,7 +114,7 @@ namespace IndoorMap.UserControls
 
         private void ChangeCenter()
         {
-            maps.Center = MapUserCenter;
+            maps.Center = MapUserCenter; 
         }
 
         //Map Element
@@ -174,7 +195,7 @@ namespace IndoorMap.UserControls
                 MapControl.SetNormalizedAnchorPoint(markerLocation, new Point(0.5, 0.5));
                 //AppSettings.Intance.LocationSetting = true;
                 //GetCity(position.Coordinate);
-                this.maps.Center = marsPosition;
+                await this.maps.TrySetViewAsync(marsPosition);
                 this.maps.ZoomLevel = 15;
 
                 //add mark of my location
@@ -212,7 +233,9 @@ namespace IndoorMap.UserControls
         //        await Task.Delay(5000);
         //    } 
         //} 
-        bool isTilt = false;
+
+        bool isTilt = false; 
+
         private async void Button_Tapped(object sender, TappedRoutedEventArgs e)
         {
             var model = (sender as Button).DataContext as PaneModel;

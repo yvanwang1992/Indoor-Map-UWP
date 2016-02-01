@@ -423,15 +423,16 @@ namespace IndoorMap.ViewModels
 
                                 vm.AutoSuggestText = mall.name;
                                 var selectedItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
-                                //if (selectedItem.type == PanelItemType.PanelItemMallList)
-                                //{
-                                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "NavigateToDetailByEventRouter", true);
-                                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "MarkSearchedMall", true);
-                                //}
-                                //else if (selectedItem.type == PanelItemType.PanelItemMap)
-                                //{
+                                if (selectedItem.type == PanelItemType.PanelItemMallList)
+                                {
+                                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "MarkListSearchedMall", true);
+                                }
+                                else if (selectedItem.type == PanelItemType.PanelItemMap)
+                                {
+                                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "MarkMapSearchedMall", true);
+                                }
+                                MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "NavigateToDetailByEventRouter", true);
 
-                                //}
                             }
                             else
                             {
@@ -762,7 +763,7 @@ namespace IndoorMap.ViewModels
         {
 
             this.SupportCities = jsonCity;
-            if (AppSettings.Intance.LocationSetting)
+            if (AppSettings.Intance.GetAppSetting(AppSettings.LocationSettingKey))
             {
                 string city = AppSettings.Intance.LocationCity;
                 var saveCity = SupportCities.FirstOrDefault(n => n.name == city);
@@ -867,19 +868,19 @@ namespace IndoorMap.ViewModels
                 bool result = await CommonHelper.ShowMessageDialog("是否打开定位");
                 if (result)
                 {
-                    AppSettings.Intance.LocationSetting = true;
+                    AppSettings.Intance.SetAppSetting(AppSettings.LocationSettingKey, true);
                     string location = await LocationManager.GetCityUsingMapLocation();
                     if (!string.IsNullOrEmpty(location))
                         AppSettings.Intance.LocationCity = location;
                 }
                 else
-                    AppSettings.Intance.LocationSetting = false;
+                    AppSettings.Intance.SetAppSetting(AppSettings.LocationSettingKey, false);
 
                 AppSettings.Intance.IsFirstRun = false;
             }
 
             //if the locate setting is on but the city is empty or null
-            if (AppSettings.Intance.LocationSetting && !string.IsNullOrEmpty(AppSettings.Intance.LocationCity))
+            if (AppSettings.Intance.GetAppSetting(AppSettings.LocationSettingKey) && !string.IsNullOrEmpty(AppSettings.Intance.LocationCity))
             {
                 string location = await LocationManager.GetCityUsingMapLocation();
                 if (!string.IsNullOrEmpty(location))

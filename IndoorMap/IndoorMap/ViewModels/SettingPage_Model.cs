@@ -31,6 +31,15 @@ namespace IndoorMap.ViewModels
         public SettingPage_Model()
         {
             isLoadSuscribe = false;
+            if (IsInDesignMode)
+            {
+                SettingList = new ObservableCollection<SettingModel>()
+                {
+                    new SettingModel(true, AppSettings.LocationSettingKey) { DisplayName = "允许获取位置信息"},
+                    new SettingModel(false, AppSettings.NetworkSettingKey) { DisplayName = "仅在WIFI下使用网络"},
+                    new SettingModel(false, AppSettings.LandmarksVisibleSettingKey) { DisplayName = "显示地标性建筑"}
+                };
+            }
         }
          
         public SettingPage_Model(Building buiding)
@@ -55,6 +64,26 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, String> _TitleDefaultValueFactory = m => m.GetType().Name;
         #endregion
 
+        //设置列表  在其他地方更改值
+        public ObservableCollection<SettingModel> SettingList
+        {
+            get { return _SettingListLocator(this).Value; }
+            set { _SettingListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property ObservableCollection<SettingModel> SettingList Setup
+        protected Property<ObservableCollection<SettingModel>> _SettingList = new Property<ObservableCollection<SettingModel>> { LocatorFunc = _SettingListLocator };
+        static Func<BindableBase, ValueContainer<ObservableCollection<SettingModel>>> _SettingListLocator = RegisterContainerLocator<ObservableCollection<SettingModel>>("SettingList", model => model.Initialize("SettingList", ref model._SettingList, ref _SettingListLocator, _SettingListDefaultValueFactory));
+        static Func<BindableBase, ObservableCollection<SettingModel>> _SettingListDefaultValueFactory = m =>
+        {
+            return new ObservableCollection<SettingModel>()
+            {
+                new SettingModel(true, AppSettings.LocationSettingKey) { DisplayName = "允许获取位置信息"},
+                    new SettingModel(false, AppSettings.NetworkSettingKey) { DisplayName = "允许使用2G/3G/4G网络"},
+                    new SettingModel(false, AppSettings.LandmarksVisibleSettingKey) { DisplayName = "显示地标性建筑"}
+            };
+        };
+        #endregion
+
 
         private void SuscribeCommand()
         { 
@@ -73,8 +102,7 @@ namespace IndoorMap.ViewModels
             //    }
             //    ).DisposeWith(this);
         }
-
-
+         
         #region Life Time Event Handling
 
         ///// <summary>
@@ -114,15 +142,17 @@ namespace IndoorMap.ViewModels
             return base.OnBindedViewLoad(view);
         }
 
-        ///// <summary>
-        ///// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property
-        ///// </summary>
-        ///// <param name="view">View that firing Unload event</param>
-        ///// <returns>Task awaiter</returns>
-        //protected override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
-        //{
-        //    return base.OnBindedViewUnload(view);
-        //}
+        /// <summary>
+        /// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property
+        /// </summary>
+        /// <param name="view">View that firing Unload event</param>
+        /// <returns>Task awaiter</returns>
+        protected override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
+        {
+            var visible = AppSettings.Intance.GetAppSetting(AppSettings.LandmarksVisibleSettingKey);
+            MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(this, visible, typeof(bool), "ChangeMapLandMarks", true);
+            return base.OnBindedViewUnload(view);
+        }
 
         ///// <summary>
         ///// <para>If dispose actions got exceptions, will handled here. </para>

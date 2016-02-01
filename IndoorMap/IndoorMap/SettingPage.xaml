@@ -19,13 +19,13 @@
         <vm:SettingPage_Model x:Key="DesignVM"/>
     </Page.Resources>
     
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
+    <Grid  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
-        <Grid>
+        <Grid Margin="12" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -33,12 +33,19 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-              
-            <ToggleSwitch Grid.Row="1" IsOn="{Binding Source={StaticResource AppSettings}, Path=LocationSetting, Mode=TwoWay}" />
-             <TextBlock Grid.Row="3"  x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
- 
-        </Grid>
+            
+            <TextBlock Grid.Row="0"  x:Name="pageTitle" Text="{Binding Title}"  FontSize="26"
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"  />
+            <ItemsControl Grid.Row="1" ItemsSource="{Binding SettingList, Mode=TwoWay}" >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleSwitch Header="{Binding DisplayName, Mode=TwoWay}" OnContent="开启" OffContent="关闭" Grid.Row="1" IsOn="{Binding ToggleValue, Mode=TwoWay}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+          </Grid>
     </Grid>
  
 </mvvm:MVVMPage>

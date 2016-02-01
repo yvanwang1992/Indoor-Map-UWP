@@ -33,8 +33,7 @@ namespace IndoorMap
     {
          
         public SubMapPage()
-        {
-
+        { 
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
@@ -54,9 +53,7 @@ namespace IndoorMap
         public static readonly DependencyProperty StrongTypeViewModelProperty =
                     DependencyProperty.Register("StrongTypeViewModel", typeof(SubMapPage_Model), typeof(SubMapPage), new PropertyMetadata(null));
 
-
-
-
+         
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);

@@ -229,11 +229,31 @@ namespace IndoorMap.ViewModels
 
             //When Search One Mall, Mark It And go for it;
             MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
-                .Where(x => x.EventName == "MarkSearchedMall")
+                .Where(x => x.EventName == "MarkListSearchedMall")
                 .Subscribe(
                 e =>
                 {
+                    int index= 0;
+
                     var mall = e.EventData as MallModel;
+                    foreach(var group in MallGroupList)
+                    {
+                        bool flag = false;
+                        foreach (var m in group.MallList)
+                        {
+                            if (m.name == mall.name)
+                            {
+                                flag = true;
+                                break;
+                            }   
+                            else
+                                index++;
+                        }
+                        if (flag) break;
+                        ListView a = new ListView();
+                        a.ScrollIntoView(mall);
+                    }
+                    SelectedIndex = index;
                 }
                 ).DisposeWith(this);
         }

@@ -15,6 +15,10 @@ namespace IndoorMap.Helpers
         static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         static StorageFolder folder = ApplicationData.Current.LocalFolder;
 
+        public static void DeleteAllTheKeyAndValue()
+        {
+            localSettings.Values.Clear();
+        }
 
         public static void SetSettingsValueAndKey(object value ,string key)
         {

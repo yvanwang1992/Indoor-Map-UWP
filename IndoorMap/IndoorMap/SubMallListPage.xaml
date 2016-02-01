@@ -12,6 +12,7 @@
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:behavior="using:MVVMSidekick.Behaviors"
     xmlns:converter="using:IndoorMap.Helpers"
+    xmlns:helpers="using:IndoorMap.Helpers"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -66,10 +67,12 @@
             <SemanticZoom>
                 <!--列表-->
                 <SemanticZoom.ZoomedInView>
-                    <ListView   
+                    <ListView  
+                        helpers:ListViewDependencyProperty.ScrollToIndex="{Binding SelectedIndex}"
                         x:Name="lvMall" 
                         VerticalAlignment="Stretch"
                         Grid.Row="3" 
+                        SelectedIndex="{Binding SelectedIndex, Mode=TwoWay}"
                         IsItemClickEnabled="True"
                         ItemsSource="{Binding Source={StaticResource Groups}}"
                         ItemTemplate="{StaticResource MallListDataTemplate}">
@@ -77,7 +80,7 @@
                             <GroupStyle>
                                 <GroupStyle.HeaderTemplate>
                                     <DataTemplate>
-                                        <Border >
+                                        <Border>
                                             <TextBlock Grid.Row="1" Foreground="{ThemeResource ThemeColor}" Text="{Binding District, Mode=TwoWay}" FontSize="26"  />
                                         </Border>
                                     </DataTemplate>

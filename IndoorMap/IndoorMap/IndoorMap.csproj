@@ -90,7 +90,6 @@
   </PropertyGroup>
   <ItemGroup>
     <!-- A reference to the entire .Net Framework and Windows SDK are automatically included -->
-    <None Include="ClassDiagram1.cd" />
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
@@ -110,6 +109,7 @@
     <Compile Include="Helpers\AppSettings.cs" />
     <Compile Include="Helpers\CommonHelper.cs" />
     <Compile Include="Helpers\ConverterHelper.cs" />
+    <Compile Include="Helpers\CustomDependencyProperty.cs" />
     <Compile Include="Helpers\DataManager.cs" />
     <Compile Include="Helpers\LocationManager.cs" />
     <Compile Include="Helpers\NetworkManager.cs" />

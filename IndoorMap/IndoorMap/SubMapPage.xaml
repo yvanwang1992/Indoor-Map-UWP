@@ -30,8 +30,9 @@
 
         <Grid> 
             <usercontrol:MapUserControl 
-                 Height="600"
+                Height="600"
                 HorizontalAlignment="Stretch"
+                MapUserLandMarkVisible="{Binding MapLandMarkVisible}"
                 MapUserElements="{Binding MapElements}" 
                 MapUserCenter="{Binding MapCenter}" 
                 MapUserZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}">

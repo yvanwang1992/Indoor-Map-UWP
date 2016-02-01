@@ -27,6 +27,8 @@ using Newtonsoft.Json;
 using Windows.UI.Popups;
 using IndoorMap.Controller;
 using Windows.UI.Core;
+using IndoorMap.Helpers;
+using System.Collections.ObjectModel;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -39,17 +41,13 @@ namespace IndoorMap
     {
         public SettingPage()
         {
-
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
                 StrongTypeViewModel = this.ViewModel as SettingPage_Model;
             });
-            this.NavigationCacheMode = NavigationCacheMode.Required;
-
             StrongTypeViewModel = this.ViewModel as SettingPage_Model;
-
-
+             
         }
 
         public SettingPage_Model StrongTypeViewModel
@@ -70,5 +68,6 @@ namespace IndoorMap
         {
             base.OnNavigatedFrom(e);
         }
+         
     }
 }
