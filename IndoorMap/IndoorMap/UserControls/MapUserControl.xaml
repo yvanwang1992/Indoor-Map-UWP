@@ -18,19 +18,25 @@
         </DataTemplate>
     </UserControl.Resources>
     
-    <Grid>
-        <maps:MapControl x:Name="maps" VerticalAlignment="Stretch" 
+    <RelativePanel>
+        <maps:MapControl x:Name="maps" 
+                         RelativePanel.AlignTopWithPanel="True"
+                         RelativePanel.AlignBottomWithPanel="True"
+                         RelativePanel.AlignRightWithPanel="True"
+                         RelativePanel.AlignLeftWithPanel="True"
+                         VerticalAlignment="Stretch" 
                          MapElementClick="maps_MapElementClick"   
                          LandmarksVisible="True"  
                          MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
         </maps:MapControl>
- 
-        <ItemsControl HorizontalAlignment="Right" 
-                      VerticalAlignment="Top"
+
+        <ItemsControl RelativePanel.AlignTopWithPanel="True"
+                         RelativePanel.AlignRightWithPanel="True"
+                       VerticalAlignment="Top"
                       Background="Red"
                       ItemsSource="{x:Bind MapOptionList}"
                       ItemTemplate="{StaticResource MapOptionDataTemplate}"
                       Margin="0,50,20,0">
         </ItemsControl>
-    </Grid>
+    </RelativePanel>
 </UserControl>

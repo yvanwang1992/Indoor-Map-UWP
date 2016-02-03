@@ -40,9 +40,9 @@ namespace IndoorMap
             });
             StrongTypeViewModel = this.ViewModel as SubMallListPage_Model;
 
-            //this.NavigationCacheMode = NavigationCacheMode.Required;
+            this.NavigationCacheMode = NavigationCacheMode.Required;
 
-         }
+        }
 
 
         public SubMallListPage_Model StrongTypeViewModel

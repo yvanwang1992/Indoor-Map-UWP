@@ -66,6 +66,17 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, int> _SelectedIndexDefaultValueFactory = m => -1;
         #endregion
 
+        public MallModel SelectedItem
+        {
+            get { return _SelectedItemLocator(this).Value; }
+            set { _SelectedItemLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property MallModel SelectedItem Setup
+        protected Property<MallModel> _SelectedItem = new Property<MallModel> { LocatorFunc = _SelectedItemLocator };
+        static Func<BindableBase, ValueContainer<MallModel>> _SelectedItemLocator = RegisterContainerLocator<MallModel>("SelectedItem", model => model.Initialize("SelectedItem", ref model._SelectedItem, ref _SelectedItemLocator, _SelectedItemDefaultValueFactory));
+        static Func<BindableBase, MallModel> _SelectedItemDefaultValueFactory = m => new MallModel();
+        #endregion
+
         //MallList
         public List<MallModel> MallList
         {
@@ -81,8 +92,15 @@ namespace IndoorMap.ViewModels
         //MallGroupList
         public List<MallGroup> MallGroupList
         {
-            get { return _MallGroupListLocator(this).Value; }
-            set { _MallGroupListLocator(this).SetValueAndTryNotify(value); }
+            get
+            {
+                return _MallGroupListLocator(this).Value;
+            }
+            set
+            {
+                if (_MallGroupListLocator(this).Value != value)
+                    _MallGroupListLocator(this).SetValueAndTryNotify(value);
+            }
         }
         #region Property Channel MallGroupList Setup        
         protected Property<List<MallGroup>> _MallGroupList = new Property<List<MallGroup>> { LocatorFunc = _MallGroupListLocator };
@@ -116,6 +134,8 @@ namespace IndoorMap.ViewModels
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
                             MallModel mall = e.EventArgs.Parameter as MallModel;
+                            //vm.GoToListViewIndex(mall);
+                            vm.SelectedItem = mall;
                             MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "ListButtonClickByEventRouter", true);
 
                         }
@@ -156,7 +176,7 @@ namespace IndoorMap.ViewModels
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
                             ItemClickEventArgs eventArgs = e.EventArgs.Parameter as ItemClickEventArgs;
                             var mall = eventArgs.ClickedItem as MallModel;
-                            
+                            vm.SelectedItem = mall;
                             MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "NavigateToDetailByEventRouter", true);
 
                             //await vm.StageManager.DefaultStage.Show(new AtlasPage_Model(mall.buildings.FirstOrDefault()));
@@ -175,6 +195,28 @@ namespace IndoorMap.ViewModels
             };
         #endregion
 
+        private void GoToListViewIndex(MallModel mall)
+        {
+            //mall 参数没有用
+            int index = 0;
+
+            foreach (var group in MallGroupList)
+            {
+                bool flag = false;
+                foreach (var m in group.MallList)
+                {
+                    if (m.id == mall.id)
+                    {
+                        flag = true;
+                        break;
+                    }
+                    else
+                        index++;
+                }
+                if (flag) break;
+            }
+            SelectedIndex = index;
+        }
 
         //private void GetSupportMallListAction()
         //{
@@ -204,12 +246,12 @@ namespace IndoorMap.ViewModels
                 .Where(x => x.EventName == "CitySelectedChangedEvent")
                 .Subscribe(
                 e =>
-                { 
+                {
                     //未分组数据
                     var mallList = e.EventData as List<MallModel>;
                     this.MallList = mallList;
 
-                    //分组
+                    //分组 
                     MallGroupList.Clear();
                     List<MallGroup> tempMallGroupList = new List<MallGroup>();
                     var groups = MallList.GroupBy(n => n.district);
@@ -223,7 +265,6 @@ namespace IndoorMap.ViewModels
                     }
                     MallGroupList = tempMallGroupList;
 
-
                 }
                 ).DisposeWith(this);
 
@@ -233,29 +274,22 @@ namespace IndoorMap.ViewModels
                 .Subscribe(
                 e =>
                 {
-                    int index= 0;
-
-                    var mall = e.EventData as MallModel;
-                    foreach(var group in MallGroupList)
-                    {
-                        bool flag = false;
-                        foreach (var m in group.MallList)
-                        {
-                            if (m.name == mall.name)
-                            {
-                                flag = true;
-                                break;
-                            }   
-                            else
-                                index++;
-                        }
-                        if (flag) break;
-                        ListView a = new ListView();
-                        a.ScrollIntoView(mall);
-                    }
-                    SelectedIndex = index;
+                    GoToListViewIndex(e.EventData as MallModel);
                 }
                 ).DisposeWith(this);
+
+            //MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+            //    .Where(x => x.EventName == "ListButtonClickByEventRouter")
+            //    .Subscribe(
+            //    e =>
+            //    {
+            //        var item = e.EventData as MallModel;
+            //        if (item != null)
+            //        {
+ 
+            //         }
+            //    }
+            //    ).DisposeWith(this);
         }
         #region Life Time Event Handling
 

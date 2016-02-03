@@ -35,31 +35,36 @@ namespace IndoorMap.ViewModels
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性 propcmd 输入命令
         bool isLoadSuscribe = false;
 
-        private SubMallListPage_Model subMallListPageModel;
-        public SubMallListPage_Model SubMallListPageModel
-        {
-            get
-            {
-                if(subMallListPageModel == null)
-                {
-                    subMallListPageModel = new SubMallListPage_Model();
-                }
-                return subMallListPageModel;
-            }
-        }
+        //private SubMallListPage_Model subMallListPageModel;
+        public SubMallListPage_Model SubMallListPageModel;
+        //{
+        //    get
+        //    {
+        //        if(subMallListPageModel == null)
+        //        {
+        //            subMallListPageModel = new SubMallListPage_Model();
+        //        }
+        //        return subMallListPageModel;
+        //    }
+        //    set { subMallListPageModel = value; }
+        //}
 
-        private SubMapPage_Model subMapPageModel;
-        public SubMapPage_Model SubMapPageModel
-        {
-            get
-            {
-                if (subMapPageModel == null)
-                {
-                    subMapPageModel = new SubMapPage_Model();
-                }
-                return subMapPageModel;
-            }
-        }
+        //private SubMapPage_Model subMapPageModel;
+        public SubMapPage_Model SubMapPageModel;
+        //{
+        //    get
+        //    {
+        //        if (subMapPageModel == null)
+        //        {
+        //            subMapPageModel = new SubMapPage_Model();
+        //        }
+        //        return subMapPageModel;
+        //    }
+        //    set
+        //    {
+        //        subMapPageModel = value;
+        //    }
+        //}
 
         const string NoResultString =  "未能查询到结果";
 
@@ -73,8 +78,8 @@ namespace IndoorMap.ViewModels
             }
             else
             {
-                subMapPageModel = new SubMapPage_Model();
-                subMallListPageModel = new SubMallListPage_Model();
+                SubMapPageModel = new SubMapPage_Model();
+                SubMallListPageModel = new SubMallListPage_Model();
 
                 InitPaneListData();
             }
@@ -263,9 +268,65 @@ namespace IndoorMap.ViewModels
         static Func<int> _SelectedMallIndexDefaultValueFactory = () => { return -1; };
         #endregion
 
+
         #endregion
 
+        
+        //IsAutoSuggestionBoxFocus
+        public bool IsAutoSuggestionBoxFocus
+        {
+            get { return _IsAutoSuggestionBoxFocusLocator(this).Value; }
+            set { _IsAutoSuggestionBoxFocusLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel IsAutoSuggestionBoxFocus Setup        
+        protected Property<bool> _IsAutoSuggestionBoxFocus = new Property<bool> { LocatorFunc = _IsAutoSuggestionBoxFocusLocator };
+        static Func<BindableBase, ValueContainer<bool>> _IsAutoSuggestionBoxFocusLocator = RegisterContainerLocator<bool>("IsAutoSuggestionBoxFocus", model => model.Initialize("IsAutoSuggestionBoxFocus", ref model._IsAutoSuggestionBoxFocus, ref _IsAutoSuggestionBoxFocusLocator, _IsAutoSuggestionBoxFocusDefaultValueFactory));
+        static Func<bool> _IsAutoSuggestionBoxFocusDefaultValueFactory = () => { return false; };
+        #endregion
+
+
+
         #region -------------------   Commands   -------------------
+        
+        #region CommandSearchTapped
+        public CommandModel<ReactiveCommand, String> CommandSearchTapped
+        {
+            get { return _CommandSearchTappedLocator(this).Value; }
+            set { _CommandSearchTappedLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandSearchTapped Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandSearchTapped = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandSearchTappedLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandSearchTappedLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandSearchTapped", model => model.Initialize("CommandSearchTapped", ref model._CommandSearchTapped, ref _CommandSearchTappedLocator, _CommandSearchTappedDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandSearchTappedDefaultValueFactory =
+            model =>
+            {
+                var resource = "SearchTapped";           // Command resource  
+                var commandId = "SearchTapped";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            vm.IsAutoSuggestionBoxFocus = true;
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
+
 
         #region CommandCityChanged
         public CommandModel<ReactiveCommand, String> CommandCityChanged
@@ -736,7 +797,7 @@ namespace IndoorMap.ViewModels
                 JsonMallModel jsonMall = JsonConvert.DeserializeObject<JsonMallModel>(result);
                                     
                 if (jsonMall.reason == "成功" || jsonMall.reason == "successed")
-                { 
+                {
                     //此处 解析时间非常慢慢慢慢
                     foreach (var mall in jsonMall.result)
                     {
@@ -745,15 +806,17 @@ namespace IndoorMap.ViewModels
                             Latitude = Double.Parse(mall.lat),
                             Longitude = Double.Parse(mall.lon)
                         }));
-                    }                    
-
+                    } 
                     var item = new SavedMallListModel() { City = SelectedCity, MallList = jsonMall.result };
-                    if (!DataManager.SavedMallList.Contains(item))
-                    {
+                    var saveItem = DataManager.SavedMallList.FirstOrDefault(n => n.City.id == item.City.id);
+                    if (saveItem != null)
+                        saveItem = item;
+                    else
                         DataManager.SavedMallList.Add(item);
-                        string save = JsonConvert.SerializeObject(DataManager.SavedMallList);
-                        await StorageHelper.SetLocalTextFile(DataManager.CityMallListFile, save);
-                    }
+
+                    string save = JsonConvert.SerializeObject(DataManager.SavedMallList);
+                    await StorageHelper.SetLocalTextFile(DataManager.CityMallListFile, save);
+
                     HttpClientReturnMallList(jsonMall.result);
                 }
             };
@@ -813,6 +876,7 @@ namespace IndoorMap.ViewModels
                         {
                             MainVisibility = Visibility.Visible;
                         }
+                        
                         //await StageManager.DefaultStage.Show(new AtlasPage_Model(item.buildings.FirstOrDefault()));
                         await StageManager["frameSub"].Show(new AtlasPage_Model(item.buildings.FirstOrDefault()));
                     }
@@ -826,12 +890,9 @@ namespace IndoorMap.ViewModels
                 {
                     var item = e.EventData as MallModel;
                     if (item != null)
-                    {
-                        //Debug.WriteLine(SelectedPaneDownIndex + ":" + SelectedPaneDownItem.Label);
-                        
+                    {  
                         SelectedPaneDownIndex = 1;
-                        //SelectedPaneDownItem = PaneDownList[1];
-                        
+                        //SelectedPaneDownItem = PaneDownList[1]; 
                     }
                 }
                 ).DisposeWith(this);

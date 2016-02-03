@@ -173,8 +173,8 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandMapItemClickDefaultValueFactory =
             model =>
             {
-                var resource = "ShowAllMallInMap";           // Command resource  
-                var commandId = "ShowAllMallInMap";
+                var resource = "MapItemClick";           // Command resource  
+                var commandId = "MapItemClick";
                 var vm = CastToCurrentType(model);
                 var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
                 cmd.DoExecuteUIBusyTask(
@@ -298,8 +298,8 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandGoToAtalsPageDefaultValueFactory =
             model =>
             {
-                var resource = "ShowAllMallInMap";           // Command resource  
-                var commandId = "ShowAllMallInMap";
+                var resource = "GoToAtalsPage";           // Command resource  
+                var commandId = "GoToAtalsPage";
                 var vm = CastToCurrentType(model);
                 var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
                 cmd.DoExecuteUIBusyTask(
@@ -309,6 +309,7 @@ namespace IndoorMap.ViewModels
                             //    await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            
                             MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(null, vm.SelectedMallItem, typeof(MallModel), "NavigateToDetailByEventRouter", true);
 
                         }

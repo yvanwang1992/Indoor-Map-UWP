@@ -13,24 +13,33 @@
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
     xmlns:behavior="using:MVVMSidekick.Behaviors"
+    xmlns:converter="using:IndoorMap.Helpers"
     mc:Ignorable="d">
 
     <Page.Resources>
+
+        <converter:OpenTimeConverter x:Key="OpenTimeConverter"/>
+        <converter:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+        
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">My Application</x:String>
         <vm:SubMapPage_Model x:Key="DesignVM"/>
     </Page.Resources>
 
-    <Grid Background="Red"  DataContext="{StaticResource DesignVM}">
+    <Grid Background="White"  DataContext="{StaticResource DesignVM}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
 
-        <Grid> 
+        <RelativePanel>
             <usercontrol:MapUserControl 
-                Height="600"
+                RelativePanel.AlignTopWithPanel="True"
+                RelativePanel.AlignBottomWithPanel="True"
+                RelativePanel.AlignRightWithPanel="True"
+                RelativePanel.AlignLeftWithPanel="True"
+                x:Name="userMapControl"
                 HorizontalAlignment="Stretch"
                 MapUserLandMarkVisible="{Binding MapLandMarkVisible}"
                 MapUserElements="{Binding MapElements}" 
@@ -42,19 +51,27 @@
                     </core:EventTriggerBehavior>
                 </interactivity:Interaction.Behaviors>
             </usercontrol:MapUserControl>
-            <Grid VerticalAlignment="Bottom" Background="{ThemeResource ThemeColor}" Visibility="{Binding SelectedItemVisibility}">
+            <Grid x:Name="gridDetails" Opacity="0.8"
+                  RelativePanel.AlignBottomWithPanel="True" 
+                RelativePanel.AlignRightWithPanel="True"
+                RelativePanel.AlignLeftWithPanel="True"
+                  VerticalAlignment="Bottom" Background="Gray" Visibility="{Binding SelectedItemVisibility}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition Width="*"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <StackPanel Grid.Column="0"> 
-                    <TextBlock Text="{Binding SelectedMallItem.name}"/>
-                    <TextBlock Text="{Binding SelectedMallItem.addr}"/>
-                    <TextBlock Text="{Binding SelectedMallItem.opentime}"/> 
-                    <TextBlock Text="分类"/>
+
+                <StackPanel Grid.Column="0" Margin="8">
+                    <TextBlock Text="{Binding SelectedMallItem.name}" FontFamily="微软雅黑" FontSize="19"/>
+                    <TextBlock Text="{Binding SelectedMallItem.addr}"  FontFamily="微软雅黑" FontSize="15"/>
+                    <TextBlock Text="{Binding SelectedMallItem.opentime, Converter={StaticResource OpenTimeConverter}}" 
+                               Visibility="{Binding SelectedMallItem.opentime, Converter={StaticResource EmptyStringToVisibilityConverter}}"
+                               TextWrapping="Wrap"
+                               FontFamily="微软雅黑" FontSize="14"/>
                 </StackPanel>
-                <Button Grid.Column="1" Content="查看室内地图" Command="{Binding CommandGoToAtalsPage}"/>
+
+                <Button Grid.Column="1" Style="{ThemeResource SegoeIconButton}" Background="Transparent" Margin="20" Content="&#xE825;" Command="{Binding CommandGoToAtalsPage}"/>
             </Grid>
-        </Grid>
+        </RelativePanel>
     </Grid>
 </mvvm:MVVMPage>

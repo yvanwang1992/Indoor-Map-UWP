@@ -25,6 +25,7 @@ using Newtonsoft.Json.Linq;
 using System.Diagnostics;
 using Windows.UI.Core;
 using Windows.UI.ViewManagement;
+using Windows.Graphics.Display;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -35,6 +36,7 @@ namespace IndoorMap
     /// </summary>
     public sealed partial class MainPage : MVVMPage
     {
+        
         public MainPage()
         {
             this.InitializeComponent();
@@ -44,8 +46,12 @@ namespace IndoorMap
             });
             StrongTypeViewModel = this.ViewModel as MainPage_Model;
             this.NavigationCacheMode = NavigationCacheMode.Required;
+
             SystemNavigationManager.GetForCurrentView().BackRequested += MainPage_BackRequested;
             this.SizeChanged += MainPage_SizeChanged;
+
+
+            
         }
 
 
@@ -58,16 +64,18 @@ namespace IndoorMap
         public static readonly DependencyProperty StrongTypeViewModelProperty =
                     DependencyProperty.Register("StrongTypeViewModel", typeof(MainPage_Model), typeof(MainPage), new PropertyMetadata(null));
          
-        protected override void OnNavigatedTo(NavigationEventArgs e)
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
-            //////StatusBar
-            ////if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
-            ////{
-            ////    StatusBar statusBar = StatusBar.GetForCurrentView();
-            ////    await statusBar.ShowAsync();
-            ////    statusBar.BackgroundColor = Colors.Red;
-            ////}
+            //StatusBar
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                StatusBar statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundColor = Configmanager.ThemeColor;
+                statusBar.BackgroundOpacity = 1;
+                statusBar.ForegroundColor = Colors.White;
+                await statusBar.ShowAsync();
+            }
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
@@ -97,7 +105,12 @@ namespace IndoorMap
 
 
         private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
+        {//窗口大小
+            double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
+            double height = ApplicationView.GetForCurrentView().VisibleBounds.Height;
+            double rawPixel = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+
+
             if (this.ActualWidth <= 500)
             {
                 if (frameAtals.CanGoBack)
@@ -108,8 +121,25 @@ namespace IndoorMap
                 {
                     StrongTypeViewModel.MainVisibility = Visibility.Visible;
                 }
-
+                this.frameSplitContent.Height = height - lvHorizontal.ActualHeight - BottomAppBar.ActualHeight;
+                this.rpMain.Width = width;
             }
+            else
+            {
+                this.frameSplitContent.Height = height;
+
+                this.rpMain.Width = width;
+            }
+        }
+
+        private void AppBarButton_Click(object sender, RoutedEventArgs e)
+        {
+            CommonHelper.Feedback();
+        }
+
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+             autoSuggestBox.Focus(FocusState.Keyboard);
         }
     }
 }
