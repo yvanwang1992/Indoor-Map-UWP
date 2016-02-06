@@ -21,7 +21,8 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Windows.UI.Core;
+using IndoorMap.Helpers;
+using Windows.Graphics.Display;
 using Windows.UI.ViewManagement;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
@@ -31,52 +32,42 @@ namespace IndoorMap
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class AtlasPage : MVVMPage
-    {
-        public AtlasPage()
+    public sealed partial class AboutPage : MVVMPage
+    { 
+        public AboutPage()
         {
+
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
-                StrongTypeViewModel = this.ViewModel as AtlasPage_Model;
+                StrongTypeViewModel = this.ViewModel as AboutPage_Model;
             });
-            StrongTypeViewModel = this.ViewModel as AtlasPage_Model;
-            this.SizeChanged += AtlasPage_SizeChanged;
-        }
-
-        private void AtlasPage_SizeChanged(object sender, SizeChangedEventArgs e)
+            StrongTypeViewModel = this.ViewModel as AboutPage_Model;
+         }
+         
+        public AboutPage_Model StrongTypeViewModel
         {
-            double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
-       
-            if (this.ActualWidth <= 500)
-            {
-                this.gridAtlas.Width = width;
-                this.gridAtlas.HorizontalAlignment = HorizontalAlignment.Left;
-            }
-            else
-            {
-                this.gridAtlas.HorizontalAlignment = HorizontalAlignment.Stretch;
-            }
-        }
-
-        public AtlasPage_Model StrongTypeViewModel
-        {
-            get { return (AtlasPage_Model)GetValue(StrongTypeViewModelProperty); }
+            get { return (AboutPage_Model)GetValue(StrongTypeViewModelProperty); }
             set { SetValue(StrongTypeViewModelProperty, value); }
         }
 
         public static readonly DependencyProperty StrongTypeViewModelProperty =
-                    DependencyProperty.Register("StrongTypeViewModel", typeof(AtlasPage_Model), typeof(AtlasPage), new PropertyMetadata(null));
+                    DependencyProperty.Register("StrongTypeViewModel", typeof(AboutPage_Model), typeof(AboutPage), new PropertyMetadata(null));
         
-
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
             base.OnNavigatedTo(e);
+            ShowLogoStoryboard.Begin();
         }
 
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-        } 
+        }
+
+        private void txtGoStore_Tapped(object sender, TappedRoutedEventArgs e)
+        {
+            CommonHelper.GoToMyAppStore();
+        }
     }
 }

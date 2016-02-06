@@ -29,7 +29,7 @@ namespace IndoorMap.Controller
             set { _viewModel = value; }
         }
         #endregion
-
+        
         private bool _isShowWaitingPanel;
         public bool isShowWaitingPanel
         {
@@ -91,11 +91,13 @@ namespace IndoorMap.Controller
                 //    }
                 //}
 
+                if (WaitingPanelHelper.IsWaitingPanelExisted())
+                    WaitingPanelHelper.HiddenWaitingPanel();
+
                 if (FormActionCompleted != null)
                     FormActionCompleted(content, "");
 
-                if (WaitingPanelHelper.IsWaitingPanelExisted())
-                    WaitingPanelHelper.HiddenWaitingPanel();
+
             }
             catch (Exception exception)
             {
@@ -105,14 +107,14 @@ namespace IndoorMap.Controller
                 {
                     //if (FormActionError != null)
                     //    FormActionError("", "");
-                    ShowMessage(exception);
+                    ShowMessage("服务器连接失败");
                 }
             }
         }
 
-        private async void ShowMessage(Exception exception)
+        private async void ShowMessage(string exception)
         {
-            await new MessageDialog(exception.Message).ShowAsync();
+            await new MessageDialog(exception).ShowAsync();
         }
 
         public void setHeaders()

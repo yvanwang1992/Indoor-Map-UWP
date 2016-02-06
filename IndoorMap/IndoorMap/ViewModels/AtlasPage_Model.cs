@@ -21,6 +21,7 @@ using Windows.Phone.UI.Input;
 using IndoorMap.Helpers;
 using Windows.UI.Core;
 using Windows.Graphics.Display;
+using Windows.UI.ViewManagement;
 
 namespace IndoorMap.ViewModels
 {
@@ -30,21 +31,45 @@ namespace IndoorMap.ViewModels
     {
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property。
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性
-        public Building Building;
         public WebView webView;
-
+        public Building Building;
         public AtlasPage_Model()
         {
-            
+            if (IsInDesignMode)
+            {
+                SelectedMallModel = new MallModel()
+                {
+                    addr = "某某区  某某路  ",
+                    desc = "描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述描述",
+                    name = "某某某商场",
+                    opentime = "20：00 ------ 10：00",
+                    traffic = "公交路线"
+                };
+            }
         } 
 
-        public AtlasPage_Model(Building buiding)
+        public AtlasPage_Model(MallModel mall)
         {
             //[{"Floor1": "541797c6ac4711c3332d6cd1",
             //"Floor2": "541797c6ac4711c3332d6cs1"}]
-            Building = buiding;
-            Title = Building.name; 
+            SelectedMallModel = mall;
+            Building = mall.buildings.FirstOrDefault();
+            //Title = Building.name; 
         }
+
+        //SelectedMallModel
+        public MallModel SelectedMallModel
+        {
+            get { return _SelectedMallModelLocator(this).Value; }
+            set { _SelectedMallModelLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property MallModel SelectedMallModel Setup
+        protected Property<MallModel> _SelectedMallModel = new Property<MallModel> { LocatorFunc = _SelectedMallModelLocator };
+        static Func<BindableBase, ValueContainer<MallModel>> _SelectedMallModelLocator = RegisterContainerLocator<MallModel>("SelectedMallModel", model => model.Initialize("SelectedMallModel", ref model._SelectedMallModel, ref _SelectedMallModelLocator, _SelectedMallModelDefaultValueFactory));
+        static Func<BindableBase, MallModel> _SelectedMallModelDefaultValueFactory = m => new MallModel();
+        #endregion
+
+
 
         //AutoSuggestText
         public String AutoSuggestText
@@ -169,11 +194,25 @@ namespace IndoorMap.ViewModels
 
                             vm.webView = e.EventArgs.Parameter as WebView;
                             string param = vm.GetInvokeParamsInJson();
-                            await vm.webView.InvokeScriptAsync("StartInit", new string[] { param, "480"});
 
-                        }
-                    )
+                            double altlasWith = 0;
+                            double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
+                            //手机  并且是 横屏
+                            if ((DisplayInformation.GetForCurrentView().CurrentOrientation == DisplayOrientations.LandscapeFlipped ||
+                            DisplayInformation.GetForCurrentView().CurrentOrientation == DisplayOrientations.Landscape)
+                            && Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Mobile")
+                            {
+                                altlasWith = width * 3 / 5 - 30;
+                            }
+                            else
+                            {
+                                altlasWith = (width <= 500) ? width : 700;
+                            }
 
+                            await vm.webView.InvokeScriptAsync("StartInit", new string[] { param, altlasWith.ToString() });
+                            // altlasWith.ToString() });
+                        
+                        })
                     .DoNotifyDefaultEventRouter(vm, commandId)
                     .Subscribe()
                     .DisposeWith(vm);
@@ -220,11 +259,12 @@ namespace IndoorMap.ViewModels
                             }
                             else
                             {
+                                //await new MessageDialog("接口中未提供店铺有用信息，后续版本将添加").ShowAsync();
                                 //GoToDetailsPage
-                                string url = string.Format("http://op.juhe.cn/atlasyun/shop/detail?key={0}&cityid={1}&shopid={2}",
-                                    Configmanager.INDOORMAP_APPKEY, AppSettings.Intance.SelectedCityId, split[0]);
+                                //string url = string.Format("http://op.juhe.cn/atlasyun/shop/detail?key={0}&cityid={1}&shopid={2}",
+                                //    Configmanager.INDOORMAP_APPKEY, AppSettings.Intance.SelectedCityId, split[0]);
                                  
-                                    await vm.StageManager.DefaultStage.Show(new ShopDetailsPage_Model(url));
+                                //    await vm.StageManager.DefaultStage.Show(new ShopDetailsPage_Model(url));
                              }
                         }
                     )

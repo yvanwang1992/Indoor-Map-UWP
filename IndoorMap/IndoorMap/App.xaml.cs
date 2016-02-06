@@ -134,17 +134,19 @@ namespace IndoorMap
             //TODO: Save application state and stop any background activity
             deferral.Complete();
         }
-         
+
         private void BackRequested(object eventArgs)
         { 
             if (WaitingPanelHelper.IsWaitingPanelExisted())
             {
                 WaitingPanelHelper.HiddenWaitingPanel();
+                
                 if (formAction != null)
                 {
                     formAction.Absort();
-                    setArgsHandleTrue(eventArgs);
                 }
+                setArgsHandleTrue(eventArgs);
+
             }
 
             var page = CommonHelper.HostPage;
@@ -153,6 +155,7 @@ namespace IndoorMap
                 page.GoBack();
                 setArgsHandleTrue(eventArgs);
             }
+            
         }
 
         private void setArgsHandleTrue(object eventArgs)

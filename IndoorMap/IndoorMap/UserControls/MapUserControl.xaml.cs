@@ -183,7 +183,7 @@ namespace IndoorMap.UserControls
         }
 
         private async void Location()
-        {
+        { 
             var position = await LocationManager.GetPosition();
             if (position != null)
             {

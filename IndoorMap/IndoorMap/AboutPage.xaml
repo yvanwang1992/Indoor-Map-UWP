@@ -1,0 +1,71 @@
+﻿<mvvm:MVVMPage 
+    x:Name="pageRoot"
+    x:Class="IndoorMap.AboutPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IndoorMap"
+    xmlns:mvvm="using:MVVMSidekick.Views"     
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:IndoorMap.ViewModels"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <Storyboard x:Name="ShowLogoStoryboard">
+                <!--<DoubleAnimation Storyboard.TargetName="LogoIconRotation"
+                    Storyboard.TargetProperty="RotationZ"
+                    From="-270"
+                    To="0"
+                    Duration="0:0:1.5" />-->
+                <!--<DoubleAnimation Storyboard.TargetName="LogoIconTransform"
+                    Storyboard.TargetProperty="X"
+                    From="160"
+                    To="0"
+                    Duration="0:0:1.5" />-->
+                <DoubleAnimation Storyboard.TargetName="imgLogo"
+                    Storyboard.TargetProperty="Opacity"
+                    From="0"
+                    To="1"
+                    Duration="0:0:2" />
+            </Storyboard>
+            <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">My Application</x:String>
+        <vm:AboutPage_Model x:Key="DesignVM"/>
+    </Page.Resources>
+    <Grid x:Name="gridAbout" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+        <Grid>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <TextBlock  Margin="15,15,0,0"   Grid.Row="0"  x:Name="pageTitle" Text="关于"  FontSize="26"
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"  />
+            <ScrollViewer Grid.Row="1" VerticalAlignment="Center" x:Name="LayoutRoot">
+                <StackPanel Margin="15"  VerticalAlignment="Center"  Orientation="Vertical">
+                    <Image x:Name="imgLogo" Height="100" Margin="30,0,30,0" Stretch="Uniform"  Source="ms-appx:///Resources/IndoorMapStore.png"/>
+                    <TextBlock Margin="0,5,0,0" FontFamily="微软雅黑"  Visibility="Visible"
+                FontSize="18"  HorizontalAlignment="Center">商场室内地图</TextBlock>
+                    <TextBlock Margin="0,10,0,10"   FontFamily="微软雅黑"
+                FontSize="18" HorizontalAlignment="Center" FontWeight="Medium"> 开发者：Yvan Wang</TextBlock>
+                    <TextBlock Margin="0,20,0,10"   FontSize="18"
+                      HorizontalAlignment="Center" TextAlignment="Left" TextWrapping="Wrap">
+                   本应用以商场室内地图为平台，将商场店铺的地理位置信息搭载在上面，为用户实现一站式、全方面的逛商场信息服务。目前仅支持上海、北京。
+                    </TextBlock>
+                    <TextBlock Text="（Api并未提供商场相关的导购信息、优惠信息，后续版本将会想办法去完善）" TextWrapping="Wrap"/>
+                    <TextBlock Margin="0,5,0,5"   FontSize="18" Text=""
+                      HorizontalAlignment="Center" TextAlignment="Left" TextWrapping="Wrap"/>
+
+                    <TextBlock Margin="0,20,0,0" x:Name="txtGoStore" Text="查看我的其他应用 >>" FontSize="20" Tapped="txtGoStore_Tapped" Foreground="{ThemeResource ThemeColor}" Opacity=".8"/>
+
+                </StackPanel>
+            </ScrollViewer>
+        </Grid>
+    </Grid>
+
+</mvvm:MVVMPage>

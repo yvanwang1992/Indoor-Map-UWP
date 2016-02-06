@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Windows.UI.Xaml;
 
 namespace IndoorMap.Controller
 {
@@ -10,13 +11,13 @@ namespace IndoorMap.Controller
     {
         private static WaitingPanel waitingPanel;
 
-        public static void ShowWaitingPanel()
+        public static void ShowWaitingPanel(string text = "", Visibility visible = Visibility.Collapsed)
         {   
             if(waitingPanel == null)
             {
                 waitingPanel = new WaitingPanel();
             }
-            waitingPanel.Show();
+            waitingPanel.Show(text, visible);
         }
 
         public static void HiddenWaitingPanel()

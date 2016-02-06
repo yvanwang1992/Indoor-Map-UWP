@@ -16,6 +16,10 @@ namespace IndoorMap.Models
     public enum PanelItemType
     {
         PanelItemMallList,
-        PanelItemMap
+        PanelItemMap,
+        PanelItemFeedback,
+        PanelItemSetting,
+        PanelItemReview,
+        PanelItemAbout
     }
 }

@@ -30,7 +30,7 @@
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
                 
-                <StackPanel Grid.Column="0" Margin="8">
+                <StackPanel Grid.Column="0" Margin="5">
                     <TextBlock Text="{Binding name}" FontFamily="微软雅黑" FontSize="19"/>
                     <TextBlock Text="{Binding addr}"  FontFamily="微软雅黑" FontSize="15"/>
                     <TextBlock Text="{Binding opentime, Converter={StaticResource OpenTimeConverter}}" 
@@ -39,7 +39,7 @@
                                FontFamily="微软雅黑" FontSize="14"/>
                 </StackPanel>
 
-                <Button Content="&#xE1C4;"  Margin="0,0,20,0"  FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Column="1">
+                <Button Content="&#xE1C4;"  Margin="0,0,10,0"  FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Column="1">
                     <interactivity:Interaction.Behaviors>
                         <core:EventTriggerBehavior EventName="Tapped">
                             <core:InvokeCommandAction Command="{Binding ElementName=lvMall, Path=DataContext.CommandShowOneMallInMap}" CommandParameter="{Binding}"/>

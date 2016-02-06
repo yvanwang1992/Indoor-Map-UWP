@@ -93,6 +93,9 @@
     <None Include="project.json" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AboutPage.xaml.cs">
+      <DependentUpon>AboutPage.xaml</DependentUpon>
+    </Compile>
     <Compile Include="AtlasBlankPage.xaml.cs">
       <DependentUpon>AtlasBlankPage.xaml</DependentUpon>
     </Compile>
@@ -100,6 +103,7 @@
       <DependentUpon>AtlasPage.xaml</DependentUpon>
     </Compile>
     <Compile Include="Configmanager.cs" />
+    <Compile Include="Controller\CustomExitToast.cs" />
     <Compile Include="Controller\FormAction.cs" />
     <Compile Include="Controller\WaitingPanel.xaml.cs">
       <DependentUpon>WaitingPanel.xaml</DependentUpon>
@@ -111,6 +115,7 @@
     <Compile Include="Helpers\ConverterHelper.cs" />
     <Compile Include="Helpers\CustomDependencyProperty.cs" />
     <Compile Include="Helpers\DataManager.cs" />
+    <Compile Include="Helpers\Funtions.cs" />
     <Compile Include="Helpers\LocationManager.cs" />
     <Compile Include="Helpers\NetworkManager.cs" />
     <Compile Include="Helpers\StorageHelper.cs" />
@@ -128,6 +133,7 @@
     <Compile Include="ShopDetailsPage.xaml.cs">
       <DependentUpon>ShopDetailsPage.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Startups\AboutPage.cs" />
     <Compile Include="Startups\AtlasBlankPage.cs" />
     <Compile Include="Startups\AtlasPage.cs" />
     <Compile Include="Startups\SettingPage.cs" />
@@ -143,6 +149,7 @@
     <Compile Include="UserControls\MapUserControl.xaml.cs">
       <DependentUpon>MapUserControl.xaml</DependentUpon>
     </Compile>
+    <Compile Include="ViewModels\AboutPage_Model.cs" />
     <Compile Include="ViewModels\AtlasBlankPage_Model.cs" />
     <Compile Include="ViewModels\AtlasPage_Model.cs" />
     <Compile Include="ViewModels\MainPage_Model.cs" />
@@ -174,7 +181,7 @@
     <Content Include="Assets\Square44x44Logo.targetsize-24_altform-unplated.png" />
     <Content Include="Assets\StoreLogo.png" />
     <Content Include="Assets\Wide310x150Logo.scale-200.png" />
-    <Content Include="Resources\SplashScreenImage.jpg" />
+    <Content Include="Resources\IndoorMapStore.png" />
     <Content Include="Resources\TappedIcon.png" />
     <Content Include="Resources\UnTappedIcon.png" />
     <Content Include="VenueAtlasPage.html" />
@@ -184,6 +191,10 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Page Include="AboutPage.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="AtlasBlankPage.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

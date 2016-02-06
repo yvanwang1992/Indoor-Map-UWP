@@ -16,15 +16,14 @@
         <vm:AtlasBlankPage_Model x:Key="DesignVM"/>
     </Page.Resources>
     
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
+    <Grid Background="{ThemeResource ThemeColor}"  DataContext="{StaticResource DesignVM}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
 
-            <TextBlock Visibility="Collapsed" x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-        <Image Stretch="UniformToFill" Source="/Resources/SplashScreenImage.jpg"/>
-    </Grid>
+        <TextBlock Visibility="Visible" x:Name="pageTitle" Text="室内地图" FontSize="28" Grid.Column="1" 
+                   Foreground="White"     IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+     </Grid>
 </mvvm:MVVMPage>

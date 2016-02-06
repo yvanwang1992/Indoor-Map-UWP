@@ -29,7 +29,7 @@ namespace IndoorMap.ViewModels
 {
 
     [DataContract]
-    public class MainPage_Model : ViewModelBase<MainPage_Model> 
+    public class MainPage_Model : ViewModelBase<MainPage_Model>
     {
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property propcmd for command
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性 propcmd 输入命令
@@ -66,7 +66,7 @@ namespace IndoorMap.ViewModels
         //    }
         //}
 
-        const string NoResultString =  "未能查询到结果";
+        const string NoResultString = "未能查询到结果";
 
         public MainPage_Model()
         {
@@ -75,13 +75,15 @@ namespace IndoorMap.ViewModels
                 IsHumburgShow = true;
 
                 InitPaneListData();
+                InitPaneBottomListData();
             }
             else
             {
                 SubMapPageModel = new SubMapPage_Model();
                 SubMallListPageModel = new SubMallListPage_Model();
-
+                
                 InitPaneListData();
+                InitPaneBottomListData();
             }
         }
 
@@ -107,9 +109,9 @@ namespace IndoorMap.ViewModels
         #region Property List<MallModel> AutoSuggests Setup
         protected Property<List<MallModel>> _AutoSuggests = new Property<List<MallModel>> { LocatorFunc = _AutoSuggestsLocator };
         static Func<BindableBase, ValueContainer<List<MallModel>>> _AutoSuggestsLocator = RegisterContainerLocator<List<MallModel>>("AutoSuggests", model => model.Initialize("AutoSuggests", ref model._AutoSuggests, ref _AutoSuggestsLocator, _AutoSuggestsDefaultValueFactory));
-        static Func<List<MallModel>> _AutoSuggestsDefaultValueFactory = () => new List<MallModel>() {};
+        static Func<List<MallModel>> _AutoSuggestsDefaultValueFactory = () => new List<MallModel>() { };
         #endregion
-         
+
         public Visibility MainVisibility
         {
             get { return _MainVisibilityLocator(this).Value; }
@@ -152,13 +154,13 @@ namespace IndoorMap.ViewModels
         #region Property String Title Setup
         protected Property<String> _Title = new Property<String> { LocatorFunc = _TitleLocator };
         static Func<BindableBase, ValueContainer<String>> _TitleLocator = RegisterContainerLocator<String>("Title", model => model.Initialize("Title", ref model._Title, ref _TitleLocator, _TitleDefaultValueFactory));
-        static Func<String> _TitleDefaultValueFactory = ()=>"Title is Here";
+        static Func<String> _TitleDefaultValueFactory = () => "Title is Here";
         #endregion
 
         private Frame frameSplitContent;
         public Frame FrameSplitContent
         {
-            get { return frameSplitContent;  }
+            get { return frameSplitContent; }
         }
 
         //SelectedPaneDownIndex
@@ -207,6 +209,19 @@ namespace IndoorMap.ViewModels
         static Func<BindableBase, ValueContainer<List<PaneModel>>> _PaneDownListLocator = RegisterContainerLocator<List<PaneModel>>("PaneDownList", model => model.Initialize("PaneDownList", ref model._PaneDownList, ref _PaneDownListLocator, _PaneDownListDefaultValueFactory));
         static Func<List<PaneModel>> _PaneDownListDefaultValueFactory = () => { return new List<PaneModel>(); };
         #endregion
+
+        public List<PaneModel> PaneBottomList
+        {
+            get { return _PaneBottomListLocator(this).Value; }
+            set { _PaneBottomListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property List<PaneModel> PaneBottomList Setup
+        protected Property<List<PaneModel>> _PaneBottomList = new Property<List<PaneModel>> { LocatorFunc = _PaneBottomListLocator };
+        static Func<BindableBase, ValueContainer<List<PaneModel>>> _PaneBottomListLocator = RegisterContainerLocator<List<PaneModel>>("PaneBottomList", model => model.Initialize("PaneBottomList", ref model._PaneBottomList, ref _PaneBottomListLocator, _PaneBottomListDefaultValueFactory));
+        static Func<List<PaneModel>> _PaneBottomListDefaultValueFactory = () => { return new List<PaneModel>(); };
+        #endregion
+
+
 
         //SupportCities
         public List<CityModel> SupportCities
@@ -271,7 +286,7 @@ namespace IndoorMap.ViewModels
 
         #endregion
 
-        
+
         //IsAutoSuggestionBoxFocus
         public bool IsAutoSuggestionBoxFocus
         {
@@ -287,7 +302,7 @@ namespace IndoorMap.ViewModels
 
 
         #region -------------------   Commands   -------------------
-        
+
         #region CommandSearchTapped
         public CommandModel<ReactiveCommand, String> CommandSearchTapped
         {
@@ -350,7 +365,7 @@ namespace IndoorMap.ViewModels
                         {
                             //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-
+                            vm.IsHumburgShow = false;
                             var city = vm.SelectedCity;
 
                             AppSettings.Intance.SelectedCityId = city.id;
@@ -370,7 +385,7 @@ namespace IndoorMap.ViewModels
         #endregion
 
         #endregion
-        
+
         #region CommandHamburgClick
 
         //CommandHamburgClick
@@ -393,7 +408,7 @@ namespace IndoorMap.ViewModels
                         vm,
                         async e =>
                         {
-                            
+
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
 
                             //Todo: Add NavigateToAbout logic here, or
@@ -414,7 +429,7 @@ namespace IndoorMap.ViewModels
         #endregion
 
         #region -------------   AutoSuggestionCommand   -------------
-         
+
         //CommandAutoSuggestionTextChange   
         public CommandModel<ReactiveCommand, String> CommandAutoSuggestionTextChange
         {
@@ -434,14 +449,14 @@ namespace IndoorMap.ViewModels
                 cmd.DoExecuteUIBusyTask(
                         vm,
                         async e =>
-                        {   
+                        {
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
                             var args = e.EventArgs.Parameter as AutoSuggestBoxTextChangedEventArgs;
-                            if(args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
+                            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
                             {
                                 //搜索
                                 vm.SearchMallFromInputKey();
-                            } 
+                            }
                         }
                     )
 
@@ -454,7 +469,7 @@ namespace IndoorMap.ViewModels
                 return cmdmdl;
             };
         #endregion
-        
+
         //CommandAutoSuggestionSubmitted
         public CommandModel<ReactiveCommand, String> CommandAutoSuggestionSubmitted
         {
@@ -500,7 +515,7 @@ namespace IndoorMap.ViewModels
                                 vm.SearchMallFromInputKey();
                                 //自己处理
                             }
-                        }) 
+                        })
                     .DoNotifyDefaultEventRouter(vm, commandId)
                     .Subscribe()
                     .DisposeWith(vm);
@@ -559,7 +574,7 @@ namespace IndoorMap.ViewModels
         {
             get { return _CommandGoToSettingPageLocator(this).Value; }
             set { _CommandGoToSettingPageLocator(this).SetValueAndTryNotify(value); }
-        } 
+        }
         #region Property CommandModel<ReactiveCommand, String> CommandGoToSettingPage Setup        
         protected Property<CommandModel<ReactiveCommand, String>> _CommandGoToSettingPage = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandGoToSettingPageLocator };
         static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandGoToSettingPageLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandGoToSettingPage", model => model.Initialize("CommandGoToSettingPage", ref model._CommandGoToSettingPage, ref _CommandGoToSettingPageLocator, _CommandGoToSettingPageDefaultValueFactory));
@@ -575,16 +590,7 @@ namespace IndoorMap.ViewModels
                         async e =>
                         {
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            if (CommonHelper.HostPage.ActualWidth <= 500)
-                            {
-                                vm.MainVisibility = Visibility.Collapsed;
-                            }
-                            else
-                            {
-                                vm.MainVisibility = Visibility.Visible;
-                            }
-                            await vm.StageManager["frameSub"].Show(new SettingPage_Model());
-                           
+                            vm.GoToSetting();
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                         }
@@ -600,7 +606,36 @@ namespace IndoorMap.ViewModels
             };
         #endregion
 
+        public async void GoToSetting()
+        {
+            if (CommonHelper.HostPage.ActualWidth <= 500)
+            {
+                MainVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                MainVisibility = Visibility.Visible;
+            }
+            await StageManager["frameSub"].Show(new SettingPage_Model());
+        }
+
         #endregion
+
+
+
+        public async void GoToAbout()
+        {
+            if (CommonHelper.HostPage.ActualWidth <= 500)
+            {
+                MainVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                MainVisibility = Visibility.Visible;
+            }
+            await StageManager["frameSub"].Show(new AboutPage_Model());
+        }
+
 
         //CommandGoToRefreshPage
         #region CommandGoToRefreshPage
@@ -625,7 +660,7 @@ namespace IndoorMap.ViewModels
                         async e =>
                         {
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-
+                            vm.IsHumburgShow = false;
                             vm.GetSupportMallListAction();
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
@@ -644,7 +679,46 @@ namespace IndoorMap.ViewModels
 
         #endregion
 
-        
+
+        //CommandPaneBottomItemClick
+        #region CommandPaneBottomItemClick
+
+        public CommandModel<ReactiveCommand, String> CommandPaneBottomItemClick
+        {
+            get { return _CommandPaneBottomItemClickLocator(this).Value; }
+            set { _CommandPaneBottomItemClickLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandPaneBottomItemClick Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandPaneBottomItemClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandPaneBottomItemClickLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandPaneBottomItemClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandPaneBottomItemClick", model => model.Initialize("CommandPaneBottomItemClick", ref model._CommandPaneBottomItemClick, ref _CommandPaneBottomItemClickLocator, _CommandPaneBottomItemClickDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandPaneBottomItemClickDefaultValueFactory =
+            model =>
+            {
+                var resource = "PaneBottomItemClick";           // Command resource  
+                var commandId = "PaneBottomItemClick";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            var a = e.EventArgs;
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
 
 
         #region CommandPaneItemChanged
@@ -670,7 +744,12 @@ namespace IndoorMap.ViewModels
                         async e =>
                         {
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            var navItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
+                            var navItem = new PaneModel();
+                            if (e.EventArgs.Parameter is ItemClickEventArgs)
+                                navItem = (e.EventArgs.Parameter as ItemClickEventArgs).ClickedItem as PaneModel;
+                            else
+                                navItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
+
                             MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, navItem, typeof(PaneModel), "SplitViewPaneItemClick", true);
                         }
                     )
@@ -759,7 +838,7 @@ namespace IndoorMap.ViewModels
             {
                 JsonCityModel jsonCity = JsonConvert.DeserializeObject<JsonCityModel>(result);
                 if (jsonCity.reason == "成功" || jsonCity.reason == "successed")
-                { 
+                {
                     HttpClientReturnCities(jsonCity.result);
                 }
             };
@@ -768,6 +847,7 @@ namespace IndoorMap.ViewModels
 
         private async void GetSupportMallList()
         {
+
             var mallListJson = await StorageHelper.GetLocalTextFile(DataManager.CityMallListFile);
             if (mallListJson != null)
             {
@@ -782,23 +862,28 @@ namespace IndoorMap.ViewModels
                     GetSupportMallListAction();
             }
             else
-                GetSupportMallListAction(); 
+                GetSupportMallListAction();
         }
 
         public void GetSupportMallListAction()
-        {
+        { 
             string url = string.Format(@"http://op.juhe.cn/atlasyun/mall/list?key={0}&cityid={1}", Configmanager.INDOORMAP_APPKEY, SelectedCity.id);
             FormAction action = new FormAction(url);
-            action.isShowWaitingPanel = true;
+            action.isShowWaitingPanel = false;
             action.viewModel = this;
-            action.Run();
+            action.Run(false);
             action.FormActionCompleted += async (result, ee) =>
-            {
+            { 
                 JsonMallModel jsonMall = JsonConvert.DeserializeObject<JsonMallModel>(result);
-                                    
+
                 if (jsonMall.reason == "成功" || jsonMall.reason == "successed")
                 {
                     //此处 解析时间非常慢慢慢慢
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => 
+                    {
+                        WaitingPanelHelper.ShowWaitingPanel("正在解析商场区域", Visibility.Visible);
+                    });
+
                     foreach (var mall in jsonMall.result)
                     {
                         mall.district = await LocationManager.GetDistrictUsingLocation(new Geopoint(new BasicGeoposition()
@@ -806,7 +891,7 @@ namespace IndoorMap.ViewModels
                             Latitude = Double.Parse(mall.lat),
                             Longitude = Double.Parse(mall.lon)
                         }));
-                    } 
+                    }
                     var item = new SavedMallListModel() { City = SelectedCity, MallList = jsonMall.result };
                     var saveItem = DataManager.SavedMallList.FirstOrDefault(n => n.City.id == item.City.id);
                     if (saveItem != null)
@@ -817,22 +902,27 @@ namespace IndoorMap.ViewModels
                     string save = JsonConvert.SerializeObject(DataManager.SavedMallList);
                     await StorageHelper.SetLocalTextFile(DataManager.CityMallListFile, save);
 
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        WaitingPanelHelper.HiddenWaitingPanel();
+
+                    });
                     HttpClientReturnMallList(jsonMall.result);
                 }
             };
         }
 
         public async void HttpClientReturnCities(List<CityModel> jsonCity)
-        {
-
+        { 
             this.SupportCities = jsonCity;
-            if (AppSettings.Intance.GetAppSetting(AppSettings.LocationSettingKey))
+
+            string city = AppSettings.Intance.LocationCity;
+            if (!string.IsNullOrEmpty(city))
             {
-                string city = AppSettings.Intance.LocationCity;
                 var saveCity = SupportCities.FirstOrDefault(n => n.name == city);
                 if (saveCity == null)
                 {
-                    await new MessageDialog("暂不支持" + city + "，为您切换到默认城市").ShowAsync();
+                    await new MessageDialog("暂不支持您所在的城市，为您切换到默认城市").ShowAsync();
                     SelectedCityIndex = 0;
                 }
                 else
@@ -854,6 +944,15 @@ namespace IndoorMap.ViewModels
             PaneDownList.Add(new PaneModel() { Label = "地图", Icon = "\xE128", type = PanelItemType.PanelItemMap }); 
 
             //SelectedPaneDownItem = PaneDownList.FirstOrDefault(); 
+        }
+
+
+        public void InitPaneBottomListData()
+        {
+            PaneBottomList.Add(new PaneModel() { Label = "设置", Icon = "\xE115", type = PanelItemType.PanelItemSetting });
+            PaneBottomList.Add(new PaneModel() { Label = "给我好评", Icon = "\xE19F", type = PanelItemType.PanelItemReview });
+            PaneBottomList.Add(new PaneModel() { Label = "反馈", Icon = "\xE119", type = PanelItemType.PanelItemFeedback });
+            PaneBottomList.Add(new PaneModel() { Label = "关于", Icon = "\xE946", type = PanelItemType.PanelItemAbout });
         }
 
         //Subscribe
@@ -878,7 +977,7 @@ namespace IndoorMap.ViewModels
                         }
                         
                         //await StageManager.DefaultStage.Show(new AtlasPage_Model(item.buildings.FirstOrDefault()));
-                        await StageManager["frameSub"].Show(new AtlasPage_Model(item.buildings.FirstOrDefault()));
+                        await StageManager["frameSub"].Show(new AtlasPage_Model(item));
                     }
                 }
                 ).DisposeWith(this);
@@ -906,13 +1005,26 @@ namespace IndoorMap.ViewModels
                     var navItem = e.EventData as PaneModel;
                     if (navItem != null)
                     {
+                        IsHumburgShow = false;
                         switch (navItem.type)
-                        {
+                        {                       
                             case PanelItemType.PanelItemMallList:
                                 await StageManager["frameMain"].Show(SubMallListPageModel);
-                                break;
+                                 break;
                             case PanelItemType.PanelItemMap:
                                 await StageManager["frameMain"].Show(SubMapPageModel);
+                                break;
+                            case PanelItemType.PanelItemFeedback:
+                                CommonHelper.Feedback("商场室内地图-反馈", "请在此输入内容,谢谢！", "yffswyf@163.com");
+                                break;
+                            case PanelItemType.PanelItemReview:
+                                CommonHelper.Review();
+                                break;
+                            case PanelItemType.PanelItemSetting:
+                                GoToSetting();
+                                break;
+                            case PanelItemType.PanelItemAbout:
+                                GoToAbout();
                                 break;
                         }
                     }
@@ -931,6 +1043,7 @@ namespace IndoorMap.ViewModels
                 {
                     AppSettings.Intance.SetAppSetting(AppSettings.LocationSettingKey, true);
                     string location = await LocationManager.GetCityUsingMapLocation();
+                    //正在定位  要有提示
                     if (!string.IsNullOrEmpty(location))
                         AppSettings.Intance.LocationCity = location;
                 }
@@ -941,12 +1054,12 @@ namespace IndoorMap.ViewModels
             }
 
             //if the locate setting is on but the city is empty or null
-            if (AppSettings.Intance.GetAppSetting(AppSettings.LocationSettingKey) && !string.IsNullOrEmpty(AppSettings.Intance.LocationCity))
+            if (AppSettings.Intance.GetAppSetting(AppSettings.LocationSettingKey) && string.IsNullOrEmpty(AppSettings.Intance.LocationCity))
             {
                 string location = await LocationManager.GetCityUsingMapLocation();
                 if (!string.IsNullOrEmpty(location))
                     AppSettings.Intance.LocationCity = location;
-            } 
+            }
 
             GetSupportCities();
         }

@@ -78,13 +78,12 @@ namespace IndoorMap.ViewModels
             return new ObservableCollection<SettingModel>()
             {
                 new SettingModel(true, AppSettings.LocationSettingKey) { DisplayName = "允许获取位置信息"},
-                    new SettingModel(false, AppSettings.NetworkSettingKey) { DisplayName = "允许使用2G/3G/4G网络"},
+                    //new SettingModel(false, AppSettings.NetworkSettingKey) { DisplayName = "允许使用2G/3G/4G网络"},
                     new SettingModel(false, AppSettings.LandmarksVisibleSettingKey) { DisplayName = "显示地标性建筑"}
             };
         };
         #endregion
-
-
+         
         private void SuscribeCommand()
         { 
 
@@ -102,7 +101,7 @@ namespace IndoorMap.ViewModels
             //    }
             //    ).DisposeWith(this);
         }
-         
+
         #region Life Time Event Handling
 
         ///// <summary>
@@ -122,10 +121,10 @@ namespace IndoorMap.ViewModels
         ///// <param name="view">Overwrite target view.</param>
         ///// <param name="newValue">The value replacing </param>
         ///// <returns>Task awaiter</returns>
-        //protected override Task OnUnbindedFromView(MVVMSidekick.Views.IView view, IViewModel newValue)
-        //{
-        //    return base.OnUnbindedFromView(view, newValue);
-        //}
+        protected override Task OnUnbindedFromView(MVVMSidekick.Views.IView view, IViewModel newValue)
+        {
+            return base.OnUnbindedFromView(view, newValue);
+        }
 
         /// <summary>
         /// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
@@ -147,12 +146,12 @@ namespace IndoorMap.ViewModels
         /// </summary>
         /// <param name="view">View that firing Unload event</param>
         /// <returns>Task awaiter</returns>
-        protected override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
-        {
-            var visible = AppSettings.Intance.GetAppSetting(AppSettings.LandmarksVisibleSettingKey);
-            MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(this, visible, typeof(bool), "ChangeMapLandMarks", true);
-            return base.OnBindedViewUnload(view);
-        }
+        //protected async override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
+        //{
+           
+        //    await base.OnBindedViewUnload(view);
+
+        //}
 
         ///// <summary>
         ///// <para>If dispose actions got exceptions, will handled here. </para>

@@ -404,16 +404,16 @@ namespace IndoorMap.ViewModels
                 }
                 ).DisposeWith(this);
 
-            //MallList Item Tapped
-            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
-                .Where(x => x.EventName == "ChangeMapLandMarks")
-                .Subscribe(
-                e =>
-                {
-                    var visibile = (bool)e.EventData;
-                    MapLandMarkVisible = visibile;
-                }
-                ).DisposeWith(this);
+
+            //MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+            //    .Where(x => x.EventName == "ChangeMapLandMarks")
+            //    .Subscribe(
+            //    e =>
+            //    {
+            //        var visibile = (bool)e.EventData;
+            //        MapLandMarkVisible = visibile;
+            //    }
+            //    ).DisposeWith(this);
 
             //When Search One Mall, Mark It And go for it;
             MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
@@ -425,66 +425,70 @@ namespace IndoorMap.ViewModels
                     AddSelectedMallInMap(mall);
                 }
                 ).DisposeWith(this);
+        }
+        #region Life Time Event Handling
 
-            #region Life Time Event Handling
-
-            ///// <summary>
-            ///// This will be invoked by view when this viewmodel instance is set to view's ViewModel property. 
-            ///// </summary>
-            ///// <param name="view">Set target</param>
-            ///// <param name="oldValue">Value before set.</param>
-            ///// <returns>Task awaiter</returns>
-            //protected override Task OnBindedToView(MVVMSidekick.Views.IView view, IViewModel oldValue)
-            //{
-            //    return base.OnBindedToView(view, oldValue);
-            //}
-
-            ///// <summary>
-            ///// This will be invoked by view when this instance of viewmodel in ViewModel property is overwritten.
-            ///// </summary>
-            ///// <param name="view">Overwrite target view.</param>
-            ///// <param name="newValue">The value replacing </param>
-            ///// <returns>Task awaiter</returns>
-            //protected override Task OnUnbindedFromView(MVVMSidekick.Views.IView view, IViewModel newValue)
-            //{
-            //    return base.OnUnbindedFromView(view, newValue);
-            //}
-
-            ///// <summary>
-            ///// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
-            ///// </summary>
-            ///// <param name="view">View that firing Load event</param>
-            ///// <returns>Task awaiter</returns>
-            //protected async override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
-            //{ 
-            //    await base.OnBindedViewLoad(view);
-            //}
-
-            ///// <summary>
-            ///// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property
-            ///// </summary>
-            ///// <param name="view">View that firing Unload event</param>
-            ///// <returns>Task awaiter</returns>
-            //protected override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
-            //{
-            //    return base.OnBindedViewUnload(view);
-            //}
-
-            ///// <summary>
-            ///// <para>If dispose actions got exceptions, will handled here. </para>
-            ///// </summary>
-            ///// <param name="exceptions">
-            ///// <para>The exception and dispose infomation</para>
-            ///// </param>
-            //protected override async void OnDisposeExceptions(IList<DisposeInfo> exceptions)
-            //{
-            //    base.OnDisposeExceptions(exceptions);
-            //    await TaskExHelper.Yield();
-            //}
-
-            #endregion
+        /// <summary>
+        /// This will be invoked by view when this viewmodel instance is set to view's ViewModel property. 
+        /// </summary>
+        /// <param name="view">Set target</param>
+        /// <param name="oldValue">Value before set.</param>
+        /// <returns>Task awaiter</returns>
+        protected override Task OnBindedToView(MVVMSidekick.Views.IView view, IViewModel oldValue)
+        {
+            return base.OnBindedToView(view, oldValue);
 
         }
+
+        ///// <summary>
+        ///// This will be invoked by view when this instance of viewmodel in ViewModel property is overwritten.
+        ///// </summary>
+        ///// <param name="view">Overwrite target view.</param>
+        ///// <param name="newValue">The value replacing </param>
+        ///// <returns>Task awaiter</returns>
+        //protected override Task OnUnbindedFromView(MVVMSidekick.Views.IView view, IViewModel newValue)
+        //{
+        //    return base.OnUnbindedFromView(view, newValue);
+        //}
+
+        /// <summary>
+        /// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
+        /// </summary>
+        /// <param name="view">View that firing Load event</param>
+        /// <returns>Task awaiter</returns>
+        protected async override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
+        {
+            await base.OnBindedViewLoad(view);
+            MapLandMarkVisible = AppSettings.Intance.GetAppSetting(AppSettings.LandmarksVisibleSettingKey);
+            //var visible = AppSettings.Intance.GetAppSetting(AppSettings.LandmarksVisibleSettingKey);
+            //MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(this, visible, typeof(bool), "ChangeMapLandMarks", true);
+
+        }
+
+        ///// <summary>
+        ///// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property
+        ///// </summary>
+        ///// <param name="view">View that firing Unload event</param>
+        ///// <returns>Task awaiter</returns>
+        //protected override Task OnBindedViewUnload(MVVMSidekick.Views.IView view)
+        //{
+        //    return base.OnBindedViewUnload(view);
+        //}
+
+        ///// <summary>
+        ///// <para>If dispose actions got exceptions, will handled here. </para>
+        ///// </summary>
+        ///// <param name="exceptions">
+        ///// <para>The exception and dispose infomation</para>
+        ///// </param>
+        //protected override async void OnDisposeExceptions(IList<DisposeInfo> exceptions)
+        //{
+        //    base.OnDisposeExceptions(exceptions);
+        //    await TaskExHelper.Yield();
+        //}
+
+        #endregion
+
     }
 }
 

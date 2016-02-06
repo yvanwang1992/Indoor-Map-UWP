@@ -15,8 +15,8 @@ namespace IndoorMap.Helpers
         static ApplicationDataContainer localSettings = ApplicationData.Current.LocalSettings;
         static StorageFolder folder = ApplicationData.Current.LocalFolder;
 
-        public static void DeleteAllTheKeyAndValue()
-        {
+        public  void DeleteAllTheKeyAndValue()
+        {             
             localSettings.Values.Clear();
         }
 

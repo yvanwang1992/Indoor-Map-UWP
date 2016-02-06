@@ -10,44 +10,48 @@
     xmlns:vm="using:IndoorMap.ViewModels"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:converter="using:IndoorMap.Helpers"
     mc:Ignorable="d">
 
     <Page.Resources>
+        <converter:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+        <converter:OpenTimeConverter x:Key="OpenTimeConverter"/>
+        <converter:TrafficMultiLineConverter x:Key="TrafficMultiLineConverter"/>
+        <converter:FloorConverter x:Key="FloorConverter"/>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
         <x:String x:Key="AppName">My Application</x:String>
         <vm:AtlasPage_Model x:Key="DesignVM"/>
     </Page.Resources>
     
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
+    <Grid x:Name="gridAtlas" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
-        <Grid Background="White">
+        <Grid Background="{ThemeResource ThemeColor}">
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
             </Grid.RowDefinitions>
-            
-            <TextBlock x:Name="pageTitle" Text="{Binding Title}"  Grid.Column="1" 
-                         TextWrapping="NoWrap"/>
-            <AutoSuggestBox Grid.Row="1" 
+
+            <AutoSuggestBox Grid.Row="0"
                             ItemsSource="{Binding ShopSearchList}" 
                             UpdateTextOnSelect="True" 
                             TextMemberPath ="ch_name"
-                            PlaceholderText="请输入需要查询的商铺" 
+                            PlaceholderText="请输入商铺名称" 
                             QueryIcon="Find" 
-                            Grid.Column="1"  
+                            Grid.Column="1"
                             Text="{Binding AutoSuggestText, Mode=TwoWay}"
                             HorizontalAlignment="Stretch" >
+         
                 <AutoSuggestBox.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
-                            <TextBlock Text="{Binding ch_name, Mode=TwoWay}"/>
-                            <TextBlock Text="{Binding floor.name, Mode=TwoWay}"/>
-                        </StackPanel> 
+                            <TextBlock Text="{Binding floor.name, Converter={StaticResource FloorConverter}, Mode=TwoWay}"/>
+                            <TextBlock Text="{Binding ch_name, Mode=TwoWay}" Margin="20,0,0,0"/>
+                        </StackPanel>
                     </DataTemplate>
                 </AutoSuggestBox.ItemTemplate>
                 <interactivity:Interaction.Behaviors>
@@ -60,7 +64,32 @@
                 </interactivity:Interaction.Behaviors>
             </AutoSuggestBox>
 
-            <WebView Grid.Row="2" Margin="10"  x:Name="webView"  
+            <Grid Margin="8" Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <StackPanel Grid.Row="0" Orientation="Horizontal">
+                    <TextBlock FontSize="22" Text="{Binding SelectedMallModel.name}" Foreground="White"/>
+                    <TextBlock VerticalAlignment="Center"  Text="{Binding SelectedMallModel.opentime, Converter={StaticResource OpenTimeConverter}}" Foreground="White" FontSize="13" Margin="5,10,0,0" />
+                </StackPanel> 
+                <TextBlock Grid.Row="1"  Text="{Binding SelectedMallModel.addr}" FontSize="18" Foreground="White"/>
+                <StackPanel Margin="5" Grid.Row="3" Orientation="Horizontal"  Visibility="{Binding SelectedMallModel.traffic, Converter={StaticResource EmptyStringToVisibilityConverter}}">
+                    <Border>
+                        <TextBlock Foreground="White" FontFamily="Segoe MDL2 Assets" Text="&#xEB47;" VerticalAlignment="Center" FontSize="25" Margin="0,0,15,0"/>
+                    </Border>
+                    <TextBlock Text="{Binding SelectedMallModel.traffic, Converter={StaticResource TrafficMultiLineConverter}}" VerticalAlignment="Center"   Foreground="White" FontSize="16" TextWrapping="Wrap"/>
+                </StackPanel>
+            </Grid>
+
+
+            <WebView Grid.Row="2" x:Name="webView"
+                     HorizontalAlignment="Stretch"
+                     VerticalAlignment="Stretch"
+                     DefaultBackgroundColor="White"
+                     ScrollViewer.VerticalScrollBarVisibility="Disabled"
+                     ScrollViewer.HorizontalScrollBarVisibility="Disabled"
                      Source="ms-appx-web:///VenueAtlasPage.html">
                 <interactivity:Interaction.Behaviors>
                     <core:EventTriggerBehavior EventName="LoadCompleted">

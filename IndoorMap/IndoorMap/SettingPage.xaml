@@ -25,7 +25,7 @@
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
-        <Grid Margin="12" >
+        <Grid Margin="15" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -34,9 +34,9 @@
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
             
-            <TextBlock Grid.Row="0"  x:Name="pageTitle" Text="{Binding Title}"  FontSize="26"
+            <TextBlock Grid.Row="0"  x:Name="pageTitle" Text="设置"  FontSize="26"
                         IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"  />
-            <ItemsControl Grid.Row="1" ItemsSource="{Binding SettingList, Mode=TwoWay}" >
+            <ItemsControl Margin="0,20,0,0" Grid.Row="1" ItemsSource="{Binding SettingList, Mode=TwoWay}" >
                 <ItemsControl.ItemTemplate>
                     <DataTemplate>
                         <StackPanel Orientation="Horizontal">
@@ -45,7 +45,14 @@
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>
-          </Grid>
+
+            <StackPanel Visibility="Collapsed" Margin="0,20,0,0"  Grid.Row="3" Orientation="Vertical">
+                <TextBlock Text="隐私" FontSize="20"/>
+                <TextBlock x:Name="txtLocationStatus" Text="地图可以使用你的位置"/>
+                <Button Content="打开定位设置" Click="Button_Click"/>
+            </StackPanel>
+            
+        </Grid>
     </Grid>
  
 </mvvm:MVVMPage>

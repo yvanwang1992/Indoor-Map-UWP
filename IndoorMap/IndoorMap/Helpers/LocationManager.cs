@@ -8,6 +8,7 @@ using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.Services.Maps;
 using Windows.UI.Popups;
+using Windows.UI.Xaml;
 
 namespace IndoorMap.Helpers
 {
@@ -33,6 +34,7 @@ namespace IndoorMap.Helpers
 
         public static async Task<Geoposition> GetPosition(uint accuracyInMeters = 0)
         {
+            WaitingPanelHelper.ShowWaitingPanel("正在定位，请稍后...", Visibility.Visible);
             bool access = await IsLocationCanAccess();
             if (access)
             {
@@ -43,10 +45,12 @@ namespace IndoorMap.Helpers
                     DesiredAccuracyInMeters = accuracyInMeters,
                 };
                 var position = await locator.GetGeopositionAsync();
+                WaitingPanelHelper.HiddenWaitingPanel();
                 return position;
             }
             else
             {
+                WaitingPanelHelper.HiddenWaitingPanel();
                 await new MessageDialog("定位失败! 如有需要，可前往设置打开定位").ShowAsync();
                 return null;
             }

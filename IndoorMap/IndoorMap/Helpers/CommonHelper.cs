@@ -19,17 +19,15 @@ namespace IndoorMap.Helpers
     {
 
         public const string SettingLocationUri = "ms-settings:privacy-location";
-        public const string AppReviewUri = "ms-windows-store://review/?ProductId=";
+        //public const string AppReviewUri = "ms-windows-store://review/?ProductId="; 
+        public const string AppReviewUri = "ms-windows-store:REVIEW?PFN=";
+        public const string MyAppStoreUri = "ms-windows-store://publisher/?name=";
 
         #region Go To System Settings   
 
         public static async void NavigationToSettingUri()
         {
            bool result = await Launcher.LaunchUriAsync(new Uri(SettingLocationUri));
-            if (!result)
-            {
-                //error
-            }
         }
 
         public async static void Feedback(string subject = "主题", string content = "内容", string to = "RecipientEmail")
@@ -42,10 +40,23 @@ namespace IndoorMap.Helpers
         }
 
         public async static void Review()
-        { 
-             bool result = await Launcher.LaunchUriAsync(new Uri(AppReviewUri + CurrentApp.AppId));
+        {
+            try
+            {
+                await Launcher.LaunchUriAsync(new Uri(string.Format(AppReviewUri + Windows.ApplicationModel.Package.Current.Id.FamilyName)));
+
+                //bool result = await Launcher.LaunchUriAsync(new Uri(AppReviewUri +  CurrentApp.AppId));
+            }
+            catch (Exception e)
+            {
+
+            }
         }
 
+        public async static void GoToMyAppStore()
+        {
+            await Launcher.LaunchUriAsync(new Uri(string.Format(MyAppStoreUri + "Yvan Wang")));
+        }
 
         #endregion
 

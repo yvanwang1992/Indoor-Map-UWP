@@ -21,7 +21,7 @@ namespace IndoorMap
 
         public static string App_Version = "v1.0.0"; 
 
-        public static Color ThemeColor = Color.FromArgb(1,90, 165, 240);
+        public static Color ThemeColor = Color.FromArgb(100,90, 165, 240);
         
     }
 }
