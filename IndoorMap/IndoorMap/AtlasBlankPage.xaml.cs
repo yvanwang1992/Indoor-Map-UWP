@@ -21,8 +21,6 @@ using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Input;
 using Windows.UI.Xaml.Media;
 using Windows.UI.Xaml.Navigation;
-using Windows.UI.Core;
-using Windows.UI.ViewManagement;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=234238
 
@@ -31,43 +29,32 @@ namespace IndoorMap
     /// <summary>
     /// An empty page that can be used on its own or navigated to within a Frame.
     /// </summary>
-    public sealed partial class AtlasPage : MVVMPage
+    public sealed partial class AtlasBlankPage : MVVMPage
     {
-        public AtlasPage()
+
+        public AtlasBlankPage()
         {
+
             this.InitializeComponent();
             this.RegisterPropertyChangedCallback(ViewModelProperty, (_, __) =>
             {
-                StrongTypeViewModel = this.ViewModel as AtlasPage_Model;
+                StrongTypeViewModel = this.ViewModel as AtlasBlankPage_Model;
             });
-            StrongTypeViewModel = this.ViewModel as AtlasPage_Model;
-            this.SizeChanged += AtlasPage_SizeChanged;
+            StrongTypeViewModel = this.ViewModel as AtlasBlankPage_Model;
         }
 
-        private void AtlasPage_SizeChanged(object sender, SizeChangedEventArgs e)
-        {
-            double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
-       
-            if (this.ActualWidth <= 500)
-            {
-                this.gridAtlas.Width = width;
-                this.gridAtlas.HorizontalAlignment = HorizontalAlignment.Left;
-            }
-            else
-            {
-                this.gridAtlas.HorizontalAlignment = HorizontalAlignment.Stretch;
-            }
-        }
 
-        public AtlasPage_Model StrongTypeViewModel
+        public AtlasBlankPage_Model StrongTypeViewModel
         {
-            get { return (AtlasPage_Model)GetValue(StrongTypeViewModelProperty); }
+            get { return (AtlasBlankPage_Model)GetValue(StrongTypeViewModelProperty); }
             set { SetValue(StrongTypeViewModelProperty, value); }
         }
 
         public static readonly DependencyProperty StrongTypeViewModelProperty =
-                    DependencyProperty.Register("StrongTypeViewModel", typeof(AtlasPage_Model), typeof(AtlasPage), new PropertyMetadata(null));
-        
+                    DependencyProperty.Register("StrongTypeViewModel", typeof(AtlasBlankPage_Model), typeof(AtlasBlankPage), new PropertyMetadata(null));
+
+
+
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
         {
@@ -77,6 +64,7 @@ namespace IndoorMap
         protected override void OnNavigatedFrom(NavigationEventArgs e)
         {
             base.OnNavigatedFrom(e);
-        } 
+        }
+
     }
 }

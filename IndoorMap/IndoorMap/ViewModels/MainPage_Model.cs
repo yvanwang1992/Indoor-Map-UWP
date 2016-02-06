@@ -23,25 +23,127 @@ using Windows.UI.Xaml.Controls.Maps;
 using Windows.Devices.Geolocation;
 using Windows.Storage.Streams;
 using Windows.UI.Xaml;
+using Windows.UI.Xaml.Controls;
 
 namespace IndoorMap.ViewModels
 {
 
     [DataContract]
-    public class MainPage_Model : ViewModelBase<MainPage_Model> 
+    public class MainPage_Model : ViewModelBase<MainPage_Model>
     {
         // If you have install the code sniplets, use "propvm + [tab] +[tab]" create a property propcmd for command
         // 如果您已经安装了 MVVMSidekick 代码片段，请用 propvm +tab +tab 输入属性 propcmd 输入命令
+        bool isLoadSuscribe = false;
 
-    public MainPage_Model()
+        //private SubMallListPage_Model subMallListPageModel;
+        public SubMallListPage_Model SubMallListPageModel;
+        //{
+        //    get
+        //    {
+        //        if(subMallListPageModel == null)
+        //        {
+        //            subMallListPageModel = new SubMallListPage_Model();
+        //        }
+        //        return subMallListPageModel;
+        //    }
+        //    set { subMallListPageModel = value; }
+        //}
+
+        //private SubMapPage_Model subMapPageModel;
+        public SubMapPage_Model SubMapPageModel;
+        //{
+        //    get
+        //    {
+        //        if (subMapPageModel == null)
+        //        {
+        //            subMapPageModel = new SubMapPage_Model();
+        //        }
+        //        return subMapPageModel;
+        //    }
+        //    set
+        //    {
+        //        subMapPageModel = value;
+        //    }
+        //}
+
+        const string NoResultString = "未能查询到结果";
+
+        public MainPage_Model()
         {
             if (IsInDesignMode)
             {
-                Title = "Title is a little different in Design mode";
+                IsHumburgShow = true;
+
+                InitPaneListData();
+                InitPaneBottomListData();
+            }
+            else
+            {
+                SubMapPageModel = new SubMapPage_Model();
+                SubMallListPageModel = new SubMallListPage_Model();
+                
+                InitPaneListData();
+                InitPaneBottomListData();
             }
         }
 
         #region --------------------   Properties   -------------------
+
+
+        public String AutoSuggestText
+        {
+            get { return _AutoSuggestTextLocator(this).Value; }
+            set { _AutoSuggestTextLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property String AutoSuggestText Setup
+        protected Property<String> _AutoSuggestText = new Property<String> { LocatorFunc = _AutoSuggestTextLocator };
+        static Func<BindableBase, ValueContainer<String>> _AutoSuggestTextLocator = RegisterContainerLocator<String>("AutoSuggestText", model => model.Initialize("AutoSuggestText", ref model._AutoSuggestText, ref _AutoSuggestTextLocator, _AutoSuggestTextDefaultValueFactory));
+        static Func<String> _AutoSuggestTextDefaultValueFactory = () => string.Empty;
+        #endregion
+
+        public List<MallModel> AutoSuggests
+        {
+            get { return _AutoSuggestsLocator(this).Value; }
+            set { _AutoSuggestsLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property List<MallModel> AutoSuggests Setup
+        protected Property<List<MallModel>> _AutoSuggests = new Property<List<MallModel>> { LocatorFunc = _AutoSuggestsLocator };
+        static Func<BindableBase, ValueContainer<List<MallModel>>> _AutoSuggestsLocator = RegisterContainerLocator<List<MallModel>>("AutoSuggests", model => model.Initialize("AutoSuggests", ref model._AutoSuggests, ref _AutoSuggestsLocator, _AutoSuggestsDefaultValueFactory));
+        static Func<List<MallModel>> _AutoSuggestsDefaultValueFactory = () => new List<MallModel>() { };
+        #endregion
+
+        public Visibility MainVisibility
+        {
+            get { return _MainVisibilityLocator(this).Value; }
+            set { _MainVisibilityLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Visibility MainVisibility Setup
+        protected Property<Visibility> _MainVisibility = new Property<Visibility> { LocatorFunc = _MainVisibilityLocator };
+        static Func<BindableBase, ValueContainer<Visibility>> _MainVisibilityLocator = RegisterContainerLocator<Visibility>("MainVisibility", model => model.Initialize("MainVisibility", ref model._MainVisibility, ref _MainVisibilityLocator, _MainVisibilityDefaultValueFactory));
+        static Func<Visibility> _MainVisibilityDefaultValueFactory = () => Visibility.Visible;
+        #endregion
+
+        public Visibility FrameVisibility
+        {
+            get { return _FrameVisibilityLocator(this).Value; }
+            set { _FrameVisibilityLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Visibility FrameVisibility Setup
+        protected Property<Visibility> _FrameVisibility = new Property<Visibility> { LocatorFunc = _FrameVisibilityLocator };
+        static Func<BindableBase, ValueContainer<Visibility>> _FrameVisibilityLocator = RegisterContainerLocator<Visibility>("FrameVisibility", model => model.Initialize("FrameVisibility", ref model._FrameVisibility, ref _FrameVisibilityLocator, _FrameVisibilityDefaultValueFactory));
+        static Func<Visibility> _FrameVisibilityDefaultValueFactory = () => Visibility.Visible;
+        #endregion
+
+        public bool IsHumburgShow
+        {
+            get { return _IsHumburgShowLocator(this).Value; }
+            set { _IsHumburgShowLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property bool IsHumburgShow Setup
+        protected Property<bool> _IsHumburgShow = new Property<bool> { LocatorFunc = _IsHumburgShowLocator };
+        static Func<BindableBase, ValueContainer<bool>> _IsHumburgShowLocator = RegisterContainerLocator<bool>("IsHumburgShow", model => model.Initialize("IsHumburgShow", ref model._IsHumburgShow, ref _IsHumburgShowLocator, _IsHumburgShowDefaultValueFactory));
+        static Func<bool> _IsHumburgShowDefaultValueFactory = () => false;
+        #endregion
 
         //propvm tab tab string tab Title
         public String Title
@@ -52,9 +154,75 @@ namespace IndoorMap.ViewModels
         #region Property String Title Setup
         protected Property<String> _Title = new Property<String> { LocatorFunc = _TitleLocator };
         static Func<BindableBase, ValueContainer<String>> _TitleLocator = RegisterContainerLocator<String>("Title", model => model.Initialize("Title", ref model._Title, ref _TitleLocator, _TitleDefaultValueFactory));
-        static Func<String> _TitleDefaultValueFactory = ()=>"Title is Here";
+        static Func<String> _TitleDefaultValueFactory = () => "Title is Here";
         #endregion
-        
+
+        private Frame frameSplitContent;
+        public Frame FrameSplitContent
+        {
+            get { return frameSplitContent; }
+        }
+
+        //SelectedPaneDownIndex
+        public int SelectedPaneDownIndex
+        {
+            get { return _SelectedPaneDownIndexLocator(this).Value; }
+            set
+            {
+                _SelectedPaneDownIndexLocator(this).SetValueAndTryNotify(value);
+                //SubNavigateTo(SelectedPaneDownIndex.type);
+                //Navigate To SubPage :  List.Map..ect 
+            }
+        }
+        #region Property int SelectedPaneDownIndex Setup
+        protected Property<int> _SelectedPaneDownIndex = new Property<int> { LocatorFunc = _SelectedPaneDownIndexLocator };
+        static Func<BindableBase, ValueContainer<int>> _SelectedPaneDownIndexLocator = RegisterContainerLocator<int>("SelectedPaneDownIndex", model => model.Initialize("SelectedPaneDownIndex", ref model._SelectedPaneDownIndex, ref _SelectedPaneDownIndexLocator, _SelectedPaneDownIndexDefaultValueFactory));
+        static Func<int> _SelectedPaneDownIndexDefaultValueFactory = () => { return 0; };
+        #endregion
+
+
+        //SelectedPaneDownItem
+        public PaneModel SelectedPaneDownItem
+        {
+            get { return _SelectedPaneDownItemLocator(this).Value; }
+            set
+            {
+                _SelectedPaneDownItemLocator(this).SetValueAndTryNotify(value);
+                //SubNavigateTo(SelectedPaneDownItem.type);
+                //Navigate To SubPage :  List.Map..ect 
+            }
+        }
+        #region Property PaneModel SelectedPaneDownItem Setup
+        protected Property<PaneModel> _SelectedPaneDownItem = new Property<PaneModel> { LocatorFunc = _SelectedPaneDownItemLocator };
+        static Func<BindableBase, ValueContainer<PaneModel>> _SelectedPaneDownItemLocator = RegisterContainerLocator<PaneModel>("SelectedPaneDownItem", model => model.Initialize("SelectedPaneDownItem", ref model._SelectedPaneDownItem, ref _SelectedPaneDownItemLocator, _SelectedPaneDownItemDefaultValueFactory));
+        static Func<PaneModel> _SelectedPaneDownItemDefaultValueFactory = () => { return new PaneModel(); };
+        #endregion
+
+
+        public List<PaneModel> PaneDownList
+        {
+            get { return _PaneDownListLocator(this).Value; }
+            set { _PaneDownListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property List<PaneModel> PaneDownList Setup
+        protected Property<List<PaneModel>> _PaneDownList = new Property<List<PaneModel>> { LocatorFunc = _PaneDownListLocator };
+        static Func<BindableBase, ValueContainer<List<PaneModel>>> _PaneDownListLocator = RegisterContainerLocator<List<PaneModel>>("PaneDownList", model => model.Initialize("PaneDownList", ref model._PaneDownList, ref _PaneDownListLocator, _PaneDownListDefaultValueFactory));
+        static Func<List<PaneModel>> _PaneDownListDefaultValueFactory = () => { return new List<PaneModel>(); };
+        #endregion
+
+        public List<PaneModel> PaneBottomList
+        {
+            get { return _PaneBottomListLocator(this).Value; }
+            set { _PaneBottomListLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property List<PaneModel> PaneBottomList Setup
+        protected Property<List<PaneModel>> _PaneBottomList = new Property<List<PaneModel>> { LocatorFunc = _PaneBottomListLocator };
+        static Func<BindableBase, ValueContainer<List<PaneModel>>> _PaneBottomListLocator = RegisterContainerLocator<List<PaneModel>>("PaneBottomList", model => model.Initialize("PaneBottomList", ref model._PaneBottomList, ref _PaneBottomListLocator, _PaneBottomListDefaultValueFactory));
+        static Func<List<PaneModel>> _PaneBottomListDefaultValueFactory = () => { return new List<PaneModel>(); };
+        #endregion
+
+
+
         //SupportCities
         public List<CityModel> SupportCities
         {
@@ -91,6 +259,18 @@ namespace IndoorMap.ViewModels
         static Func<int> _SelectedCityIndexDefaultValueFactory = () => { return -1; };
         #endregion
 
+        //SelectedCity
+        public CityModel SelectedCity
+        {
+            get { return _SelectedCityLocator(this).Value; }
+            set { _SelectedCityLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property Channel SelectedCity Setup        
+        protected Property<CityModel> _SelectedCity = new Property<CityModel> { LocatorFunc = _SelectedCityLocator };
+        static Func<BindableBase, ValueContainer<CityModel>> _SelectedCityLocator = RegisterContainerLocator<CityModel>("SelectedCity", model => model.Initialize("SelectedCity", ref model._SelectedCity, ref _SelectedCityLocator, _SelectedCityDefaultValueFactory));
+        static Func<CityModel> _SelectedCityDefaultValueFactory = () => { return new CityModel(); };
+        #endregion
+
         //SelectedMallIndex
         public int SelectedMallIndex
         {
@@ -103,46 +283,65 @@ namespace IndoorMap.ViewModels
         static Func<int> _SelectedMallIndexDefaultValueFactory = () => { return -1; };
         #endregion
 
-        //All the Map Element
-        public ObservableCollection<MapElement> MapElements
+
+        #endregion
+
+
+        //IsAutoSuggestionBoxFocus
+        public bool IsAutoSuggestionBoxFocus
         {
-            get { return _MapElementsLocator(this).Value; }
-            set { _MapElementsLocator(this).SetValueAndTryNotify(value); }
+            get { return _IsAutoSuggestionBoxFocusLocator(this).Value; }
+            set { _IsAutoSuggestionBoxFocusLocator(this).SetValueAndTryNotify(value); }
         }
-        #region Property Channel MapElements Setup        
-        protected Property<ObservableCollection<MapElement>> _MapElements = new Property<ObservableCollection<MapElement>> { LocatorFunc = _MapElementsLocator };
-        static Func<BindableBase, ValueContainer<ObservableCollection<MapElement>>> _MapElementsLocator = RegisterContainerLocator<ObservableCollection<MapElement>>("MapElements", model => model.Initialize("MapElements", ref model._MapElements, ref _MapElementsLocator, _MapElementsDefaultValueFactory));
-        static Func<ObservableCollection<MapElement>> _MapElementsDefaultValueFactory = () => { return new ObservableCollection<MapElement>(); };
-        #endregion
-
-        //MapZoomLevel
-        public Double MapZoomLevel
-        {
-            get { return _MapZoomLevelLocator(this).Value; }
-            set { _MapZoomLevelLocator(this).SetValueAndTryNotify(value); }
-        }
-        #region Property Channel MapZoomLevel Setup        
-        protected Property<Double> _MapZoomLevel = new Property<Double> { LocatorFunc = _MapZoomLevelLocator };
-        static Func<BindableBase, ValueContainer<Double>> _MapZoomLevelLocator = RegisterContainerLocator<Double>("MapZoomLevel", model => model.Initialize("MapZoomLevel", ref model._MapZoomLevel, ref _MapZoomLevelLocator, _MapZoomLevelDefaultValueFactory));
-        static Func<Double> _MapZoomLevelDefaultValueFactory = () => { return 0; };
-        #endregion
-
-        //MapCenter GeopoGeopoint
-        public Geopoint MapCenter
-        {
-            get { return _MapCenterLocator(this).Value; }
-            set { _MapCenterLocator(this).SetValueAndTryNotify(value); }
-        }
-        #region Property Channel MapCenter Setup        
-        protected Property<Geopoint> _MapCenter = new Property<Geopoint> { LocatorFunc = _MapCenterLocator };
-        static Func<BindableBase, ValueContainer<Geopoint>> _MapCenterLocator = RegisterContainerLocator<Geopoint>("MapCenter", model => model.Initialize("MapCenter", ref model._MapCenter, ref _MapCenterLocator, _MapCenterDefaultValueFactory));
-        static Func<Geopoint> _MapCenterDefaultValueFactory = () => { return new Geopoint(new BasicGeoposition() { }); };
+        #region Property Channel IsAutoSuggestionBoxFocus Setup        
+        protected Property<bool> _IsAutoSuggestionBoxFocus = new Property<bool> { LocatorFunc = _IsAutoSuggestionBoxFocusLocator };
+        static Func<BindableBase, ValueContainer<bool>> _IsAutoSuggestionBoxFocusLocator = RegisterContainerLocator<bool>("IsAutoSuggestionBoxFocus", model => model.Initialize("IsAutoSuggestionBoxFocus", ref model._IsAutoSuggestionBoxFocus, ref _IsAutoSuggestionBoxFocusLocator, _IsAutoSuggestionBoxFocusDefaultValueFactory));
+        static Func<bool> _IsAutoSuggestionBoxFocusDefaultValueFactory = () => { return false; };
         #endregion
 
 
-        #endregion
 
         #region -------------------   Commands   -------------------
+
+        #region CommandSearchTapped
+        public CommandModel<ReactiveCommand, String> CommandSearchTapped
+        {
+            get { return _CommandSearchTappedLocator(this).Value; }
+            set { _CommandSearchTappedLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandSearchTapped Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandSearchTapped = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandSearchTappedLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandSearchTappedLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandSearchTapped", model => model.Initialize("CommandSearchTapped", ref model._CommandSearchTapped, ref _CommandSearchTappedLocator, _CommandSearchTappedDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandSearchTappedDefaultValueFactory =
+            model =>
+            {
+                var resource = "SearchTapped";           // Command resource  
+                var commandId = "SearchTapped";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            //Todo: Add NavigateToAbout logic here, or
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            vm.IsAutoSuggestionBoxFocus = true;
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
+
 
         #region CommandCityChanged
         public CommandModel<ReactiveCommand, String> CommandCityChanged
@@ -164,17 +363,99 @@ namespace IndoorMap.ViewModels
                         vm,
                         async e =>
                         {
-                             //Todo: Add NavigateToAbout logic here, or
+                            //Todo: Add NavigateToAbout logic here, or
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            if(vm.SelectedCityIndex >= 0)
+                            vm.IsHumburgShow = false;
+                            var city = vm.SelectedCity;
+
+                            AppSettings.Intance.SelectedCityId = city.id;
+
+                            vm.GetSupportMallList();
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
+        #region CommandHamburgClick
+
+        //CommandHamburgClick
+        public CommandModel<ReactiveCommand, String> CommandHamburgClick
+        {
+            get { return _CommandHamburgClickLocator(this).Value; }
+            set { _CommandHamburgClickLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandHamburgClick Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandHamburgClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandHamburgClickLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandHamburgClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandHamburgClick", model => model.Initialize("CommandHamburgClick", ref model._CommandHamburgClick, ref _CommandHamburgClickLocator, _CommandHamburgClickDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandHamburgClickDefaultValueFactory =
+            model =>
+            {
+                var resource = "HamburgClick";           // Command resource  
+                var commandId = "HamburgClick";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+
+                            //Todo: Add NavigateToAbout logic here, or
+                            vm.IsHumburgShow = !vm.IsHumburgShow;
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
+        #region -------------   AutoSuggestionCommand   -------------
+
+        //CommandAutoSuggestionTextChange   
+        public CommandModel<ReactiveCommand, String> CommandAutoSuggestionTextChange
+        {
+            get { return _CommandAutoSuggestionTextChangeLocator(this).Value; }
+            set { _CommandAutoSuggestionTextChangeLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandAutoSuggestionTextChange Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionTextChange = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandAutoSuggestionTextChangeLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandAutoSuggestionTextChangeLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandAutoSuggestionTextChange", model => model.Initialize("CommandAutoSuggestionTextChange", ref model._CommandAutoSuggestionTextChange, ref _CommandAutoSuggestionTextChangeLocator, _CommandAutoSuggestionTextChangeDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionTextChangeDefaultValueFactory =
+            model =>
+            {
+                var resource = "AutoSuggestionTextChange";           // Command resource  
+                var commandId = "AutoSuggestionTextChange";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            var args = e.EventArgs.Parameter as AutoSuggestBoxTextChangedEventArgs;
+                            if (args.Reason == AutoSuggestionBoxTextChangeReason.UserInput)
                             {
-                                var city = vm.SupportCities[vm.SelectedCityIndex];
-                               
-                                AppSettings.Intance.SelectedCityId = city.id;
-
-                                vm.GetSupportMallListAction();
-
-                                //之后在地图上画出各个商铺
+                                //搜索
+                                vm.SearchMallFromInputKey();
                             }
                         }
                     )
@@ -189,22 +470,20 @@ namespace IndoorMap.ViewModels
             };
         #endregion
 
-        #endregion
-         
-        //Request City List
-        public CommandModel<ReactiveCommand, String> CommandGetSupportCities
+        //CommandAutoSuggestionSubmitted
+        public CommandModel<ReactiveCommand, String> CommandAutoSuggestionSubmitted
         {
-            get { return _CommandGetSupportCitiesLocator(this).Value; }
-            set { _CommandGetSupportCitiesLocator(this).SetValueAndTryNotify(value); }
+            get { return _CommandAutoSuggestionSubmittedLocator(this).Value; }
+            set { _CommandAutoSuggestionSubmittedLocator(this).SetValueAndTryNotify(value); }
         }
-        #region Property CommandModel<ReactiveCommand, String> CommandGetSupportCities Setup        
-        protected Property<CommandModel<ReactiveCommand, String>> _CommandGetSupportCities = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandGetSupportCitiesLocator };
-        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandGetSupportCitiesLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandGetSupportCities", model => model.Initialize("CommandGetSupportCities", ref model._CommandGetSupportCities, ref _CommandGetSupportCitiesLocator, _CommandGetSupportCitiesDefaultValueFactory));
-        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandGetSupportCitiesDefaultValueFactory =
+        #region Property CommandModel<ReactiveCommand, String> CommandAutoSuggestionSubmitted Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionSubmitted = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandAutoSuggestionSubmittedLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandAutoSuggestionSubmittedLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandAutoSuggestionSubmitted", model => model.Initialize("CommandAutoSuggestionSubmitted", ref model._CommandAutoSuggestionSubmitted, ref _CommandAutoSuggestionSubmittedLocator, _CommandAutoSuggestionSubmittedDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandAutoSuggestionSubmittedDefaultValueFactory =
             model =>
             {
-                var resource = "GetSupportCities";           // Command resource  
-                var commandId = "GetSupportCities";
+                var resource = "AutoSuggestionSubmitted";           // Command resource  
+                var commandId = "AutoSuggestionSubmitted";
                 var vm = CastToCurrentType(model);
                 var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
                 cmd.DoExecuteUIBusyTask(
@@ -212,11 +491,67 @@ namespace IndoorMap.ViewModels
                         async e =>
                         {
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            var args = e.EventArgs.Parameter as AutoSuggestBoxQuerySubmittedEventArgs;
+                            if (args.ChosenSuggestion != null)
+                            {
+                                var mall = (args.ChosenSuggestion as MallModel);
+                                if (mall.name == NoResultString) return;
 
-                            //var location = await LocationManager.GetPosition();
-                             vm.GetSupportCitesAction();
-                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
-                            //Todo: Add NavigateToAbout logic here, or
+                                vm.AutoSuggestText = mall.name;
+                                var selectedItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
+                                if (selectedItem.type == PanelItemType.PanelItemMallList)
+                                {
+                                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "MarkListSearchedMall", true);
+                                }
+                                else if (selectedItem.type == PanelItemType.PanelItemMap)
+                                {
+                                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "MarkMapSearchedMall", true);
+                                }
+                                MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, mall, typeof(MallModel), "NavigateToDetailByEventRouter", true);
+
+                            }
+                            else
+                            {
+                                vm.SearchMallFromInputKey();
+                                //自己处理
+                            }
+                        })
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
+
+
+        #region CommandGridLoaded
+
+        public CommandModel<ReactiveCommand, String> CommandGridLoaded
+        {
+            get { return _CommandGridLoadedLocator(this).Value; }
+            set { _CommandGridLoadedLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandGridLoaded Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandGridLoaded = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandGridLoadedLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandGridLoadedLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandGridLoaded", model => model.Initialize("CommandGridLoaded", ref model._CommandGridLoaded, ref _CommandGridLoadedLocator, _CommandGridLoadedDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandGridLoadedDefaultValueFactory =
+            model =>
+            {
+                var resource = "GridLoaded";           // Command resource  
+                var commandId = "GridLoaded";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
                         }
                     )
 
@@ -230,13 +565,16 @@ namespace IndoorMap.ViewModels
             };
         #endregion
 
-        //Navigate To Setting Page
+        #endregion
+
+
+        #region CommandGoToSettingPage
+
         public CommandModel<ReactiveCommand, String> CommandGoToSettingPage
         {
             get { return _CommandGoToSettingPageLocator(this).Value; }
             set { _CommandGoToSettingPageLocator(this).SetValueAndTryNotify(value); }
         }
-
         #region Property CommandModel<ReactiveCommand, String> CommandGoToSettingPage Setup        
         protected Property<CommandModel<ReactiveCommand, String>> _CommandGoToSettingPage = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandGoToSettingPageLocator };
         static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandGoToSettingPageLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandGoToSettingPage", model => model.Initialize("CommandGoToSettingPage", ref model._CommandGoToSettingPage, ref _CommandGoToSettingPageLocator, _CommandGoToSettingPageDefaultValueFactory));
@@ -252,9 +590,7 @@ namespace IndoorMap.ViewModels
                         async e =>
                         {
                             await MVVMSidekick.Utilities.TaskExHelper.Yield();
-
-                            await vm.StageManager.DefaultStage.Show(new SettingPage_Model());
-
+                            vm.GoToSetting();
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
                         }
@@ -269,36 +605,65 @@ namespace IndoorMap.ViewModels
                 return cmdmdl;
             };
         #endregion
-         
-        //CommandLvMallItemClick
-        public CommandModel<ReactiveCommand, String> CommandLvMallItemClick
+
+        public async void GoToSetting()
         {
-            get { return _CommandLvMallItemClickLocator(this).Value; }
-            set { _CommandLvMallItemClickLocator(this).SetValueAndTryNotify(value); }
+            if (CommonHelper.HostPage.ActualWidth <= 500)
+            {
+                MainVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                MainVisibility = Visibility.Visible;
+            }
+            await StageManager["frameSub"].Show(new SettingPage_Model());
         }
-        #region Property CommandModel<ReactiveCommand, String> CommandLvMallItemClick Setup        
-        protected Property<CommandModel<ReactiveCommand, String>> _CommandLvMallItemClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandLvMallItemClickLocator };
-        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandLvMallItemClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandLvMallItemClick", model => model.Initialize("CommandLvMallItemClick", ref model._CommandLvMallItemClick, ref _CommandLvMallItemClickLocator, _CommandLvMallItemClickDefaultValueFactory));
-        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandLvMallItemClickDefaultValueFactory =
+
+        #endregion
+
+
+
+        public async void GoToAbout()
+        {
+            if (CommonHelper.HostPage.ActualWidth <= 500)
+            {
+                MainVisibility = Visibility.Collapsed;
+            }
+            else
+            {
+                MainVisibility = Visibility.Visible;
+            }
+            await StageManager["frameSub"].Show(new AboutPage_Model());
+        }
+
+
+        //CommandGoToRefreshPage
+        #region CommandGoToRefreshPage
+
+        public CommandModel<ReactiveCommand, String> CommandGoToRefreshPage
+        {
+            get { return _CommandGoToRefreshPageLocator(this).Value; }
+            set { _CommandGoToRefreshPageLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandGoToRefreshPage Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandGoToRefreshPage = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandGoToRefreshPageLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandGoToRefreshPageLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandGoToRefreshPage", model => model.Initialize("CommandGoToRefreshPage", ref model._CommandGoToRefreshPage, ref _CommandGoToRefreshPageLocator, _CommandGoToRefreshPageDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandGoToRefreshPageDefaultValueFactory =
             model =>
             {
-                var resource = "LvMallItemClick";           // Command resource  
-                var commandId = "LvMallItemClick";
+                var resource = "GoToRefreshPage";           // Command resource  
+                var commandId = "GoToRefreshPage";
                 var vm = CastToCurrentType(model);
                 var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
                 cmd.DoExecuteUIBusyTask(
                         vm,
                         async e =>
-                        { 
+                        {
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            vm.IsHumburgShow = false;
+                            vm.GetSupportMallListAction();
                             //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
                             //Todo: Add NavigateToAbout logic here, or
-                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
-
-                            var mall = vm.MallList[vm.SelectedMallIndex];
-
-                            await vm.StageManager.DefaultStage.Show(new AtlasPage_Model(mall.buildings.FirstOrDefault()));
-
-                            //await new MessageDialog(mall.lat + " " + mall.lon).ShowAsync();
                         }
                     )
 
@@ -310,206 +675,160 @@ namespace IndoorMap.ViewModels
                 cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
                 return cmdmdl;
             };
+        #endregion
+
+        #endregion
+
+
+        //CommandPaneBottomItemClick
+        #region CommandPaneBottomItemClick
+
+        public CommandModel<ReactiveCommand, String> CommandPaneBottomItemClick
+        {
+            get { return _CommandPaneBottomItemClickLocator(this).Value; }
+            set { _CommandPaneBottomItemClickLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandPaneBottomItemClick Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandPaneBottomItemClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandPaneBottomItemClickLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandPaneBottomItemClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandPaneBottomItemClick", model => model.Initialize("CommandPaneBottomItemClick", ref model._CommandPaneBottomItemClick, ref _CommandPaneBottomItemClickLocator, _CommandPaneBottomItemClickDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandPaneBottomItemClickDefaultValueFactory =
+            model =>
+            {
+                var resource = "PaneBottomItemClick";           // Command resource  
+                var commandId = "PaneBottomItemClick";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            var a = e.EventArgs;
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
+        #endregion
+
+
+
+        #region CommandPaneItemChanged
+
+        //CommandPaneItemChanged
+        public CommandModel<ReactiveCommand, String> CommandPaneItemChanged
+        {
+            get { return _CommandPaneItemChangedLocator(this).Value; }
+            set { _CommandPaneItemChangedLocator(this).SetValueAndTryNotify(value); }
+        }
+        #region Property CommandModel<ReactiveCommand, String> CommandPaneItemChanged Setup        
+        protected Property<CommandModel<ReactiveCommand, String>> _CommandPaneItemChanged = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandPaneItemChangedLocator };
+        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandPaneItemChangedLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandPaneItemChanged", model => model.Initialize("CommandPaneItemChanged", ref model._CommandPaneItemChanged, ref _CommandPaneItemChangedLocator, _CommandPaneItemChangedDefaultValueFactory));
+        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandPaneItemChangedDefaultValueFactory =
+            model =>
+            {
+                var resource = "PaneItemChanged";           // Command resource  
+                var commandId = "PaneItemChanged";
+                var vm = CastToCurrentType(model);
+                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+                cmd.DoExecuteUIBusyTask(
+                        vm,
+                        async e =>
+                        {
+                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
+                            var navItem = new PaneModel();
+                            if (e.EventArgs.Parameter is ItemClickEventArgs)
+                                navItem = (e.EventArgs.Parameter as ItemClickEventArgs).ClickedItem as PaneModel;
+                            else
+                                navItem = vm.PaneDownList[vm.SelectedPaneDownIndex];
+
+                            MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(vm, navItem, typeof(PaneModel), "SplitViewPaneItemClick", true);
+                        }
+                    )
+
+                    .DoNotifyDefaultEventRouter(vm, commandId)
+                    .Subscribe()
+                    .DisposeWith(vm);
+
+                var cmdmdl = cmd.CreateCommandModel(resource);
+                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+                return cmdmdl;
+            };
+        #endregion
+
         #endregion
 
         //CommandShowAllMallInMap
-        public CommandModel<ReactiveCommand, String> CommandShowAllMallInMap
+        //public CommandModel<ReactiveCommand, String> CommandShowAllMallInMap
+        //{
+        //    get { return _CommandShowAllMallInMapLocator(this).Value; }
+        //    set { _CommandShowAllMallInMapLocator(this).SetValueAndTryNotify(value); }
+        //}
+        //#region Property CommandModel<ReactiveCommand, String> CommandShowAllMallInMap Setup        
+        //protected Property<CommandModel<ReactiveCommand, String>> _CommandShowAllMallInMap = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandShowAllMallInMapLocator };
+        //static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandShowAllMallInMapLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandShowAllMallInMap", model => model.Initialize("CommandShowAllMallInMap", ref model._CommandShowAllMallInMap, ref _CommandShowAllMallInMapLocator, _CommandShowAllMallInMapDefaultValueFactory));
+        //static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandShowAllMallInMapDefaultValueFactory =
+        //    model =>
+        //    {
+        //        var resource = "ShowAllMallInMap";           // Command resource  
+        //        var commandId = "ShowAllMallInMap";
+        //        var vm = CastToCurrentType(model);
+        //        var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
+        //        cmd.DoExecuteUIBusyTask(
+        //                vm,
+        //                async e =>
+        //                {
+        //                    //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
+        //                    //Todo: Add NavigateToAbout logic here, or
+        //                    await MVVMSidekick.Utilities.TaskExHelper.Yield();
+        //                    //var mall = vm.MallList[0];
+        //                    //maps.Center = new Geopoint(new BasicGeoposition()
+        //                    //{
+        //                    //    Latitude = Double.Parse(mall.lat),
+        //                    //    Longitude = Double.Parse(mall.lon)
+        //                    //});
+        //                    //maps.ZoomLevel = 50;
+
+        //                    //maps.MapElementClick
+        //                    vm.AddAllMallsInMap();                            
+        //                }
+        //            )
+
+        //            .DoNotifyDefaultEventRouter(vm, commandId)
+        //            .Subscribe()
+        //            .DisposeWith(vm);
+
+        //        var cmdmdl = cmd.CreateCommandModel(resource);
+        //        cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
+        //        return cmdmdl;
+        //    };
+        //#endregion
+
+
+
+        internal void SetFrameSplitContent(Frame frame)
         {
-            get { return _CommandShowAllMallInMapLocator(this).Value; }
-            set { _CommandShowAllMallInMapLocator(this).SetValueAndTryNotify(value); }
+            frameSplitContent = frame;
         }
-        #region Property CommandModel<ReactiveCommand, String> CommandShowAllMallInMap Setup        
-        protected Property<CommandModel<ReactiveCommand, String>> _CommandShowAllMallInMap = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandShowAllMallInMapLocator };
-        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandShowAllMallInMapLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandShowAllMallInMap", model => model.Initialize("CommandShowAllMallInMap", ref model._CommandShowAllMallInMap, ref _CommandShowAllMallInMapLocator, _CommandShowAllMallInMapDefaultValueFactory));
-        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandShowAllMallInMapDefaultValueFactory =
-            model =>
-            {
-                var resource = "ShowAllMallInMap";           // Command resource  
-                var commandId = "ShowAllMallInMap";
-                var vm = CastToCurrentType(model);
-                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
-                cmd.DoExecuteUIBusyTask(
-                        vm,
-                        async e =>
-                        {
-                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
-                            //Todo: Add NavigateToAbout logic here, or
-                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            //var mall = vm.MallList[0];
-                            //maps.Center = new Geopoint(new BasicGeoposition()
-                            //{
-                            //    Latitude = Double.Parse(mall.lat),
-                            //    Longitude = Double.Parse(mall.lon)
-                            //});
-                            //maps.ZoomLevel = 50;
 
-                            //maps.MapElementClick
-                            vm.AddAllMallsInMap();                            
-                        }
-                    )
-
-                    .DoNotifyDefaultEventRouter(vm, commandId)
-                    .Subscribe()
-                    .DisposeWith(vm);
-
-                var cmdmdl = cmd.CreateCommandModel(resource);
-                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
-                return cmdmdl;
-            };
-        #endregion
-         
-        //CommandShowOneMallInMap
-        public CommandModel<ReactiveCommand, String> CommandShowOneMallInMap
+        private void SubNavigateTo(Type type)
         {
-            get { return _CommandShowOneMallInMapLocator(this).Value; }
-            set { _CommandShowOneMallInMapLocator(this).SetValueAndTryNotify(value); }
+            FrameSplitContent.Navigate(type);
         }
-        #region Property CommandModel<ReactiveCommand, String> CommandShowOneMallInMap Setup        
-        protected Property<CommandModel<ReactiveCommand, String>> _CommandShowOneMallInMap = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandShowOneMallInMapLocator };
-        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandShowOneMallInMapLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandShowOneMallInMap", model => model.Initialize("CommandShowOneMallInMap", ref model._CommandShowOneMallInMap, ref _CommandShowOneMallInMapLocator, _CommandShowOneMallInMapDefaultValueFactory));
-        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandShowOneMallInMapDefaultValueFactory =
-            model =>
-            {
-                var resource = "ShowAllMallInMap";           // Command resource  
-                var commandId = "ShowAllMallInMap";
-                var vm = CastToCurrentType(model);
-                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
-                cmd.DoExecuteUIBusyTask(
-                        vm,
-                        async e =>
-                        {
-                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
-                            //Todo: Add NavigateToAbout logic here, or
-                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                        }
-                    )
-
-                    .DoNotifyDefaultEventRouter(vm, commandId)
-                    .Subscribe()
-                    .DisposeWith(vm);
-
-                var cmdmdl = cmd.CreateCommandModel(resource);
-                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
-                return cmdmdl;
-            };
-        #endregion
-
-        //CommandMapItemClick
-        public CommandModel<ReactiveCommand, String> CommandMapItemClick
-        {
-            get { return _CommandMapItemClickLocator(this).Value; }
-            set { _CommandMapItemClickLocator(this).SetValueAndTryNotify(value); }
-        }
-        #region Property CommandModel<ReactiveCommand, String> CommandMapItemClick Setup        
-        protected Property<CommandModel<ReactiveCommand, String>> _CommandMapItemClick = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandMapItemClickLocator };
-        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandMapItemClickLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandMapItemClick", model => model.Initialize("CommandMapItemClick", ref model._CommandMapItemClick, ref _CommandMapItemClickLocator, _CommandMapItemClickDefaultValueFactory));
-        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandMapItemClickDefaultValueFactory =
-            model =>
-            {
-                var resource = "ShowAllMallInMap";           // Command resource  
-                var commandId = "ShowAllMallInMap";
-                var vm = CastToCurrentType(model);
-                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
-                cmd.DoExecuteUIBusyTask(
-                        vm,
-                        async e =>
-                        {
-                            //await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
-                            //Todo: Add NavigateToAbout logic here, or
-                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            var param = e.EventArgs.Parameter as MapElementClickEventArgs;
-                            foreach (var item in param.MapElements)
-                            {
-                                if (item is MapPolygon)
-                                {
-                                    var poly = item as MapPolygon;
-                                    //Is MapPolygon
-                                }
-                                else if (item is MapPolyline)
-                                {
-                                    var poly = item as MapPolyline;
-                                    //Is MapPolyline
-                                }
-                                else if (item is MapIcon)
-                                {
-                                    var icon = item as MapIcon;
-                                    //Is MapIcon
-                                    //
-                                    //MallModel mall = vm.MallList.FirstOrDefault(n => n.name == icon.Title);
-                                    //await vm.StageManager.DefaultStage.Show(new AtlasPage_Model(mall.buildings[0]));
-
-                                    vm.MapCenter = icon.Location;
-
-                                }
-                            }
-                        }
-                    )
-
-                    .DoNotifyDefaultEventRouter(vm, commandId)
-                    .Subscribe()
-                    .DisposeWith(vm);
-
-                var cmdmdl = cmd.CreateCommandModel(resource);
-                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
-                return cmdmdl;
-            };
-        #endregion 
-
-        //CommandGeoLocation
-        public CommandModel<ReactiveCommand, String> CommandGeoLocation
-        {
-            get { return _CommandGeoLocationLocator(this).Value; }
-            set { _CommandGeoLocationLocator(this).SetValueAndTryNotify(value); }
-        }
-        #region Property CommandModel<ReactiveCommand, String> CommandGeoLocation Setup        
-        protected Property<CommandModel<ReactiveCommand, String>> _CommandGeoLocation = new Property<CommandModel<ReactiveCommand, String>> { LocatorFunc = _CommandGeoLocationLocator };
-        static Func<BindableBase, ValueContainer<CommandModel<ReactiveCommand, String>>> _CommandGeoLocationLocator = RegisterContainerLocator<CommandModel<ReactiveCommand, String>>("CommandGeoLocation", model => model.Initialize("CommandGeoLocation", ref model._CommandGeoLocation, ref _CommandGeoLocationLocator, _CommandGeoLocationDefaultValueFactory));
-        static Func<BindableBase, CommandModel<ReactiveCommand, String>> _CommandGeoLocationDefaultValueFactory =
-            model =>
-            {
-                var resource = "ShowAllMallInMap";           // Command resource  
-                var commandId = "ShowAllMallInMap";
-                var vm = CastToCurrentType(model);
-                var cmd = new ReactiveCommand(canExecute: true) { ViewModel = model }; //New Command Core
-                cmd.DoExecuteUIBusyTask(
-                        vm,
-                        async e =>
-                        {
-
-                            //    await vm.StageManager.DefaultStage.Show(new DetailPage_Model());
-                            //Todo: Add NavigateToAbout logic here, or
-                            await MVVMSidekick.Utilities.TaskExHelper.Yield();
-                            var position = await LocationManager.GetPosition();
-                            if (position != null)
-                            {
-                                AppSettings.Intance.LocationSetting = true;
-                                //GetCity(position.Coordinate);
-                                vm.MapCenter = position.Coordinate.Point;
-                                vm.MapZoomLevel = 15;
-                            }
-                            else
-                            {
-                                AppSettings.Intance.LocationSetting = false;
-                            }
-                        }
-                    )
-
-                    .DoNotifyDefaultEventRouter(vm, commandId)
-                    .Subscribe()
-                    .DisposeWith(vm);
-
-                var cmdmdl = cmd.CreateCommandModel(resource);
-                cmdmdl.ListenToIsUIBusy(model: vm, canExecuteWhenBusy: false);
-                return cmdmdl;
-            };
-        #endregion 
-         
 
         #endregion
 
         #region -------------------   Methods   -------------------
 
-        private void GetSupportCitesAction()
+        private async void GetSupportCities()
         {
             string url = @"http://op.juhe.cn/atlasyun/city/list?key=" + Configmanager.INDOORMAP_APPKEY;
             FormAction action = new FormAction(url);
@@ -523,71 +842,243 @@ namespace IndoorMap.ViewModels
                     HttpClientReturnCities(jsonCity.result);
                 }
             };
+            await StageManager["frameMain"].Show(SubMallListPageModel);
         }
 
-        private void GetSupportMallListAction()
+        private async void GetSupportMallList()
         {
-            string url = string.Format(@"http://op.juhe.cn/atlasyun/mall/list?key={0}&cityid={1}", Configmanager.INDOORMAP_APPKEY, SupportCities[SelectedCityIndex].id);
-            FormAction action = new FormAction(url);
-            action.viewModel = this;
-            action.Run();
-            action.FormActionCompleted += (result, ee) =>
+
+            var mallListJson = await StorageHelper.GetLocalTextFile(DataManager.CityMallListFile);
+            if (mallListJson != null)
             {
+                DataManager.SavedMallList = JsonConvert.DeserializeObject<List<SavedMallListModel>>(mallListJson);
+                var selectedCitMallList = DataManager.SavedMallList.FirstOrDefault(n => n.City.id == SelectedCity.id);
+                if (selectedCitMallList != null)
+                {
+                    this.MallList = selectedCitMallList.MallList;
+                    MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(this, this.MallList, typeof(List<MallModel>), "CitySelectedChangedEvent", true);
+                }
+                else
+                    GetSupportMallListAction();
+            }
+            else
+                GetSupportMallListAction();
+        }
+
+        public void GetSupportMallListAction()
+        { 
+            string url = string.Format(@"http://op.juhe.cn/atlasyun/mall/list?key={0}&cityid={1}", Configmanager.INDOORMAP_APPKEY, SelectedCity.id);
+            FormAction action = new FormAction(url);
+            action.isShowWaitingPanel = false;
+            action.viewModel = this;
+            action.Run(false);
+            action.FormActionCompleted += async (result, ee) =>
+            { 
                 JsonMallModel jsonMall = JsonConvert.DeserializeObject<JsonMallModel>(result);
+
                 if (jsonMall.reason == "成功" || jsonMall.reason == "successed")
                 {
+                    //此处 解析时间非常慢慢慢慢
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () => 
+                    {
+                        WaitingPanelHelper.ShowWaitingPanel("正在解析商场区域", Visibility.Visible);
+                    });
+
+                    foreach (var mall in jsonMall.result)
+                    {
+                        mall.district = await LocationManager.GetDistrictUsingLocation(new Geopoint(new BasicGeoposition()
+                        {
+                            Latitude = Double.Parse(mall.lat),
+                            Longitude = Double.Parse(mall.lon)
+                        }));
+                    }
+                    var item = new SavedMallListModel() { City = SelectedCity, MallList = jsonMall.result };
+                    var saveItem = DataManager.SavedMallList.FirstOrDefault(n => n.City.id == item.City.id);
+                    if (saveItem != null)
+                        saveItem = item;
+                    else
+                        DataManager.SavedMallList.Add(item);
+
+                    string save = JsonConvert.SerializeObject(DataManager.SavedMallList);
+                    await StorageHelper.SetLocalTextFile(DataManager.CityMallListFile, save);
+
+                    await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+                    {
+                        WaitingPanelHelper.HiddenWaitingPanel();
+
+                    });
                     HttpClientReturnMallList(jsonMall.result);
                 }
             };
         }
-        
+
         public async void HttpClientReturnCities(List<CityModel> jsonCity)
-        {
+        { 
             this.SupportCities = jsonCity;
 
             string city = AppSettings.Intance.LocationCity;
-            var saveCity = SupportCities.FirstOrDefault(n => n.name == city);
-            if (saveCity == null)
+            if (!string.IsNullOrEmpty(city))
             {
-                await new MessageDialog("暂不支持" + city + "，为您切换到默认城市").ShowAsync();
-                SelectedCityIndex = 0;
-                return;
+                var saveCity = SupportCities.FirstOrDefault(n => n.name == city);
+                if (saveCity == null)
+                {
+                    await new MessageDialog("暂不支持您所在的城市，为您切换到默认城市").ShowAsync();
+                    SelectedCityIndex = 0;
+                }
+                else
+                    SelectedCityIndex = SupportCities.IndexOf(saveCity);
             }
-            SelectedCityIndex = SupportCities.IndexOf(saveCity);
-
-
-            SelectedCityIndex = 0;
+            else
+                SelectedCityIndex = 0;
         }
 
         public void HttpClientReturnMallList(List<MallModel> jsonMall)
-        {
+        { 
             this.MallList = jsonMall;
+            MVVMSidekick.EventRouting.EventRouter.Instance.RaiseEvent(this, this.MallList, typeof(List<MallModel>), "CitySelectedChangedEvent", true);
         }
 
-        public void AddAllMallsInMap()
+        public void InitPaneListData()
         {
-            var elements = new ObservableCollection<MapElement>();
-            
-            foreach (var item in MallList)
-            {
-                MapIcon mapIcon = new MapIcon();
-                var bdPosition = new Geopoint(new BasicGeoposition()
+            PaneDownList.Add(new PaneModel() { Label = "列表", Icon = "\xEA37", type = PanelItemType.PanelItemMallList }); 
+            PaneDownList.Add(new PaneModel() { Label = "地图", Icon = "\xE128", type = PanelItemType.PanelItemMap }); 
+
+            //SelectedPaneDownItem = PaneDownList.FirstOrDefault(); 
+        }
+
+
+        public void InitPaneBottomListData()
+        {
+            PaneBottomList.Add(new PaneModel() { Label = "设置", Icon = "\xE115", type = PanelItemType.PanelItemSetting });
+            PaneBottomList.Add(new PaneModel() { Label = "给我好评", Icon = "\xE19F", type = PanelItemType.PanelItemReview });
+            PaneBottomList.Add(new PaneModel() { Label = "反馈", Icon = "\xE119", type = PanelItemType.PanelItemFeedback });
+            PaneBottomList.Add(new PaneModel() { Label = "关于", Icon = "\xE946", type = PanelItemType.PanelItemAbout });
+        }
+
+        //Subscribe
+        private void SuscribeCommand()
+        {
+            //MallList Item Tapped
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                .Where(x => x.EventName == "NavigateToDetailByEventRouter")
+                .Subscribe(
+                async e =>
                 {
-                    Latitude = Double.Parse(item.lat),
-                    Longitude = Double.Parse(item.lon)
-                });
-                if(MallList.IndexOf(item) == 0)
-                {
-                    MapCenter = bdPosition;
+                    var item = e.EventData as MallModel;
+                    if (item != null)
+                    {
+                        if (CommonHelper.HostPage.ActualWidth <= 500)
+                        {
+                            MainVisibility = Visibility.Collapsed;
+                        }
+                        else
+                        {
+                            MainVisibility = Visibility.Visible;
+                        }
+                        
+                        //await StageManager.DefaultStage.Show(new AtlasPage_Model(item.buildings.FirstOrDefault()));
+                        await StageManager["frameSub"].Show(new AtlasPage_Model(item));
+                    }
                 }
-                mapIcon.Location = bdPosition;//LocationManager.TransformFromWorldlToMars(bdPosition);
-                mapIcon.Title = item.name;
-                mapIcon.Image = RandomAccessStreamReference.CreateFromUri(new Uri("ms-appx:///Assets/delete_auto.png"));
-                elements.Add(mapIcon);
+                ).DisposeWith(this);
+            //MallList Button Tapped
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>()
+                .Where(x => x.EventName == "ListButtonClickByEventRouter")
+                .Subscribe(
+                e =>
+                {
+                    var item = e.EventData as MallModel;
+                    if (item != null)
+                    {  
+                        SelectedPaneDownIndex = 1;
+                        //SelectedPaneDownItem = PaneDownList[1]; 
+                    }
+                }
+                ).DisposeWith(this);
+
+            //SplitViewPaneItemClick 
+            MVVMSidekick.EventRouting.EventRouter.Instance.GetEventChannel<object>().
+            Where(x => x.EventName == "SplitViewPaneItemClick")
+                .Subscribe(
+                async e =>
+                {
+                    var navItem = e.EventData as PaneModel;
+                    if (navItem != null)
+                    {
+                        IsHumburgShow = false;
+                        switch (navItem.type)
+                        {                       
+                            case PanelItemType.PanelItemMallList:
+                                await StageManager["frameMain"].Show(SubMallListPageModel);
+                                 break;
+                            case PanelItemType.PanelItemMap:
+                                await StageManager["frameMain"].Show(SubMapPageModel);
+                                break;
+                            case PanelItemType.PanelItemFeedback:
+                                CommonHelper.Feedback("商场室内地图-反馈", "请在此输入内容,谢谢！", "yffswyf@163.com");
+                                break;
+                            case PanelItemType.PanelItemReview:
+                                CommonHelper.Review();
+                                break;
+                            case PanelItemType.PanelItemSetting:
+                                GoToSetting();
+                                break;
+                            case PanelItemType.PanelItemAbout:
+                                GoToAbout();
+                                break;
+                        }
+                    }
+                }
+                ).DisposeWith(this);
+        }
+
+        private async void SetApplicationCityLocation()
+        {
+            //ShowLocationMessageDialog
+            if (AppSettings.Intance.IsFirstRun)    //true
+            {
+                //Popup just for one time
+                bool result = await CommonHelper.ShowMessageDialog("是否打开定位");
+                if (result)
+                {
+                    AppSettings.Intance.SetAppSetting(AppSettings.LocationSettingKey, true);
+                    string location = await LocationManager.GetCityUsingMapLocation();
+                    //正在定位  要有提示
+                    if (!string.IsNullOrEmpty(location))
+                        AppSettings.Intance.LocationCity = location;
+                }
+                else
+                    AppSettings.Intance.SetAppSetting(AppSettings.LocationSettingKey, false);
+
+                AppSettings.Intance.IsFirstRun = false;
             }
-            MapElements = elements;
-            MapZoomLevel = 10;
-        } 
+
+            //if the locate setting is on but the city is empty or null
+            if (AppSettings.Intance.GetAppSetting(AppSettings.LocationSettingKey) && string.IsNullOrEmpty(AppSettings.Intance.LocationCity))
+            {
+                string location = await LocationManager.GetCityUsingMapLocation();
+                if (!string.IsNullOrEmpty(location))
+                    AppSettings.Intance.LocationCity = location;
+            }
+
+            GetSupportCities();
+        }
+
+        private void SearchMallFromInputKey()
+        {
+            if (string.IsNullOrWhiteSpace(AutoSuggestText))
+                return;
+            AutoSuggests.Clear();
+
+            var result = MallList.Where(n =>
+                                n.name.ToLower().Contains(AutoSuggestText.ToLower().Trim())
+                                ).ToList();
+            if (!result.Any())
+            {
+                result = new List<MallModel>() { new MallModel() { name = NoResultString } };
+            }
+            AutoSuggests = result;
+        }
 
         #endregion
 
@@ -600,7 +1091,7 @@ namespace IndoorMap.ViewModels
         ///// <param name="oldValue">Value before set.</param>
         ///// <returns>Task awaiter</returns>
         //protected override Task OnBindedToView(MVVMSidekick.Views.IView view, IViewModel oldValue)
-        //{
+        //{ 
         //    return base.OnBindedToView(view, oldValue);
         //}
 
@@ -615,15 +1106,26 @@ namespace IndoorMap.ViewModels
         //    return base.OnUnbindedFromView(view, newValue);
         //}
 
-        ///// <summary>
-        ///// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
-        ///// </summary>
-        ///// <param name="view">View that firing Load event</param>
-        ///// <returns>Task awaiter</returns>
-        //protected override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
-        //{
-        //    return base.OnBindedViewLoad(view);
-        //}
+        /// <summary>
+        /// This will be invoked by view when the view fires Load event and this viewmodel instance is already in view's ViewModel property
+        /// </summary>
+        /// <param name="view">View that firing Load event</param>
+        /// <returns>Task awaiter</returns>
+        protected async override Task OnBindedViewLoad(MVVMSidekick.Views.IView view)
+        {
+            await base.OnBindedViewLoad(view);
+
+            if (!isLoadSuscribe)
+            {
+                SuscribeCommand();
+                isLoadSuscribe = true;
+                //设置定位相关信息   但是未包括定位更改事件
+                 
+                SetApplicationCityLocation();
+                await StageManager["frameSub"].Show(new AtlasBlankPage_Model());
+
+            }
+        }
 
         ///// <summary>
         ///// This will be invoked by view when the view fires Unload event and this viewmodel instance is still in view's  ViewModel property

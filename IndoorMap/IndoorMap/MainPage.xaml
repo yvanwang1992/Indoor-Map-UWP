@@ -11,163 +11,397 @@
     xmlns:usercontrol="using:IndoorMap.UserControls"
     xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
     xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:bahavior="using:MVVMSidekick.Behaviors"
+    xmlns:Media="using:Microsoft.Xaml.Interactions.Media"
+    xmlns:helper="using:IndoorMap.Helpers"
     mc:Ignorable="d">
+
     <Page.Resources>
         <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
-        <x:String x:Key="AppName">My Application</x:String>
+        <x:String x:Key="AppName">室内地图</x:String>
+
         <vm:MainPage_Model x:Key="DesignVM"/>
+
+        <Style x:Key="horizontalListViewStyle" TargetType="ListView">
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Horizontal"
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+
         <Style TargetType="ListViewItem">
             <Setter Property="HorizontalContentAlignment" Value="Stretch"/>
         </Style>
 
-        <DataTemplate x:Key="MallListDataTemplate">
-            <Grid Background="Transparent" BorderBrush="Red" BorderThickness="1">
-                <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="*"/>
-                    <ColumnDefinition Width="Auto"/>
-                </Grid.ColumnDefinitions>
+        <DataTemplate x:Key="CityListDataTemplate">
 
-                <StackPanel Grid.Column="0" >
-                    <TextBlock Text="{Binding name}"/>
-                    <TextBlock Text="{Binding addr}"/>
-                    <TextBlock Text="{Binding opentime}"/>
-                </StackPanel>
-                <Button Background="Yellow" Grid.Column="1" Content="按钮" Command="{Binding ElementName=lvMall, Path=DataContext.CommandShowOneMallInMap}"/>
+            <TextBlock Text="{Binding name}"/>
+
+        </DataTemplate>
+
+        <DataTemplate x:Key="PaneListDataTemplate">
+            <Grid Width="250">
+                <!--<interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="Tapped">
+                        <bahavior:SendToEventRouterAction EventRoutingName="SplitViewPaneItemClick"
+                                                          IsEventFiringToAllBaseClassesChannels="True"
+                                                          EventData="{Binding}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>-->
+
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="48"/>
+                    <ColumnDefinition/>
+                </Grid.ColumnDefinitions>
+                <!--<Button Grid.Column="0" HorizontalAlignment="Center">
+                    <Button.Content>
+                        <TextBlock FontFamily="Segoe MDL2 Assets" Text="{Binding IconText}" FontSize="24"/>
+                    </Button.Content>
+                </Button>-->
+
+                <TextBlock Foreground="White" FontFamily="Segoe MDL2 Assets"  Grid.Column="0" HorizontalAlignment="Left" VerticalAlignment="Center" Text="{Binding Icon}" FontSize="24"/>
+                <Border Grid.Column="1" HorizontalAlignment="Left" VerticalAlignment="Center">
+                    <TextBlock Foreground="White" Text="{Binding Label}" FontSize="16" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+                </Border>
             </Grid>
         </DataTemplate>
-
-        <DataTemplate x:Key="CityListDataTemplate">
-            <TextBlock Text="{Binding name}"/>
+        <DataTemplate x:Key="PaneListDataHorizontalTemplate">
+            <StackPanel Margin="0,10,0,5" HorizontalAlignment="Center" Orientation="Vertical" VerticalAlignment="Center">
+                <TextBlock Foreground="White" FontFamily="Segoe MDL2 Assets" HorizontalAlignment="Center" VerticalAlignment="Center" Text="{Binding Icon}" FontSize="24"/>
+                <TextBlock Foreground="White" Margin="0,5,0,0" HorizontalAlignment="Center" Text="{Binding Label}" FontSize="14" VerticalAlignment="Center"/>
+            </StackPanel>
         </DataTemplate>
+
+        <Storyboard x:Name="SeachBoxShowStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="autoSuggestBox" Storyboard.TargetProperty="Visibility" Duration="0">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="cbCity" Storyboard.TargetProperty="Visibility" Duration="0">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnSearch" Storyboard.TargetProperty="Visibility" Duration="0">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+        <Storyboard x:Name="SeachBoxHideStoryboard">
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="autoSuggestBox" Storyboard.TargetProperty="Visibility" Duration="0">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Collapsed"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="cbCity" Storyboard.TargetProperty="Visibility" Duration="0">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+            </ObjectAnimationUsingKeyFrames>
+            <ObjectAnimationUsingKeyFrames Storyboard.TargetName="btnSearch" Storyboard.TargetProperty="Visibility" Duration="0">
+                <DiscreteObjectKeyFrame KeyTime="0" Value="Visible"/>
+            </ObjectAnimationUsingKeyFrames>
+        </Storyboard>
+
     </Page.Resources>
-    <Grid>
-        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="False" OpenPaneLength="200" Background="Brown" PaneBackground="Red" DisplayMode="Overlay" DataContext="{StaticResource DesignVM}" >
+    <Grid Margin="0,0,0,0">
+        <interactivity:Interaction.Behaviors>
+            <core:EventTriggerBehavior x:Name="Loaded">
+                <core:InvokeCommandAction Command="{Binding CommandGridLoaded}"/>
+            </core:EventTriggerBehavior> 
+        </interactivity:Interaction.Behaviors>
+        <SplitView HorizontalAlignment="Stretch" x:Name="splitView" IsPaneOpen="{Binding IsHumburgShow, Mode=TwoWay}" OpenPaneLength="250" CompactPaneLength="48" Background="Transparent" PaneBackground="Transparent" DisplayMode="Inline" DataContext="{StaticResource DesignVM}" >
             <SplitView.Pane>
-                <Grid >
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition Height="*"/>
-                    </Grid.RowDefinitions>
-                    <StackPanel Grid.Row="0" Orientation="Vertical">
-                        <Button Tapped="bordHamburg_Tapped">
-                            <Button.Content>
-                                <TextBlock FontFamily="Segoe MDL2 Assets" Text="&#xE700;" FontSize="24"/>
-                            </Button.Content>
+                <RelativePanel>
+                    <Border x:Name="border" Background="{ThemeResource ThemeColor}" RelativePanel.AlignTopWithPanel="True">
+                        <Button 
+                            x:Name="btnHamburg"
+                             
+                            Height="48"
+                            Width="48"
+                            FontSize="24"
+                            Foreground="White"
+                            Content="&#xE700;"
+                            FontFamily="Segoe MDL2 Assets"
+                            HorizontalAlignment="Center" 
+                            Click="btnHamburg_Click">
+                            <!--Command="{Binding CommandHamburgClick}">-->
                         </Button>
-                        <TextBlock Text="11111111111aaaaaaaaaaaaa"/>
-                    </StackPanel>
-                </Grid>
-            </SplitView.Pane>
-            <SplitView.Content>
-                <Grid Loaded="Grid_Loaded"  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-                    <Grid.RowDefinitions>
-                        <RowDefinition Height="40"/>
-                        <RowDefinition Height="Auto"/>
-                        <RowDefinition />
-                        <RowDefinition Height="Auto"/>
-                    </Grid.RowDefinitions>
+                    </Border>
+                    
+                    <RelativePanel Background="{ThemeResource ThemeColor}"
+                          RelativePanel.Below="border"
+                          RelativePanel.AlignRightWithPanel="True"
+                          RelativePanel.AlignLeftWithPanel="True"
+                          RelativePanel.AlignBottomWithPanel="True" >
 
-                    <StackPanel Grid.Row="1" Orientation="Horizontal">
-                        <TextBlock x:Name="pageTitle" Grid.Column="1" Text="{Binding SupportCities[0].name}" />
-                        <Button Content="请求" HorizontalAlignment="Right" VerticalAlignment="Top" Command="{Binding CommandGetSupportCities}"/>
-                        <ComboBox CompositeMode="MinBlend" Background="IndianRed" BorderThickness="0" HorizontalAlignment="Center" x:Name="cbCity" 
-                              SelectedIndex="{Binding SelectedCityIndex, Mode=TwoWay}" ItemsSource="{Binding SupportCities}"
-                              ItemTemplate="{StaticResource CityListDataTemplate}">
-
+                        <ComboBox x:Name="leftCbCity"
+                                  RelativePanel.AlignTopWithPanel="True"
+                                  RelativePanel.AlignLeftWithPanel="True"  
+                                  CompositeMode="MinBlend" 
+                                  BorderThickness="0"  
+                                  HorizontalAlignment="Stretch"
+                                  SelectedIndex="{Binding SelectedCityIndex}"
+                                  SelectedItem="{Binding SelectedCity, Mode=TwoWay}" 
+                                  ItemsSource="{Binding SupportCities}"
+                                  ItemTemplate="{StaticResource CityListDataTemplate}">
                             <interactivity:Interaction.Behaviors>
                                 <core:EventTriggerBehavior EventName="SelectionChanged">
                                     <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
+
                         </ComboBox>
-                        <Button Content="(地图模式)显示所有"  HorizontalAlignment="Right" VerticalAlignment="Top" >
-                            <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="Tapped">
-                                    <core:InvokeCommandAction Command="{Binding CommandShowAllMallInMap}"/>
-                                </core:EventTriggerBehavior>
-                            </interactivity:Interaction.Behaviors>
+
+                        <Button 
+                            RelativePanel.RightOf="leftCbCity"
+                            RelativePanel.AlignBottomWith="leftCbCity"
+                            RelativePanel.AlignTopWith="leftCbCity"
+                            Margin="10,0,0,0"
+                            Background="Transparent"
+                            Foreground="White"
+                            Content="&#xE1CD;"
+                            FontFamily="Segoe MDL2 Assets"
+                            HorizontalAlignment="Center" 
+                            Command="{Binding CommandGoToRefreshPage}">
+                            <!--Command="{Binding CommandHamburgClick}">-->
                         </Button>
-
-                    </StackPanel>
-
-
-                    <!--Get All Malls-->
-                    <ListView x:Name="lvMall" 
-                          Background="Blue" 
-                          Grid.Row="2" 
-                          IsItemClickEnabled="True"
-                          ItemsSource="{Binding MallList}"
-                          ItemTemplate="{StaticResource MallListDataTemplate}"
-                          SelectedIndex="{Binding SelectedMallIndex, Mode=TwoWay}">
-                        <interactivity:Interaction.Behaviors>
-                            <core:EventTriggerBehavior EventName="ItemClick">
-                                <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick, ConverterParameter={Binding SelectedMallIndex}}"/>
-                            </core:EventTriggerBehavior>
-                        </interactivity:Interaction.Behaviors>
-                    </ListView>
-
-                    <Grid Grid.Row="3" Height="400" VerticalAlignment="Bottom" >
-                        <maps:MapControl x:Name="maps"                
-                                    Visibility="Collapsed"
-                                     MapServiceToken="FYD1KDi9EEGvlbg6PSng~HfQ7pePrm32IGsLi6jlt_A~ApuDQuIK-z0Q_fNpinWeq30AlbL-bUW23En9kjVfTbQbvLBPm1IREUTaanrL76AB">
-                                    
-                        </maps:MapControl>
-                        <usercontrol:MapUserControl MapUserElements="{Binding MapElements}" MapUserCenter="{Binding MapCenter}" MapUserZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}">
+                        
+                        
+                        <ListView
+                              RelativePanel.Below="leftCbCity"
+                              RelativePanel.AlignLeftWithPanel="True"
+                              RelativePanel.AlignRightWithPanel="True"
+                              ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                              ItemsSource="{Binding PaneDownList}" 
+                              SelectionMode="Single"
+                              IsItemClickEnabled="False" 
+                              SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}">
                             <interactivity:Interaction.Behaviors>
-                                <core:EventTriggerBehavior EventName="ElementClickEvent">
-                                    <core:InvokeCommandAction Command="{Binding CommandMapItemClick}"/>
+                                <core:EventTriggerBehavior EventName="ItemClick">
+                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
                                 </core:EventTriggerBehavior>
                             </interactivity:Interaction.Behaviors>
-                        </usercontrol:MapUserControl>
-                        <Border Background="Red" Height="40" Width="40" HorizontalAlignment="Right" VerticalAlignment="Top"/>
-                    </Grid>
-                </Grid>
+                        </ListView>
+
+                        <ListView 
+                              RelativePanel.AlignBottomWithPanel="True"
+                              RelativePanel.AlignRightWithPanel="True"
+                              RelativePanel.AlignLeftWithPanel="True"
+                              IsItemClickEnabled="True" 
+                              ItemTemplate="{StaticResource PaneListDataTemplate}" 
+                              ItemsSource="{Binding PaneBottomList}">
+                            <interactivity:Interaction.Behaviors>
+                                <core:EventTriggerBehavior EventName="ItemClick">
+                                    <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
+                                </core:EventTriggerBehavior>
+                            </interactivity:Interaction.Behaviors>
+                        </ListView>
+                    </RelativePanel> 
+                </RelativePanel>
+            </SplitView.Pane>
+
+            <SplitView.Content>
+                <RelativePanel Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+
+                    <RelativePanel Width="432" Visibility="{Binding MainVisibility}" x:Name="rpMain" Background="{ThemeResource ThemeColor}">
+                        <RelativePanel x:Name="rpTop"
+                                       RelativePanel.AlignLeftWithPanel="True"
+                                       RelativePanel.AlignRightWithPanel="True"
+                                       RelativePanel.AlignTopWithPanel="True">
+                            <ListView
+                                  RelativePanel.AlignLeftWithPanel="True"
+                                  RelativePanel.AlignTopWithPanel="True"
+                                  x:Name="lvHorizontal"
+                                  ItemTemplate="{StaticResource PaneListDataHorizontalTemplate}" 
+                                  ItemsSource="{Binding PaneDownList}" 
+                                  SelectionMode="Single"
+                                  IsItemClickEnabled="False"
+                                  ScrollViewer.VerticalScrollMode="Disabled"
+                                  ScrollViewer.HorizontalScrollMode="Disabled"
+                                  Style="{StaticResource horizontalListViewStyle}"
+                                  SelectedIndex="{Binding SelectedPaneDownIndex, Mode=TwoWay}">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                                        <core:InvokeCommandAction Command="{Binding CommandPaneItemChanged}"/>
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                            </ListView>
+                            
+                            <Button
+                            Background="Transparent"
+                            RelativePanel.AlignRightWithPanel="True"
+                            RelativePanel.AlignBottomWithPanel="True"
+                            x:Name="btnSearch"
+                            FontSize="20"
+                            Foreground="White"
+                            Content="&#xE094;"
+                            Click="btnSearch_Click"
+                            FontFamily="Segoe MDL2 Assets">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="Tapped">
+                                        <Media:ControlStoryboardAction Storyboard="{StaticResource SeachBoxShowStoryboard}"/>
+                                        <!--ControlStoryboardOption="Play" 如果不是关键帧动画 可以通过这个来开始 暂停-->
+                                        <!--<core:InvokeCommandAction Command="{Binding CommandSearchTapped}"/>-->
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors>
+                            </Button>
+                            <ComboBox x:Name="cbCity" 
+                                  RelativePanel.AlignBottomWithPanel="True"
+                                  RelativePanel.LeftOf="btnSearch"
+                                  CompositeMode="MinBlend" 
+                                  BorderThickness="0"   
+                                  SelectedIndex="{Binding SelectedCityIndex}"
+                                  SelectedItem="{Binding SelectedCity, Mode=TwoWay}" 
+                                  ItemsSource="{Binding SupportCities}"
+                                  ItemTemplate="{StaticResource CityListDataTemplate}">
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="SelectionChanged">
+                                        <core:InvokeCommandAction Command="{Binding CommandCityChanged}" CommandParameter="{Binding SelectedCityIndex}"/>
+                                    </core:EventTriggerBehavior>
+                                </interactivity:Interaction.Behaviors> 
+                            </ComboBox>
+                            
+                            <AutoSuggestBox
+                                        RelativePanel.AlignBottomWithPanel="True"
+                                        RelativePanel.AlignRightWithPanel="True"
+                                        x:Name="autoSuggestBox"  
+                                        Visibility="Collapsed"
+                                        Foreground="White"
+                                        helper:AutoSuggestBoxDependencyProperty.IsAutoSuggestBoxFocus="{Binding IsAutoSuggestionBoxFocus, Mode=TwoWay}"
+                                        ItemsSource="{Binding AutoSuggests}" 
+                                        TextMemberPath ="name" 
+                                        PlaceholderText="搜索"
+                                        LostFocus="autoSuggestBox_LostFocus"
+                                        Text="{Binding AutoSuggestText, Mode=TwoWay}"
+                                        HorizontalAlignment="Stretch" QueryIcon="Find" >
+                                <AutoSuggestBox.ItemTemplate>
+                                    <DataTemplate>
+                                        <TextBlock Text="{Binding name}"/>
+                                    </DataTemplate>
+                                </AutoSuggestBox.ItemTemplate>
+                                <interactivity:Interaction.Behaviors>
+                                    <core:EventTriggerBehavior EventName="TextChanged">
+                                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionTextChange}"/>
+                                    </core:EventTriggerBehavior>
+                                    <core:EventTriggerBehavior EventName="QuerySubmitted">
+                                        <core:InvokeCommandAction Command="{Binding CommandAutoSuggestionSubmitted}"/>
+                                    </core:EventTriggerBehavior>
+                                    <!--<core:EventTriggerBehavior EventName="LostFocus">  
+                                        --><!--<Media:ControlStoryboardAction Storyboard="{StaticResource SeachBoxHideStoryboard}"/>--><!--
+                                    </core:EventTriggerBehavior>-->
+                                </interactivity:Interaction.Behaviors>
+                            </AutoSuggestBox>
+                        </RelativePanel> 
+                        <Frame
+                            x:Name="frameSplitContent" 
+                            RelativePanel.Below="rpTop"
+                            RelativePanel.AlignLeftWithPanel="True"
+                            RelativePanel.AlignRightWithPanel="True"
+                            RelativePanel.AlignBottomWithPanel="True"
+                            mvvm:StageManager.Beacon="frameMain"/> 
+                    </RelativePanel>
+
+                    <Frame Navigated="frameAtals_Navigated"
+                           Visibility="{Binding FrameVisibility}"
+                           x:Name="frameAtals"
+                           mvvm:StageManager.Beacon="frameSub">
+                    </Frame>
+                </RelativePanel>
             </SplitView.Content>
         </SplitView>
+
         <VisualStateManager.VisualStateGroups>
             <VisualStateGroup>
-                <!--<VisualState x:Name="WideState">
+                <VisualState x:Name="WideState">
                     <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="800"/>
+                        <AdaptiveTrigger MinWindowWidth="720"/>
                     </VisualState.StateTriggers>
                     <VisualState.Setters>
-                        <Setter Target="splitView.IsPaneOpen" Value="true"/>
-                        <Setter Target="splitView.PaneBackground" Value="Blue"/>
-                        <Setter Target="splitView.DisplayMode" Value="CompactInline"/>
-                    </VisualState.Setters>
-                </VisualState>-->
-                <!--<VisualState x:Name="MiddleState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="700"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
-                        <Setter Target="splitView.PaneBackground" Value="Yellow"/>
-                        <Setter Target="splitView.DisplayMode" Value="CompactInline"/>
-                    </VisualState.Setters>
-                </VisualState>-->
-                <!--<VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="700"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
-                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
-                        <Setter Target="splitView.PaneBackground" Value="Green"/>
-                        <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
-                    </VisualState.Setters>
-                </VisualState>-->
-                <!--普通为红  超过600 变绿  超过700 变黄  超过800 变蓝-->
- 
-                <VisualState x:Name="NarrowState">
-                    <VisualState.StateTriggers>
-                        <AdaptiveTrigger MinWindowWidth="600"/>
-                    </VisualState.StateTriggers>
-                    <VisualState.Setters>
+                        <Setter Target="autoSuggestBox.(RelativePanel.RightOf)" Value=""/>
+                        <Setter Target="autoSuggestBox.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="autoSuggestBox.(Visibility)" Value="Visible"/>
+                        
+                        <Setter Target="cbCity.Visibility" Value="Collapsed"/>
+                        <Setter Target="btnSearch.Visibility" Value="Collapsed"/>
+                        <Setter Target="lvHorizontal.Visibility" Value="Collapsed"/>
+
                         <Setter Target="splitView.IsPaneOpen" Value="false"/>
                         <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
+
                         <Setter Target="commandBar.Visibility" Value="Collapsed"/>
+
+                        <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="rpMain.MaxWidth" Value="500"/>
+                        <Setter Target="rpMain.Visibility" Value="Visible"/>
+
+                        <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+
                     </VisualState.Setters>
                 </VisualState>
+
+                <VisualState x:Name="MiddleState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="501"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <!--SplitView-->
+                        <Setter Target="autoSuggestBox.(RelativePanel.RightOf)" Value=""/>
+                        <Setter Target="autoSuggestBox.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="autoSuggestBox.(Visibility)" Value="Visible"/>
+
+                        <Setter Target="cbCity.Visibility" Value="Collapsed"/>
+                        <Setter Target="btnSearch.Visibility" Value="Collapsed"/>
+                        <Setter Target="lvHorizontal.Visibility" Value="Collapsed"/>
+
+
+                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
+                        <Setter Target="splitView.DisplayMode" Value="CompactOverlay"/>
+
+                        <Setter Target="commandBar.Visibility" Value="Collapsed"/>
+                        <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="rpMain.MaxWidth" Value="500"/>
+                        <Setter Target="rpMain.Visibility" Value="Visible"/>
+
+
+                        <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+
+                    </VisualState.Setters>
+                </VisualState>
+
+                <VisualState x:Name="NarrowState">
+                    <VisualState.StateTriggers>
+                        <AdaptiveTrigger MinWindowWidth="0"/>
+                    </VisualState.StateTriggers>
+                    <VisualState.Setters>
+                        <Setter Target="autoSuggestBox.(RelativePanel.RightOf)" Value="lvHorizontal"/>
+                        <Setter Target="autoSuggestBox.(RelativePanel.AlignLeftWithPanel)" Value="False"/>
+
+                        <Setter Target="cbCity.Visibility" Value="Visible"/>
+                        <Setter Target="btnSearch.Visibility" Value="Visible"/>
+                        <Setter Target="lvHorizontal.Visibility" Value="Visible"/>
+
+                        <Setter Target="splitView.IsPaneOpen" Value="false"/>
+                        <Setter Target="splitView.DisplayMode" Value="Overlay"/>
+
+                        <Setter Target="commandBar.Visibility" Value="Visible"/>
+                        <Setter Target="rpMain.(RelativePanel.AlignLeftWithPanel)" Value="True"/>
+                        <Setter Target="rpMain.MaxWidth" Value="500"/>
+
+
+                        <Setter Target="frameAtals.MinWidth" Value="500"/>
+                        <Setter Target="frameAtals.(RelativePanel.RightOf)" Value="rpMain"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignRightWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignTopWithPanel)" Value="True"/>
+                        <Setter Target="frameAtals.(RelativePanel.AlignBottomWithPanel)" Value="True"/>
+
+                    </VisualState.Setters>
+                </VisualState>
+
             </VisualStateGroup>
         </VisualStateManager.VisualStateGroups>
     </Grid>
@@ -179,15 +413,20 @@
         <Binding Source="{StaticResource DesignVM}" />
     </mvvm:MVVMPage.ViewModel>
     <mvvm:MVVMPage.BottomAppBar>
-        <CommandBar  x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
+        <CommandBar Style="{StaticResource CommandBarCustomStyle}"  Background="{ThemeResource ThemeColor}" x:Name="commandBar" d:DataContext="{StaticResource DesignVM}">
+            
             <CommandBar.PrimaryCommands >
-                <AppBarButton x:Name="appbarLocate" Icon="Map" Label="定位" Command="{Binding CommandGeoLocation}"/>
-                <AppBarButton x:Name="appbarRefresh" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>
+                <AppBarButton Foreground="White" Visibility="Collapsed" x:Name="appbarLocate" Icon="Map" Label="定位" Command="{Binding CommandGeoLocation}"/>
+                <AppBarButton Foreground="White" x:Name="appbarRefresh" Icon="Refresh" Label="刷新" Command="{Binding CommandGoToRefreshPage}"/>
+                <AppBarButton Foreground="White" x:Name="appbarSetting" Icon="Setting" Label="设置" Command="{Binding CommandGoToSettingPage}"/>
             </CommandBar.PrimaryCommands>
             <CommandBar.SecondaryCommands>
-
+            
+                <AppBarButton x:Name="appbarBtnReview" Label="给我好评" Foreground="Black" Click="appbarBtnReview_Click"/>
+                <AppBarButton x:Name="appbarBtnFeedback" HorizontalAlignment="Stretch" Label="反馈" Foreground="Black" Click="appbarBtnFeedback_Click"/>
+                <AppBarButton x:Name="appbarBtnAbout" Label="关于" Foreground="Black" Click="appbarBtnAbout_Click"/>
+                
             </CommandBar.SecondaryCommands>
         </CommandBar>
     </mvvm:MVVMPage.BottomAppBar>
-
 </mvvm:MVVMPage>

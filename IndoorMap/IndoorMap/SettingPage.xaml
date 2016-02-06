@@ -8,6 +8,9 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:vm="using:IndoorMap.ViewModels"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:bahavior="using:MVVMSidekick.Behaviors"
     mc:Ignorable="d">
 
     <Page.Resources>
@@ -16,13 +19,13 @@
         <vm:SettingPage_Model x:Key="DesignVM"/>
     </Page.Resources>
     
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
+    <Grid  Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"  DataContext="{StaticResource DesignVM}">
         <Grid.ChildrenTransitions>
             <TransitionCollection>
                 <EntranceThemeTransition/>
             </TransitionCollection>
         </Grid.ChildrenTransitions>
-        <Grid>
+        <Grid Margin="15" >
             <Grid.RowDefinitions>
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="Auto"/>
@@ -30,18 +33,25 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
-            <StackPanel Grid.Row="0" Orientation="Horizontal">
-                <TextBox Text="请选择类别"/>
-                <Button x:Name="btnSearchShop" Content="搜索" Click="btnSearchShop_Click"/>
+            
+            <TextBlock Grid.Row="0"  x:Name="pageTitle" Text="设置"  FontSize="26"
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom"  />
+            <ItemsControl Margin="0,20,0,0" Grid.Row="1" ItemsSource="{Binding SettingList, Mode=TwoWay}" >
+                <ItemsControl.ItemTemplate>
+                    <DataTemplate>
+                        <StackPanel Orientation="Horizontal">
+                            <ToggleSwitch Header="{Binding DisplayName, Mode=TwoWay}" OnContent="开启" OffContent="关闭" Grid.Row="1" IsOn="{Binding ToggleValue, Mode=TwoWay}"/>
+                        </StackPanel>
+                    </DataTemplate>
+                </ItemsControl.ItemTemplate>
+            </ItemsControl>
+
+            <StackPanel Visibility="Collapsed" Margin="0,20,0,0"  Grid.Row="3" Orientation="Vertical">
+                <TextBlock Text="隐私" FontSize="20"/>
+                <TextBlock x:Name="txtLocationStatus" Text="地图可以使用你的位置"/>
+                <Button Content="打开定位设置" Click="Button_Click"/>
             </StackPanel>
             
-            <ToggleSwitch Grid.Row="1" IsOn="{Binding Source={StaticResource AppSettings}, Path=LocationSetting, Mode=TwoWay}" />
-            <Button Grid.Row="2" x:Name="btnInvoker" Content="执行" Click="btnInvoker_Click"/>
-            <TextBlock Grid.Row="3"  x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
-                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
-            <WebView Grid.Row="4"  x:Name="webView" 
-                     ScriptNotify="webView_ScriptNotify"
-                     Source="ms-appx-web:///VenueAtlasPage.html"/>
         </Grid>
     </Grid>
  

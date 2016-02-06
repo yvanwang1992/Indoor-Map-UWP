@@ -1,0 +1,29 @@
+﻿<mvvm:MVVMPage 
+    x:Name="pageRoot"
+    x:Class="IndoorMap.AtlasBlankPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IndoorMap"
+    xmlns:mvvm="using:MVVMSidekick.Views"     
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:IndoorMap.ViewModels"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">My Application</x:String>
+        <vm:AtlasBlankPage_Model x:Key="DesignVM"/>
+    </Page.Resources>
+    
+    <Grid Background="{ThemeResource ThemeColor}"  DataContext="{StaticResource DesignVM}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <TextBlock Visibility="Visible" x:Name="pageTitle" Text="室内地图" FontSize="28" Grid.Column="1" 
+                   Foreground="White"     IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+     </Grid>
+</mvvm:MVVMPage>

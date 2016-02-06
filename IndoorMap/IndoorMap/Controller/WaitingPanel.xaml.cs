@@ -27,6 +27,7 @@ namespace IndoorMap.Controller
             this.InitializeComponent();
             this.Height = Configmanager.ScreenHeight;
             this.Width = Configmanager.ScreenWidth;
+
         }
 
         internal Popup WaitingPopup
@@ -55,9 +56,12 @@ namespace IndoorMap.Controller
             }
         }
 
-        public async void Show()
+        public async void Show(string text = "", Visibility visible = Visibility.Collapsed)
         {
-            if(this.WaitingPopup == null)
+            this.txtProgress.Text = text;
+            this.txtProgress.Visibility = visible;
+
+            if (this.WaitingPopup == null)
             {
                 this.WaitingPopup = new Popup()
                 {

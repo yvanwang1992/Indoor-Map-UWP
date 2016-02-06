@@ -1,0 +1,77 @@
+﻿<mvvm:MVVMPage 
+    x:Name="pageRoot"
+    x:Class="IndoorMap.SubMapPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IndoorMap"
+    xmlns:mvvm="using:MVVMSidekick.Views"     
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:IndoorMap.ViewModels"
+    xmlns:maps="using:Windows.UI.Xaml.Controls.Maps"
+    xmlns:usercontrol="using:IndoorMap.UserControls"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:behavior="using:MVVMSidekick.Behaviors"
+    xmlns:converter="using:IndoorMap.Helpers"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+
+        <converter:OpenTimeConverter x:Key="OpenTimeConverter"/>
+        <converter:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+        
+        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">My Application</x:String>
+        <vm:SubMapPage_Model x:Key="DesignVM"/>
+    </Page.Resources>
+
+    <Grid Background="White"  DataContext="{StaticResource DesignVM}">
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <RelativePanel>
+            <usercontrol:MapUserControl 
+                RelativePanel.AlignTopWithPanel="True"
+                RelativePanel.AlignBottomWithPanel="True"
+                RelativePanel.AlignRightWithPanel="True"
+                RelativePanel.AlignLeftWithPanel="True"
+                x:Name="userMapControl"
+                HorizontalAlignment="Stretch"
+                MapUserLandMarkVisible="{Binding MapLandMarkVisible}"
+                MapUserElements="{Binding MapElements}" 
+                MapUserCenter="{Binding MapCenter}" 
+                MapUserZoomLevel="{Binding MapZoomLevel, Mode=TwoWay}">
+                <interactivity:Interaction.Behaviors>
+                    <core:EventTriggerBehavior EventName="ElementClickEvent">
+                        <core:InvokeCommandAction Command="{Binding CommandMapItemClick}"/>
+                    </core:EventTriggerBehavior>
+                </interactivity:Interaction.Behaviors>
+            </usercontrol:MapUserControl>
+            <Grid x:Name="gridDetails" Opacity="0.8"
+                  RelativePanel.AlignBottomWithPanel="True" 
+                RelativePanel.AlignRightWithPanel="True"
+                RelativePanel.AlignLeftWithPanel="True"
+                  VerticalAlignment="Bottom" Background="Gray" Visibility="{Binding SelectedItemVisibility}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+
+                <StackPanel Grid.Column="0" Margin="8">
+                    <TextBlock Text="{Binding SelectedMallItem.name}" FontFamily="微软雅黑" FontSize="19"/>
+                    <TextBlock Text="{Binding SelectedMallItem.addr}"  FontFamily="微软雅黑" FontSize="15"/>
+                    <TextBlock Text="{Binding SelectedMallItem.opentime, Converter={StaticResource OpenTimeConverter}}" 
+                               Visibility="{Binding SelectedMallItem.opentime, Converter={StaticResource EmptyStringToVisibilityConverter}}"
+                               TextWrapping="Wrap"
+                               FontFamily="微软雅黑" FontSize="14"/>
+                </StackPanel>
+
+                <Button Grid.Column="1" Style="{ThemeResource SegoeIconButton}" Background="Transparent" Margin="20" Content="&#xE825;" Command="{Binding CommandGoToAtalsPage}"/>
+            </Grid>
+        </RelativePanel>
+    </Grid>
+</mvvm:MVVMPage>

@@ -6,32 +6,23 @@ using System.Threading.Tasks;
 using IndoorMap.Helpers;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Collections.ObjectModel;
+using System.Diagnostics;
 
 namespace IndoorMap.Helpers
-{
-    public class AppSettings :INotifyPropertyChanged
-    {
-        #region NotifyPropertyChangedEvent
-
-        public event PropertyChangedEventHandler PropertyChanged;
-
-        protected void NotifyPropertyChanged(string propName)
-        {
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propName));
-            }
-        }
-
-        #endregion
-
-        //AppSettings
-        public const string LocationSettingKey = "LocationSettingKey";
-        public const string NetworkSettingKey = "NetworkSettingKey";
+{  
+    public class AppSettings
+    { 
+        //AppSaveSetting
         public const string SelectedCityIdKey = "SelectedCityIdKey";
         public const string LocationCityKey = "LocationCityKey";
         public const string IsFirstRunKey = @"IsFirstRunKey";
-        
+
+        //AppSettingPage
+        public const string LocationSettingKey = "LocationSettingKey";
+        public const string NetworkSettingKey = "NetworkSettingKey";
+        public const string LandmarksVisibleSettingKey = "LandmarksVisibleSettingKey";
+
         private static object _locker = new object();
 
         public AppSettings()
@@ -56,32 +47,40 @@ namespace IndoorMap.Helpers
             }
         }
 
-        public bool LocationSetting
+        public void SetAppSetting(string AppSettingKey ,bool AppSettingValue)
         {
-            get
-            {
-                return StorageHelper.GetSettingsValueWithKey<bool>(LocationSettingKey);
-            }
-            set
-            {
-                StorageHelper.SetSettingsValueAndKey(value, LocationSettingKey);
-                NotifyPropertyChanged("LocationSetting");
-            }
+            StorageHelper.SetSettingsValueAndKey(AppSettingValue, AppSettingKey);
         }
 
-        public bool NetworkSetting
+        public bool GetAppSetting(string AppSettingKey)
         {
-            get
-            {
-                return StorageHelper.GetSettingsValueWithKey<bool>(NetworkSettingKey);
-            }
-            set
-            {
-                StorageHelper.SetSettingsValueAndKey(value, NetworkSettingKey);
-                NotifyPropertyChanged("NetworkSetting");
-            }
+            return StorageHelper.GetSettingsValueWithKey<bool>(AppSettingKey);
         }
 
+
+        #region 设置列表  已删除
+        //private ObservableCollection<SettingModel> settingList;
+        //public ObservableCollection<SettingModel> SettingList
+        //{
+        //    get
+        //    {
+        //        if (settingList == null)
+        //        {
+        //            settingList = new ObservableCollection<SettingModel>()
+        //            {
+        //                new SettingModel(true, LocationSettingKey) { DisplayName = "是否开启定位"},
+        //                new SettingModel(false, NetworkSettingKey) { DisplayName = "仅WIFI下可用"},
+        //                new SettingModel(false, LandMarkSettingKey) { DisplayName = "是否开启3D地图"}
+        //            };
+        //        }
+        //        return settingList;
+        //    }
+        //    set { settingList = value; }
+        //}
+
+        #endregion
+        
+        //选中的城市
         public string SelectedCityId
         {
             get
@@ -90,24 +89,21 @@ namespace IndoorMap.Helpers
             }
             set
             {
-                StorageHelper.SetSettingsValueAndKey(value, SelectedCityIdKey);
-                NotifyPropertyChanged("SelectedCityId");
+                 StorageHelper.SetSettingsValueAndKey(value, SelectedCityIdKey);
             }
         }
 
+        //定位城市
         public string LocationCity
         {
-            get
-            {
-                return StorageHelper.GetSettingsValueWithKey<string>(LocationCityKey);
-            }
+            get { return StorageHelper.GetSettingsValueWithKey<string>(LocationCityKey); }
             set
             {
                 StorageHelper.SetSettingsValueAndKey(value, LocationCityKey);
-                NotifyPropertyChanged("LocationCityKey");
-            }
+             }
         }
 
+        //第一次运行
         public bool IsFirstRun
         {
             get{ return StorageHelper.GetSettingsValueWithKey<bool>(IsFirstRunKey, true); }
@@ -117,4 +113,59 @@ namespace IndoorMap.Helpers
             }
         }
      }
+
+    
+    public class SettingModel:INotifyPropertyChanged
+    {
+        #region NotifyPropertyChangedEvent
+
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        protected void NotifyPropertyChanged(string propName)
+        {
+            if (PropertyChanged != null)
+            {
+                PropertyChanged(this, new PropertyChangedEventArgs(propName));
+            }
+        }
+
+        #endregion
+        
+        public SettingModel(bool defaultToggleValue, string settingKey)
+        {
+            DefaultToggleValue = defaultToggleValue;
+            SettingKey = settingKey;
+        }
+
+        public static bool DefaultToggleValue { get; set; }
+
+        public string SettingKey { get; set; }
+        
+        private bool toggleValue = DefaultToggleValue;
+        public bool ToggleValue
+        { 
+            get
+            {
+                toggleValue= StorageHelper.GetSettingsValueWithKey<bool>(SettingKey, DefaultToggleValue);
+                return toggleValue;
+            }
+            set
+            {
+                toggleValue = value;
+                NotifyPropertyChanged("ToggleValue");
+                StorageHelper.SetSettingsValueAndKey(value, SettingKey);
+            }
+        }
+
+        private string displayName;
+        public string DisplayName
+        {
+            get { return displayName; }
+            set
+            {
+                displayName = value;
+                NotifyPropertyChanged("DisplayName");
+            }
+        }
+    }
 }

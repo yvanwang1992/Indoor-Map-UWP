@@ -9,8 +9,12 @@
 
     <Grid Background="Transparent">
         <Grid Background="Black" Opacity="0.3"/>
-        <ProgressRing HorizontalAlignment="Center" VerticalAlignment="Center"
+        <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <ProgressRing 
                       IsActive="False" x:Name="progressRing" 
-                      Foreground="Red"  Height="70" Width="70" />
+                      Foreground="{ThemeResource ThemeColor}"  Height="70" Width="70" />
+            <TextBlock Visibility="Visible"  x:Name="txtProgress" Margin="10" Text="正在处理" FontSize="22" Foreground="{ThemeResource ThemeColor}" FontFamily="微软雅黑" />
+        </StackPanel>
+        
     </Grid>
 </Page>

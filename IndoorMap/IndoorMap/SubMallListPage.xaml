@@ -1,0 +1,118 @@
+﻿<mvvm:MVVMPage 
+    x:Name="pageRoot"
+    x:Class="IndoorMap.SubMallListPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:IndoorMap"
+    xmlns:mvvm="using:MVVMSidekick.Views"     
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:vm="using:IndoorMap.ViewModels"
+    xmlns:interactivity="using:Microsoft.Xaml.Interactivity"
+    xmlns:core="using:Microsoft.Xaml.Interactions.Core"
+    xmlns:behavior="using:MVVMSidekick.Behaviors"
+    xmlns:converter="using:IndoorMap.Helpers"
+    xmlns:helpers="using:IndoorMap.Helpers"
+    mc:Ignorable="d">
+
+    <Page.Resources>
+        <!--Converter-->
+        <converter:OpenTimeConverter x:Key="OpenTimeConverter"/>
+        <converter:EmptyStringToVisibilityConverter x:Key="EmptyStringToVisibilityConverter"/>
+        <!-- TODO: Delete this line if the key AppName is declared in App.xaml -->
+        <x:String x:Key="AppName">My Application</x:String>
+        <vm:SubMallListPage_Model x:Key="DesignVM"/>
+        
+        <DataTemplate x:Key="MallListDataTemplate">
+            <Grid Background="Transparent" BorderBrush="Gray" BorderThickness="0,0,0,1"> 
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="*"/>
+                    <ColumnDefinition Width="Auto"/>
+                </Grid.ColumnDefinitions>
+                
+                <StackPanel Grid.Column="0" Margin="5">
+                    <TextBlock Text="{Binding name}" FontFamily="微软雅黑" FontSize="19"/>
+                    <TextBlock Text="{Binding addr}"  FontFamily="微软雅黑" FontSize="15"/>
+                    <TextBlock Text="{Binding opentime, Converter={StaticResource OpenTimeConverter}}" 
+                               Visibility="{Binding opentime, Converter={StaticResource EmptyStringToVisibilityConverter}}"
+                               TextWrapping="Wrap"
+                               FontFamily="微软雅黑" FontSize="14"/>
+                </StackPanel>
+
+                <Button Content="&#xE1C4;"  Margin="0,0,10,0"  FontFamily="Segoe MDL2 Assets" FontSize="20" Grid.Column="1">
+                    <interactivity:Interaction.Behaviors>
+                        <core:EventTriggerBehavior EventName="Tapped">
+                            <core:InvokeCommandAction Command="{Binding ElementName=lvMall, Path=DataContext.CommandShowOneMallInMap}" CommandParameter="{Binding}"/>
+                        </core:EventTriggerBehavior>
+                    </interactivity:Interaction.Behaviors>
+                </Button>  
+            </Grid>
+        </DataTemplate>
+        
+        <CollectionViewSource x:Name="Groups"
+                              ItemsPath="MallList" 
+                              Source="{Binding ElementName=rootGrid,Path=DataContext.MallGroupList}"
+                              IsSourceGrouped="True"/>
+
+    </Page.Resources>
+
+    <Grid x:Name="rootGrid" Background="{ThemeResource ApplicationPageBackgroundThemeBrush}"     DataContext="{StaticResource DesignVM}"
+>
+        <Grid.ChildrenTransitions>
+            <TransitionCollection>
+                <EntranceThemeTransition/>
+            </TransitionCollection>
+        </Grid.ChildrenTransitions>
+
+        <TextBlock Visibility="Collapsed" x:Name="pageTitle" Text="{Binding Title}" Style="{StaticResource HeaderTextBlockStyle}" Grid.Column="1" 
+                        IsHitTestVisible="false" TextWrapping="NoWrap" VerticalAlignment="Bottom" Margin="0,0,30,40"/>
+        <!--Get All Malls-->
+        <Grid Background="Transparent">
+            <SemanticZoom>
+                <!--列表-->
+                <SemanticZoom.ZoomedInView>
+                    <ListView  
+                        helpers:ListViewDependencyProperty.ScrollToIndex="{Binding SelectedItem, Mode=TwoWay}"
+                        x:Name="lvMall" 
+                        VerticalAlignment="Stretch"
+                        Grid.Row="3" 
+                        SelectedItem="{Binding SelectedItem, Mode=TwoWay}"
+                        IsItemClickEnabled="True"
+                        ItemsSource="{Binding Source={StaticResource Groups}}"
+                        ItemTemplate="{StaticResource MallListDataTemplate}">
+                        <ListView.GroupStyle>
+                            <GroupStyle>
+                                <GroupStyle.HeaderTemplate>
+                                    <DataTemplate>
+                                        <Border>
+                                            <TextBlock Grid.Row="1" Foreground="{ThemeResource ThemeColor}" Text="{Binding District, Mode=TwoWay}" FontSize="26"  />
+                                        </Border>
+                                    </DataTemplate>
+                                </GroupStyle.HeaderTemplate>
+                            </GroupStyle>
+                        </ListView.GroupStyle>
+
+                        <interactivity:Interaction.Behaviors>
+                            <core:EventTriggerBehavior EventName="ItemClick">
+                                <core:InvokeCommandAction Command="{Binding CommandLvMallItemClick}"/>
+                            </core:EventTriggerBehavior>
+                        </interactivity:Interaction.Behaviors>
+                    </ListView>
+                </SemanticZoom.ZoomedInView>
+                <!--点击后分组-->
+                <SemanticZoom.ZoomedOutView>
+                    <GridView HorizontalAlignment="Center"
+                              VerticalAlignment="Center"
+                              Background="Transparent"
+                              Margin="20"
+                              ItemTemplate="{StaticResource MallGridDataTemplate}"
+                              ItemsSource="{Binding Source={StaticResource Groups},Path=CollectionGroups}">
+                    </GridView>
+                </SemanticZoom.ZoomedOutView>
+            </SemanticZoom>
+            
+            
+        </Grid>
+
+    </Grid>
+</mvvm:MVVMPage>

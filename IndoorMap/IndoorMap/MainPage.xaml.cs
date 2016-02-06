@@ -23,6 +23,9 @@ using Windows.UI.Popups;
 using IndoorMap.Controller;
 using Newtonsoft.Json.Linq;
 using System.Diagnostics;
+using Windows.UI.Core;
+using Windows.UI.ViewManagement;
+using Windows.Graphics.Display;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -33,6 +36,7 @@ namespace IndoorMap
     /// </summary>
     public sealed partial class MainPage : MVVMPage
     {
+        
         public MainPage()
         {
             this.InitializeComponent();
@@ -41,8 +45,13 @@ namespace IndoorMap
                 StrongTypeViewModel = this.ViewModel as MainPage_Model;
             });
             StrongTypeViewModel = this.ViewModel as MainPage_Model;
-            this.NavigationCacheMode = NavigationCacheMode.Enabled;
+            this.NavigationCacheMode = NavigationCacheMode.Required;
+
+            SystemNavigationManager.GetForCurrentView().BackRequested += MainPage_BackRequested;
+            this.SizeChanged += MainPage_SizeChanged;
+            
         }
+
 
         public MainPage_Model StrongTypeViewModel
         {
@@ -52,57 +61,133 @@ namespace IndoorMap
 
         public static readonly DependencyProperty StrongTypeViewModelProperty =
                     DependencyProperty.Register("StrongTypeViewModel", typeof(MainPage_Model), typeof(MainPage), new PropertyMetadata(null));
-
-        private void Grid_Loaded(object sender, RoutedEventArgs e)
+         
+        protected async override void OnNavigatedTo(NavigationEventArgs e)
         {
-            Debug.WriteLine("IsFirstRun = " + AppSettings.Intance.IsFirstRun);
-            AppSettings.Intance.IsFirstRun = false;
-            NetworkManager.GetNetworkInfomation();
+            base.OnNavigatedTo(e);
+            //StatusBar
+            if (Windows.Foundation.Metadata.ApiInformation.IsTypePresent("Windows.UI.ViewManagement.StatusBar"))
+            {
+                StatusBar statusBar = StatusBar.GetForCurrentView();
+                statusBar.BackgroundColor = Configmanager.ThemeColor;
+                statusBar.BackgroundOpacity = 1;
+                statusBar.ForegroundColor = Colors.White;
+                await statusBar.ShowAsync();
+            }
         }
 
-        private void GetCity(Geocoordinate geocoordinate)
+        protected override void OnNavigatedFrom(NavigationEventArgs e)
+        {
+            base.OnNavigatedFrom(e);
+        }
+
+        private void frameAtals_Navigated(object sender, NavigationEventArgs e)
         { 
-            string url = string.Format(@"http://api.map.baidu.com/geocoder/v2/?ak={0}&location={1},{2}&output=json",
-                Configmanager.BAIDUMAP_APPKEY, geocoordinate.Point.Position.Latitude, geocoordinate.Point.Position.Longitude);
+            SystemNavigationManager.GetForCurrentView().AppViewBackButtonVisibility =
+                this.frameAtals.CanGoBack ? AppViewBackButtonVisibility.Visible : AppViewBackButtonVisibility.Collapsed;
+         }
 
-            FormAction GeocodingBaiDuAction = new FormAction(url);
-            GeocodingBaiDuAction.Run(false);
-            GeocodingBaiDuAction.FormActionCompleted += (result, ss) =>
-            {
-                /*
-                {"status":0,"result":{"location":{"lng":121.34878897239,"lat":31.219452183508},"formatted_address":"上海市闵行区仙霞西路地道","business":"华漕,虹桥机场","addressComponent":{"city":"上海市","country":"中国","direction":"","distance":"","district":"闵行区","province":"上海市","street":"仙霞西路地道","street_number":"","country_code":0},"poiRegions":[{"direction_desc":"\u5185","name":"\u4e0a\u6d77\u8679\u6865\u673a\u573a"}],"sematic_description":"上海虹桥机场内,许浦港东119米","cityCode":289}}
-                */
-                JToken jtoken = JToken.Parse(result);
-                string status = jtoken["status"].ToString();
-                if (string.Equals(status, "0"))
-                {
-                    string city = jtoken["result"]["addressComponent"]["city"].ToString().Replace("市", "");
-                    //Save the Located City
-                    AppSettings.Intance.LocationCity = city;
-                }
-            };
-        }
-        
+        bool backFlag = false;  //是否退出判断的标识
 
-        private async void appbarLocate_Click(object sender, RoutedEventArgs e)
+        private void MainPage_BackRequested(object sender, BackRequestedEventArgs e)
         {
-            var position = await LocationManager.GetPosition();
-            if (position != null)
+            if (frameAtals.CanGoBack)
             {
-                AppSettings.Intance.LocationSetting = true;
-                GetCity(position.Coordinate);
-                maps.Center = position.Coordinate.Point;
-                maps.ZoomLevel = 50;
+                if (this.ActualWidth <= 500 && frameAtals.BackStackDepth == 1)
+                {
+                    StrongTypeViewModel.MainVisibility = Visibility.Visible;
+                }
+                frameAtals.GoBack();
+                e.Handled = true;
             }
             else
             {
-                AppSettings.Intance.LocationSetting = false;
+                if (!backFlag)
+                {
+                    CustomExitToast toast = new CustomExitToast("再按一次退出程序");
+                    toast.seconds = 2;
+                    toast.Show();
+                    backFlag = true;
+                    toast.ToastHiddenCompleted += (ss, ee) =>
+                    {
+                        backFlag = false;
+                    };
+                    e.Handled = true;
+                }
             }
         }
 
-        private void bordHamburg_Tapped(object sender, TappedRoutedEventArgs e)
+
+        private void MainPage_SizeChanged(object sender, SizeChangedEventArgs e)
+        {//窗口大小
+            double width = ApplicationView.GetForCurrentView().VisibleBounds.Width;
+            double height = ApplicationView.GetForCurrentView().VisibleBounds.Height;
+            double rawPixel = DisplayInformation.GetForCurrentView().RawPixelsPerViewPixel;
+
+
+            if (this.ActualWidth <= 500)
+            {
+                if (frameAtals.CanGoBack)
+                {
+                    StrongTypeViewModel.MainVisibility = Visibility.Collapsed;
+                }
+                else
+                {
+                    StrongTypeViewModel.MainVisibility = Visibility.Visible;
+                }
+                this.frameSplitContent.Height = height - rpTop.ActualHeight - BottomAppBar.ActualHeight;
+                this.rpMain.Width = width;  
+            }
+            else
+            {
+
+                this.frameSplitContent.Height = height - rpTop.ActualHeight;
+
+                //手机上 要变小   并且是横屏 
+                if ((DisplayInformation.GetForCurrentView().CurrentOrientation == DisplayOrientations.LandscapeFlipped ||
+                    DisplayInformation.GetForCurrentView().CurrentOrientation == DisplayOrientations.Landscape)
+                    && Windows.System.Profile.AnalyticsInfo.VersionInfo.DeviceFamily == "Windows.Mobile")
+                {
+                    this.rpMain.Width = width * 2 / 5  ;
+                }
+                else
+                {
+                    this.rpMain.Width = width;
+                } 
+            }
+        }
+         
+        private void btnSearch_Click(object sender, RoutedEventArgs e)
+        {
+             autoSuggestBox.Focus(FocusState.Keyboard);
+        }
+
+        private void autoSuggestBox_LostFocus(object sender, RoutedEventArgs e)
+        {
+            if(this.ActualWidth <= 500)
+            {
+                SeachBoxHideStoryboard.Begin();
+            }
+        }
+
+        private void btnHamburg_Click(object sender, RoutedEventArgs e)
         {
             splitView.IsPaneOpen = !splitView.IsPaneOpen;
+        }
+
+        private void appbarBtnReview_Click(object sender, RoutedEventArgs e)
+        {
+            CommonHelper.Review();
+        }
+
+        private void appbarBtnFeedback_Click(object sender, RoutedEventArgs e)
+        {
+            CommonHelper.Feedback("商场室内地图-反馈", "请在此输入内容,谢谢！", "yffswyf@163.com");
+        }
+
+        private void appbarBtnAbout_Click(object sender, RoutedEventArgs e)
+        {
+            StrongTypeViewModel.GoToAbout();
         }
     }
 }
