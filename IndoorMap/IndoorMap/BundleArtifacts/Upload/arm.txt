@@ -1,0 +1,4 @@
+MainPackage=D:\GitHub Project\Indoor-Map-UWP\IndoorMap\IndoorMap\bin\ARM\Release\Upload\IndoorMap_1.1.0.0_ARM.appx
+SymbolPackage=D:\GitHub Project\Indoor-Map-UWP\IndoorMap\IndoorMap\AppPackages\IndoorMap_1.1.0.0\IndoorMap_1.1.0.0_ARM.appxsym
+ResourcePack=D:\GitHub Project\Indoor-Map-UWP\IndoorMap\IndoorMap\_language-en.appx
+ResourcePack=D:\GitHub Project\Indoor-Map-UWP\IndoorMap\IndoorMap\_language-zh-hans.appx

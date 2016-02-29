@@ -1,0 +1,2 @@
+MainPackage=D:\GitHub Project\Indoor-Map-UWP\IndoorMap\IndoorMap\bin\x64\Release\Upload\IndoorMap_1.1.0.0_x64.appx
+SymbolPackage=D:\GitHub Project\Indoor-Map-UWP\IndoorMap\IndoorMap\AppPackages\IndoorMap_1.1.0.0\IndoorMap_1.1.0.0_x64.appxsym

@@ -1,9 +1,9 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <Package xmlns="http://schemas.microsoft.com/appx/manifest/foundation/windows10" xmlns:mp="http://schemas.microsoft.com/appx/2014/phone/manifest" xmlns:uap="http://schemas.microsoft.com/appx/manifest/uap/windows10" IgnorableNamespaces="uap mp">
-  <Identity Name="7c14cf3b-555e-4dd9-913f-6922946a0633" Publisher="CN=JWM" Version="1.0.0.0" />
+  <Identity Name="50222YvanWang.22070D42D872B" Publisher="CN=770A6006-65BA-46D0-9E74-BFB8A05DDBA2" Version="1.1.0.0" />
   <mp:PhoneIdentity PhoneProductId="7c14cf3b-555e-4dd9-913f-6922946a0633" PhonePublisherId="00000000-0000-0000-0000-000000000000" />
   <Properties>
-    <DisplayName>IndoorMap</DisplayName>
+    <DisplayName>商场室内地图</DisplayName>
     <PublisherDisplayName>Yvan Wang</PublisherDisplayName>
     <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
